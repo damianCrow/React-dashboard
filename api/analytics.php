@@ -113,7 +113,7 @@ $map_data = $service->data_ga->get(
 
 	$return = array();
 	foreach ($data->rows as $row) {
-		$return[] = array(date('j M', mktime(0, 0, 0, $row[1], $row[2], $row[0])), $row[3]);
+		$return[] = array(strtoupper(date('d M Y', mktime(0, 0, 0, $row[1], $row[2], $row[0]))), $row[3]);
 	}
 
 	echo json_encode(array("stats" => $stats, "sessions_by_day" => $return, "map" => $map_data->rows));

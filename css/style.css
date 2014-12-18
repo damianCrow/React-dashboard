@@ -376,15 +376,15 @@ div.loader {
 	}
 
 #bar-chart, .bar-chart {
-	height: 340px;
+	height: 385px;
 	overflow: hidden;
 }
 
 .bar-chart {
-	background-image: -webkit-linear-gradient(left,#50b849,#fdf042);
-	background-image: -o-linear-gradient(right,#50b849,#fdf042);
-	background-image: -moz-linear-gradient(right,#50b849,#fdf042);
-	background-image: linear-gradient(to right,#50b849,#fdf042);
+	background-image: -webkit-linear-gradient(left,#007774,#3da536);
+	background-image: -o-linear-gradient(right,#007774,#3da536);
+	background-image: -moz-linear-gradient(right,#007774,#3da536);
+	background-image: linear-gradient(to right,#007774,#3da536);
 }
 
 #map {
@@ -957,6 +957,7 @@ text.identity {
   left: 0;
   top: 0;
   z-index: 1000;
+  display: none;
 }
 
 .intro {

@@ -361,26 +361,14 @@
 		calculateScaleRange = helpers.calculateScaleRange = function(valuesArray, drawingSize, textSize, startFromZero, integersOnly){
 
 			//Set a minimum step of two - a point at the top of the graph, and a point at the base
-			var minSteps = 2,
-				maxSteps = Math.floor(drawingSize/(textSize * 1.5)),
-				skipFitting = (minSteps >= maxSteps);
+			var minSteps = 4,
+				maxSteps = 4,
+				skipFitting = true;
 
 			var maxValue = max(valuesArray),
 				minValue = min(valuesArray);
 
-			// We need some degree of seperation here to calculate the scales if all the values are the same
-			// Adding/minusing 0.5 will give us a range of 1.
-			if (maxValue === minValue){
-				maxValue += 0.5;
-				// So we don't end up with a graph with a negative start value if we've said always start from zero
-				if (minValue >= 0.5 && !startFromZero){
-					minValue -= 0.5;
-				}
-				else{
-					// Make up a whole number above the values
-					maxValue += 0.5;
-				}
-			}
+			
 
 			var	valueRange = Math.abs(maxValue - minValue),
 				rangeOrderOfMagnitude = calculateOrderOfMagnitude(valueRange),
@@ -388,7 +376,7 @@
 				graphMin = (startFromZero) ? 0 : Math.floor(minValue / (1 * Math.pow(10, rangeOrderOfMagnitude))) * Math.pow(10, rangeOrderOfMagnitude),
 				graphRange = graphMax - graphMin,
 				stepValue = Math.pow(10, rangeOrderOfMagnitude),
-				numberOfSteps = Math.round(graphRange / stepValue);
+				numberOfSteps = 4;
 
 			//If we have more space on the graph we'll use it to give more definition to the data
 			while((numberOfSteps > maxSteps || (numberOfSteps * 2) < maxSteps) && !skipFitting) {
@@ -993,7 +981,8 @@
 							fontSize: this.options.tooltipFontSize,
 							caretHeight: this.options.tooltipCaretSize,
 							cornerRadius: this.options.tooltipCornerRadius,
-							text: template(this.options.tooltipTemplate, Element),
+							text: ChartElements[0].value,
+							title: ChartElements[0].label,
 							chart: this.chart
 						}).draw();
 					}, this);
@@ -1250,11 +1239,14 @@
 			this.yAlign = "above";
 
 			//Distance between the actual element.y position and the start of the tooltip caret
-			var caretPadding = 2;
+			var caretPadding = 7;
 
 			var tooltipWidth = ctx.measureText(this.text).width + 2*this.xPadding,
 				tooltipRectHeight = this.fontSize + 2*this.yPadding,
 				tooltipHeight = tooltipRectHeight + this.caretHeight + caretPadding;
+				
+			//var titleWidth = this.ctx.measureText(this.title).width,
+				//longestTextWidth = max([labelWidth,titleWidth]);
 
 			if (this.x + tooltipWidth/2 >this.chart.width){
 				this.xAlign = "left";
@@ -1278,8 +1270,8 @@
 				//Draw a caret above the x/y
 				ctx.beginPath();
 				ctx.moveTo(this.x,this.y - caretPadding);
-				ctx.lineTo(this.x + this.caretHeight, this.y - (caretPadding + this.caretHeight));
-				ctx.lineTo(this.x - this.caretHeight, this.y - (caretPadding + this.caretHeight));
+				ctx.lineTo(this.x + 7, this.y - (caretPadding + this.caretHeight));
+				ctx.lineTo(this.x - 7, this.y - (caretPadding + this.caretHeight));
 				ctx.closePath();
 				ctx.fill();
 				break;
@@ -1313,6 +1305,8 @@
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
 			ctx.fillText(this.text, tooltipX + tooltipWidth/2, tooltipY + tooltipRectHeight/2);
+			
+			console.log(this.title, this.text);
 		}
 	});
 
@@ -1434,12 +1428,11 @@
 			// Apply padding settings to the start and end point.
 			this.startPoint += this.padding;
 			this.endPoint -= this.padding;
-			
-			this.startPoint = this.startPoint + 40;
-			
-			this.endPoint = this.height;
-			
-			//console.log(this.startPoint, this.endPoint);
+
+			this.startPoint = 100;
+			this.endPoint = 328;
+
+			console.log(this.startPoint, this.endPoint);
 
 			// Cache the starting height, so can determine if we need to recalculate the scale yAxis
 			var cachedHeight = this.endPoint - this.startPoint,
@@ -1456,12 +1449,20 @@
 			 *
 			 */
 			this.calculateYRange(cachedHeight);
+			
+			//console.log(this.startPoint, this.endPoint);
+			
+			//console.log(this.steps,this.stepValue,this.min,this.max);
 
 			// With these properties set we can now build the array of yLabels
 			// and also the width of the largest yLabel
 			this.buildYLabels();
+			
+			//console.log(this.startPoint, this.endPoint);
 
 			this.calculateXLabelRotation();
+			
+			//console.log(this.startPoint, this.endPoint);
 
 			while((cachedHeight > this.endPoint - this.startPoint)){
 				cachedHeight = this.endPoint - this.startPoint;
@@ -1474,6 +1475,8 @@
 				if (cachedYLabelWidth < this.yLabelWidth){
 					this.calculateXLabelRotation();
 				}
+				
+				//console.log(this.startPoint, this.endPoint);
 			}
 
 		},
@@ -1519,15 +1522,18 @@
 					this.xLabelWidth = cosRotation * originalLabelWidth;
 
 				}
-				if (this.xLabelRotation > 0){
-					//this.endPoint -= Math.sin(toRadians(this.xLabelRotation))*originalLabelWidth + 3;
-				}
+				/*if (this.xLabelRotation > 0){
+					this.endPoint -= Math.sin(toRadians(this.xLabelRotation))*originalLabelWidth + 3;
+				}*/
 			}
 			else{
 				this.xLabelWidth = 0;
 				this.xScalePaddingRight = this.padding;
 				this.xScalePaddingLeft = this.padding;
 			}
+			
+			//this.xScalePaddingRight = 100;
+			this.xScalePaddingLeft = 100;
 
 		},
 		// Needs to be overidden in each Chart type
@@ -1558,6 +1564,7 @@
 			this.fit();
 		},
 		draw : function(){
+			this.steps = 4;
 			var ctx = this.ctx,
 				yLabelGap = (this.endPoint - this.startPoint) / this.steps,
 				xStart = Math.round(this.xScalePaddingLeft);
@@ -1568,49 +1575,37 @@
 					var yLabelCenter = this.endPoint - (yLabelGap * index),
 						linePositionY = Math.round(yLabelCenter);
 
-					ctx.textAlign = "right";
+					ctx.textAlign = "left";
 					ctx.textBaseline = "middle";
 					if (this.showLabels){
-						ctx.fillText(labelString,xStart - 10,yLabelCenter);
+						ctx.fillText(Math.round(labelString),xStart - 65,yLabelCenter-11);
 					}
 					ctx.beginPath();
-					if (index > 0){
-						// This is a grid line in the centre, so drop that
-						ctx.lineWidth = this.gridLineWidth;
-						ctx.strokeStyle = this.gridLineColor;
-					} else {
-						// This is the first line on the scale
-						ctx.lineWidth = this.lineWidth;
-						ctx.strokeStyle = this.lineColor;
-					}
 
 					linePositionY += helpers.aliasPixel(ctx.lineWidth);
 
-					ctx.moveTo(xStart, linePositionY);
+					ctx.lineWidth = this.lineWidth;
+					ctx.strokeStyle = this.lineColor;
+					ctx.moveTo(xStart-65, linePositionY);
 					ctx.lineTo(this.width, linePositionY);
 					ctx.stroke();
 					ctx.closePath();
 
-					ctx.lineWidth = this.lineWidth;
+					/*ctx.lineWidth = this.lineWidth;
 					ctx.strokeStyle = this.lineColor;
 					ctx.beginPath();
 					ctx.moveTo(xStart - 5, linePositionY);
 					ctx.lineTo(xStart, linePositionY);
 					ctx.stroke();
-					ctx.closePath();
+					ctx.closePath();*/
 
 				},this);
 
-				each(this.xLabels,function(label,index){
-					// CHRIS
-					
-					if (index % 5 > 0 || index + 3 > this.xLabels.length) return;
-					
+				/*each(this.xLabels,function(label,index){
 					var xPos = this.calculateX(index) + aliasPixel(this.lineWidth),
 						// Check to see if line/bar here and decide where to place the line
 						linePos = this.calculateX(index - (this.offsetGridLines ? 0.5 : 0)) + aliasPixel(this.lineWidth),
 						isRotated = (this.xLabelRotation > 0);
-
 
 					ctx.beginPath();
 
@@ -1641,18 +1636,14 @@
 					ctx.closePath();
 
 					ctx.save();
-					//ctx.translate(xPos,(isRotated) ? this.endPoint + 12 : this.endPoint + 8);
-					
-					// CHRIS
-					ctx.translate(xPos+50,40);
-					
-					//ctx.rotate(toRadians(this.xLabelRotation)*-1);
+					ctx.translate(xPos,(isRotated) ? this.endPoint + 12 : this.endPoint + 8);
+					ctx.rotate(toRadians(this.xLabelRotation)*-1);
 					ctx.font = this.font;
 					ctx.textAlign = (isRotated) ? "right" : "center";
 					ctx.textBaseline = (isRotated) ? "middle" : "top";
 					ctx.fillText(label, 0, 0);
 					ctx.restore();
-				},this);
+				},this);*/
 
 			}
 		}
@@ -2236,7 +2227,6 @@
 				helpers.each(dataset.bars,function(bar,index){
 					if (bar.hasValue()){
 						bar.base = this.scale.endPoint;
-						
 						//Transition then draw
 						bar.transition({
 							x : this.scale.calculateBarX(this.datasets.length, datasetIndex, index),

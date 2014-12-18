@@ -322,6 +322,8 @@ $(function() {
 			bar_data.push(parseInt(item[1]));
 			bar_labels.push(item[0]);
 		});
+		
+		console.log(bar_data,bar_labels);
 
         /*var gdata = google.visualization.arrayToDataTable(analytics_data);
 
@@ -361,7 +363,9 @@ $(function() {
 		var ctx = $("#myChart").get(0).getContext("2d");
 		//var myNewChart = new Chart(ctx);
 	
-		var data_points = {
+		// BAR CHART //
+		
+		/*var data_points = {
 		    labels: bar_labels,
 		    datasets: [
 		        {
@@ -386,7 +390,44 @@ $(function() {
 			scaleFontColor: "#ffffff"
 		};
 	
-		var myBarChart = new Chart(ctx).Bar(data_points, options);
+		var myBarChart = new Chart(ctx).Bar(data_points, options);*/
+			
+		var data_points = {
+		    labels: bar_labels,
+		    datasets: [
+		        {
+		            label: "My First dataset",
+		            fillColor: "rgba(0,108,126,1)",
+		            strokeColor: "rgba(0,108,126,1)",
+					pointColor: "rgba(0,108,126,1)",
+					pointStrokeColor: "rgba(0,108,126,1)",
+		            pointHighlightFill: "#fff",
+		            pointHighlightStroke: "rgba(220,220,220,1)",
+		            data: bar_data
+		        }
+		    ]
+		};
+			
+		var	options = {
+			scaleShowLabels: true,
+			scaleLineColor: "rgba(255,255,255,0.3)",
+			scaleLineWidth: 1,
+			scaleFontColor: "#f9ec00",
+			scaleFontFamily: "'Gotham A', 'Gotham B'",
+			scaleFontSize: 16,
+			scaleFontStyle: "normal",
+			tooltipFontFamily: "'Gotham A', 'Gotham B'",
+			tooltipFontSize: 16,
+			tooltipXPadding: 20,
+			tooltipCaretSize: 10,
+			datasetFill: false,
+			bezierCurve: false,
+			datasetStrokeWidth : 3,
+			pointDotRadius : 5,
+			pointHitDetectionRadius : 12
+		};
+			
+		var myLineChart = new Chart(ctx).Line(data_points, options);
 		
 		
 		
