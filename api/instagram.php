@@ -7,5 +7,12 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 $get = curl_exec($ch);
 curl_close($ch);
 
-echo $get;
+$data = json_decode($get);
+foreach ($data as &$item) {
+	$item->created_time_nice = strtoupper(date('d M Y',$item->created_time));
+}
+
+echo json_encode($data);
+
+//echo $get;
 ?>

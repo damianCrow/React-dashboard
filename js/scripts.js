@@ -88,13 +88,21 @@ $(function() {
 	}, 15000);
 	
 	
+	var instagram_loaded = false,
+		twitter_loaded = false;
+	
+	var instagram_dates = [];
+	
 	// INSTAGRAM
 	$.ajax({
 		url: "api/instagram.php",
 		dataType: "json"
 	}).done(function(data) {
+		//console.log('instagram',data);
+		
 		var html = '';
 		$(data).each(function(i, item) {
+			instagram_dates.push(item.created_time_nice);
 			html += '<div style="background-image:url('+item.standard_res+');"><span class="icon"><span></span>'+item.relative_time+'</span></div>';
 		});
 		
@@ -102,8 +110,11 @@ $(function() {
 			slides: '> div',
 			timeout: 5000
 		});
+		
+		instagram_loaded = true;
 	});
 	
+	var twitter_dates = [];
 	
 	// TWITTER
 	$.ajax({
@@ -114,6 +125,7 @@ $(function() {
 		
 		var html = '';
 		$(data).each(function(i, item) {
+			twitter_dates.push(item.created_time_nice);
 			html += '<p>'+item.text+'<span>'+item.relative_time+'</span></p>';
 		});
 		
@@ -123,7 +135,11 @@ $(function() {
 			autoHeight: 'calc'
 		});
 		
+		twitter_loaded = true;
 	});
+	
+	
+	
 	
 	
 	// CALENDAR
@@ -391,43 +407,57 @@ $(function() {
 		};
 	
 		var myBarChart = new Chart(ctx).Bar(data_points, options);*/
+		
+		function check_social() {
+			if (twitter_loaded === false || instagram_loaded === false) {
+				setTimeout(function() {check_social()}, 500);
+			} else {
+				var data_points = {
+				    labels: bar_labels,
+				    datasets: [
+				        {
+				            label: "My First dataset",
+				            fillColor: "rgba(0,108,126,1)",
+				            strokeColor: "rgba(0,108,126,1)",
+							pointColor: "rgba(0,108,126,1)",
+							pointStrokeColor: "rgba(0,108,126,1)",
+				            pointHighlightFill: "#fff",
+				            pointHighlightStroke: "rgba(220,220,220,1)",
+				            data: bar_data
+				        }
+				    ]
+				};
 			
-		var data_points = {
-		    labels: bar_labels,
-		    datasets: [
-		        {
-		            label: "My First dataset",
-		            fillColor: "rgba(0,108,126,1)",
-		            strokeColor: "rgba(0,108,126,1)",
-					pointColor: "rgba(0,108,126,1)",
-					pointStrokeColor: "rgba(0,108,126,1)",
-		            pointHighlightFill: "#fff",
-		            pointHighlightStroke: "rgba(220,220,220,1)",
-		            data: bar_data
-		        }
-		    ]
-		};
+		
+		
+				var	options = {
+					scaleShowLabels: true,
+					scaleLineColor: "rgba(255,255,255,0.3)",
+					scaleLineWidth: 1,
+					scaleFontColor: "#f9ec00",
+					scaleFontFamily: "'Gotham A', 'Gotham B'",
+					scaleFontSize: 16,
+					scaleFontStyle: "normal",
+					tooltipFontFamily: "'Gotham A', 'Gotham B'",
+					tooltipFontSize: 16,
+					tooltipXPadding: 20,
+					tooltipCaretSize: 10,
+					tooltipFontStyle: "normal",
+					datasetFill: false,
+					bezierCurve: false,
+					datasetStrokeWidth : 3,
+					pointDotRadius : 5,
+					pointHitDetectionRadius : 12,
+					animation: false,
+					twitter: twitter_dates,
+					instagram: instagram_dates
+				};	
 			
-		var	options = {
-			scaleShowLabels: true,
-			scaleLineColor: "rgba(255,255,255,0.3)",
-			scaleLineWidth: 1,
-			scaleFontColor: "#f9ec00",
-			scaleFontFamily: "'Gotham A', 'Gotham B'",
-			scaleFontSize: 16,
-			scaleFontStyle: "normal",
-			tooltipFontFamily: "'Gotham A', 'Gotham B'",
-			tooltipFontSize: 16,
-			tooltipXPadding: 20,
-			tooltipCaretSize: 10,
-			datasetFill: false,
-			bezierCurve: false,
-			datasetStrokeWidth : 3,
-			pointDotRadius : 5,
-			pointHitDetectionRadius : 12
-		};
+				var myLineChart = new Chart(ctx).Line(data_points, options);
+			}
+		}
 			
-		var myLineChart = new Chart(ctx).Line(data_points, options);
+		check_social();
 		
 		
 		

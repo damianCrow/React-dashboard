@@ -1094,18 +1094,62 @@
 		draw : function(){
 			if (this.display){
 				var ctx = this.ctx;
-				ctx.beginPath();
+				
+				if (this.twitter || this.instagram) {
+					ctx.beginPath();
+					ctx.arc(this.x, this.y, 14, 0, Math.PI*2);
+					ctx.closePath();
+					
+					ctx.fillStyle = "rgba(255,255,255,0.3)";
+					
+					ctx.fill();
 
-				ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-				ctx.closePath();
+					
+					
+					ctx.beginPath();
+					ctx.arc(this.x, this.y, 8, 0, Math.PI*2);
+					ctx.closePath();
+					
+					ctx.fillStyle = "#ffff00";
+					
+					ctx.fill();
+					
+					
+					var i_x = this.x - 16,
+						i_y = this.y - 94;
 
-				ctx.strokeStyle = this.strokeColor;
-				ctx.lineWidth = this.strokeWidth;
 
-				ctx.fillStyle = this.fillColor;
+					if (this.twitter) {
+						ctx.drawImage(this.twitter_img, i_x, i_y);
+					} else if (this.instagram) {
+						ctx.drawImage(this.instagram_img, i_x, i_y);
+					}
+					
 
-				ctx.fill();
-				ctx.stroke();
+
+					ctx.beginPath();
+					ctx.strokeStyle = "rgba(255,255,255,0.3)";
+					ctx.lineWidth = this.strokeWidth;
+					ctx.moveTo(this.x, this.y - 14);
+					ctx.lineTo(this.x, this.y - 64);
+					ctx.stroke();
+					
+
+				} else {
+					ctx.beginPath();
+
+					ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+					ctx.closePath();
+
+					ctx.strokeStyle = this.strokeColor;
+					ctx.lineWidth = this.strokeWidth;
+
+					ctx.fillStyle = this.fillColor;
+					
+					ctx.fill();
+					ctx.stroke();
+				}
+
 			}
 
 
@@ -1241,9 +1285,13 @@
 			//Distance between the actual element.y position and the start of the tooltip caret
 			var caretPadding = 7;
 
-			var tooltipWidth = ctx.measureText(this.text).width + 2*this.xPadding,
+			var sess = " SESSIONS";
+
+			var sessWidth = ctx.measureText(this.text+sess).width + 2*this.xPadding,
+				titleWidth = ctx.measureText(this.title).width + 2*this.xPadding,
+				tooltipWidth = max([sessWidth,titleWidth]),
 				tooltipRectHeight = this.fontSize + 2*this.yPadding,
-				tooltipHeight = tooltipRectHeight + this.caretHeight + caretPadding;
+				tooltipHeight = tooltipRectHeight*2 + this.caretHeight + caretPadding;
 				
 			//var titleWidth = this.ctx.measureText(this.title).width,
 				//longestTextWidth = max([labelWidth,titleWidth]);
@@ -1263,6 +1311,8 @@
 				tooltipY = this.y - tooltipHeight;
 
 			ctx.fillStyle = this.fillColor;
+
+			ctx.fillStyle = "#333132";
 
 			switch(this.yAlign)
 			{
@@ -1297,16 +1347,92 @@
 				break;
 			}
 
-			drawRoundedRectangle(ctx,tooltipX,tooltipY,tooltipWidth,tooltipRectHeight,this.cornerRadius);
+			ctx.fillStyle = "#2b2a2b";
+			
+			/*ctx.beginPath();
+			ctx.moveTo(tooltipX + this.cornerRadius, tooltipY);
+			// top left to top right
+			ctx.lineTo(tooltipX + tooltipWidth - this.cornerRadius, tooltipY);
+			// top right corner
+			ctx.quadraticCurveTo(tooltipX + tooltipWidth, tooltipY, tooltipX + tooltipWidth, tooltipY + this.cornerRadius);
+			// top right to bottom right 
+			ctx.lineTo(tooltipX + tooltipWidth, tooltipY + tooltipRectHeight - this.cornerRadius);
+			// bottom right corner
+			ctx.quadraticCurveTo(tooltipX + tooltipWidth, tooltipY + tooltipRectHeight, tooltipX + tooltipWidth - this.cornerRadius, tooltipY + tooltipRectHeight);
+			// bottom right to bottom left
+			ctx.lineTo(tooltipX + this.cornerRadius, tooltipY + tooltipRectHeight);
+			// bottom left corner
+			ctx.quadraticCurveTo(tooltipX, tooltipY + tooltipRectHeight, tooltipX, tooltipY + tooltipRectHeight - this.cornerRadius);
+			// bottom left to top left
+			ctx.lineTo(tooltipX, tooltipY + this.cornerRadius);
+			// top left corner
+			ctx.quadraticCurveTo(tooltipX, tooltipY, tooltipX + this.cornerRadius, tooltipY);
+			ctx.closePath();*/
+			
+			
+			ctx.beginPath();
+			ctx.moveTo(tooltipX + this.cornerRadius, tooltipY);
+			// top left to top right
+			ctx.lineTo(tooltipX + tooltipWidth - this.cornerRadius, tooltipY);
+			// top right corner
+			ctx.quadraticCurveTo(tooltipX + tooltipWidth, tooltipY, tooltipX + tooltipWidth, tooltipY + this.cornerRadius);
+			// top right to bottom right 
+			ctx.lineTo(tooltipX + tooltipWidth, tooltipY + tooltipRectHeight);
+			// bottom right corner
+			//ctx.quadraticCurveTo(tooltipX + tooltipWidth, tooltipY + tooltipRectHeight, tooltipX + tooltipWidth - this.cornerRadius, tooltipY + tooltipRectHeight);
+			// bottom right to bottom left
+			ctx.lineTo(tooltipX, tooltipY + tooltipRectHeight);
+			// bottom left corner
+			//ctx.quadraticCurveTo(tooltipX, tooltipY + tooltipRectHeight, tooltipX, tooltipY + tooltipRectHeight - this.cornerRadius);
+			// bottom left to top left
+			ctx.lineTo(tooltipX, tooltipY + this.cornerRadius);
+			// top left corner
+			ctx.quadraticCurveTo(tooltipX, tooltipY, tooltipX + this.cornerRadius, tooltipY);
+			ctx.closePath();
+			
+
+			//drawRoundedRectangle(ctx,tooltipX,tooltipY,tooltipWidth,tooltipRectHeight,this.cornerRadius);
 
 			ctx.fill();
+			
+			ctx.fillStyle = "#333132";
+			
+			
+			ctx.beginPath();
+			ctx.moveTo(tooltipX, tooltipY+tooltipRectHeight);
+			// top left to top right
+			ctx.lineTo(tooltipX + tooltipWidth, tooltipY+tooltipRectHeight);
+			// top right corner
+			//ctx.quadraticCurveTo(tooltipX + tooltipWidth, tooltipY, tooltipX + tooltipWidth, tooltipY + this.cornerRadius);
+			// top right to bottom right 
+			ctx.lineTo(tooltipX + tooltipWidth, tooltipY+tooltipRectHeight + tooltipRectHeight - this.cornerRadius);
+			// bottom right corner
+			ctx.quadraticCurveTo(tooltipX + tooltipWidth, tooltipY+tooltipRectHeight + tooltipRectHeight, tooltipX + tooltipWidth - this.cornerRadius, tooltipY+tooltipRectHeight + tooltipRectHeight);
+			// bottom right to bottom left
+			ctx.lineTo(tooltipX + this.cornerRadius, tooltipY+tooltipRectHeight + tooltipRectHeight);
+			// bottom left corner
+			ctx.quadraticCurveTo(tooltipX, tooltipY+tooltipRectHeight + tooltipRectHeight, tooltipX, tooltipY+tooltipRectHeight + tooltipRectHeight - this.cornerRadius);
+			// bottom left to top left
+			ctx.lineTo(tooltipX, tooltipY+tooltipRectHeight);
+			// top left corner
+			//ctx.quadraticCurveTo(tooltipX, tooltipY, tooltipX + this.cornerRadius, tooltipY);
+			ctx.closePath();
+			
+			
+			//drawRoundedRectangle(ctx,tooltipX,tooltipY+tooltipRectHeight,tooltipWidth,tooltipRectHeight,this.cornerRadius);
+			
+			ctx.fill();
 
-			ctx.fillStyle = this.textColor;
+			ctx.fillStyle = "#828282";
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
-			ctx.fillText(this.text, tooltipX + tooltipWidth/2, tooltipY + tooltipRectHeight/2);
 			
-			console.log(this.title, this.text);
+			ctx.fillText(this.title, tooltipX + tooltipWidth/2, tooltipY + tooltipRectHeight/2);
+			
+			ctx.fillStyle = this.textColor;
+			
+			ctx.fillText(this.text+sess, tooltipX + tooltipWidth/2, tooltipY + tooltipRectHeight*3/2);
+			
 		}
 	});
 
@@ -1429,10 +1555,9 @@
 			this.startPoint += this.padding;
 			this.endPoint -= this.padding;
 
-			this.startPoint = 100;
-			this.endPoint = 328;
+			this.startPoint = 143;
+			this.endPoint = 337;
 
-			console.log(this.startPoint, this.endPoint);
 
 			// Cache the starting height, so can determine if we need to recalculate the scale yAxis
 			var cachedHeight = this.endPoint - this.startPoint,
@@ -1449,20 +1574,12 @@
 			 *
 			 */
 			this.calculateYRange(cachedHeight);
-			
-			//console.log(this.startPoint, this.endPoint);
-			
-			//console.log(this.steps,this.stepValue,this.min,this.max);
 
 			// With these properties set we can now build the array of yLabels
 			// and also the width of the largest yLabel
 			this.buildYLabels();
-			
-			//console.log(this.startPoint, this.endPoint);
 
 			this.calculateXLabelRotation();
-			
-			//console.log(this.startPoint, this.endPoint);
 
 			while((cachedHeight > this.endPoint - this.startPoint)){
 				cachedHeight = this.endPoint - this.startPoint;
@@ -1475,8 +1592,7 @@
 				if (cachedYLabelWidth < this.yLabelWidth){
 					this.calculateXLabelRotation();
 				}
-				
-				//console.log(this.startPoint, this.endPoint);
+
 			}
 
 		},
@@ -1532,8 +1648,8 @@
 				this.xScalePaddingLeft = this.padding;
 			}
 			
-			//this.xScalePaddingRight = 100;
-			this.xScalePaddingLeft = 100;
+			this.xScalePaddingRight = 35;
+			this.xScalePaddingLeft = 135;
 
 		},
 		// Needs to be overidden in each Chart type
@@ -1569,6 +1685,9 @@
 				yLabelGap = (this.endPoint - this.startPoint) / this.steps,
 				xStart = Math.round(this.xScalePaddingLeft);
 			if (this.display){
+				ctx.fillStyle="rgba(0,0,0,0.15)";
+				ctx.fillRect(0,95,100,290);
+				
 				ctx.fillStyle = this.textColor;
 				ctx.font = this.font;
 				each(this.yLabels,function(labelString,index){
@@ -1578,7 +1697,7 @@
 					ctx.textAlign = "left";
 					ctx.textBaseline = "middle";
 					if (this.showLabels){
-						ctx.fillText(Math.round(labelString),xStart - 65,yLabelCenter-11);
+						ctx.fillText(Math.round(labelString),xStart - 100,yLabelCenter-11);
 					}
 					ctx.beginPath();
 
@@ -1586,10 +1705,11 @@
 
 					ctx.lineWidth = this.lineWidth;
 					ctx.strokeStyle = this.lineColor;
-					ctx.moveTo(xStart-65, linePositionY);
+					ctx.moveTo(xStart-100, linePositionY);
 					ctx.lineTo(this.width, linePositionY);
 					ctx.stroke();
 					ctx.closePath();
+					
 
 					/*ctx.lineWidth = this.lineWidth;
 					ctx.strokeStyle = this.lineColor;
@@ -1600,6 +1720,15 @@
 					ctx.closePath();*/
 
 				},this);
+				
+				ctx.beginPath();
+				ctx.lineWidth = this.lineWidth;
+				ctx.strokeStyle = this.lineColor;
+				ctx.moveTo(0, this.startPoint-yLabelGap);
+				ctx.lineTo(this.width, this.startPoint-yLabelGap);
+				ctx.stroke();
+				ctx.closePath();
+
 
 				/*each(this.xLabels,function(label,index){
 					var xPos = this.calculateX(index) + aliasPixel(this.lineWidth),
@@ -2481,6 +2610,14 @@
 		name: "Line",
 		defaults : defaultConfig,
 		initialize:  function(data){
+			//console.log('options',this.options);
+			
+			this.twitter_imageObj = new Image();
+			this.twitter_imageObj.src = 'img/graph-twitter.png';
+			
+			this.instagram_imageObj = new Image();
+			this.instagram_imageObj.src = 'img/graph-instagram.png';
+			
 			//Declare the extension of the default point, to cater for the options passed in to the constructor
 			this.PointClass = Chart.Point.extend({
 				strokeWidth : this.options.pointDotStrokeWidth,
@@ -2524,8 +2661,12 @@
 
 				this.datasets.push(datasetObject);
 
-
+				var twitter = this.options.twitter,
+					instagram = this.options.instagram;
+				//console.log(twitter);
+				
 				helpers.each(dataset.data,function(dataPoint,index){
+
 					//Add a new point for each piece of data, passing any required data to draw.
 					datasetObject.points.push(new this.PointClass({
 						value : dataPoint,
@@ -2534,12 +2675,16 @@
 						strokeColor : dataset.pointStrokeColor,
 						fillColor : dataset.pointColor,
 						highlightFill : dataset.pointHighlightFill || dataset.pointColor,
-						highlightStroke : dataset.pointHighlightStroke || dataset.pointStrokeColor
+						highlightStroke : dataset.pointHighlightStroke || dataset.pointStrokeColor,
+						twitter : twitter.indexOf(data.labels[index]) >= 0,
+						twitter_img : this.twitter_imageObj,
+						instagram : instagram.indexOf(data.labels[index]) >= 0,
+						instagram_img : this.instagram_imageObj
 					}));
+					
+					
 				},this);
-
 				this.buildScale(data.labels);
-
 
 				this.eachPoints(function(point, index){
 					helpers.extend(point, {

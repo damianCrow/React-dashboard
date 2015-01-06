@@ -116,52 +116,35 @@
 	$month_ago = date('M j, Y', strtotime( '-1 month', time()));
 	?>
 	
-	<div class="large-12 row report-title">
+	<!-- <div class="large-12 row report-title">
 		Interstateteam.com reports for <span><?php echo $month_ago; ?> - <?php echo $now; ?></span>
+	</div> -->
+	
+	
+	
+	<div class="large-12 row bar-chart">
+		<canvas id="myChart" width="1175" height="385"></canvas>
+		<!-- <div class="bar-chart-num-box"></div> -->
 	</div>
 	
 	<div class="large-12 row">
 		<div class="large-4 columns sessions-users">
 			<div class="large-6 columns">
-				Sessions<br />
+				<p>Sessions</p>
 				<span id="sessions"></span>
 			</div>
 			<div class="large-6 columns">
-				Users<br />
+				<p>Users</p>
 				<span id="users"></span>
 			</div>
 		</div>
-		<div class="large-8 columns visitors">
-			<div id="circles"></div>
+		<div class="large-4 columns new-visitors" id="new-visitors">
 			
-			<!-- <div class="row">
-				<div class="large-4 columns">
-					Returning visitors
-				</div>
-				<div class="large-8 columns">
-					<div id="returning-visitor" class="bar-out">
-						<div class="bar-in"></div>
-						<span></span>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="large-4 columns">
-					New visitors
-				</div>
-				<div class="large-8 columns">
-					<div id="new-visitor" class="bar-out">
-						<div class="bar-in"></div>
-						<span></span>
-					</div>
-
-				</div>
-			</div> -->
 		</div>
-	</div>
-	
-	<div class="large-12 row bar-chart">
-		<canvas id="myChart" width="1175" height="340"></canvas>
+		<div class="large-4 columns returning-visitors" id="returning-visitors">
+			
+		</div>
+		
 	</div>
 	
 	<div class="large-12 row map">
