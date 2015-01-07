@@ -280,50 +280,46 @@ $(function() {
 		</ul>';*/
 		
 		
-		var html = '<ul class="progress-circles"> \
-		    <li> \
-	        <svg viewBox="0 0 120 120"> \
+		var html = '<svg viewBox="0 0 120 120"> \
 	        <g fill="none" stroke-width="4" transform="translate(60,60)"> \
-			<circle cx="0" cy="0" r="58" stroke="#22606b" /> \
+			<circle cx="0" cy="0" r="58" stroke="#006c7e" /> \
 	        </g> \
-	        <g fill="none" stroke-width="6" transform="translate(60,60)"> \
-			<circle cx="0" cy="0" r="54" stroke="#359e8f" /> \
+	        <g fill="none" stroke-width="8" transform="translate(60,60)"> \
+			<circle cx="0" cy="0" r="52" stroke="#00a09a" /> \
 	        </g> \
 	        <g fill="none" stroke-width="5" transform="translate(60,60)"> \
-			<circle cx="0" cy="0" r="49" stroke="#201f4a" /> \
+			<circle cx="0" cy="0" r="47" stroke="#ffffff" /> \
 	        </g> \
 	        </svg> \
-	        <svg viewBox="-22 -22 244 244"> \
+	        <svg viewBox="-28 -28 256 256"> \
 	        <path d="M200,100 C200,44.771525 155.228475,0 100,0 C44.771525,0 0,44.771525 0,100 C0,155.228475 44.771525,200 100,200 C155.228475,200 200,155.228475 200,100 Z" stroke-dashoffset="'+(629*new_visitor_perc/100)+'"></path> \
 	        </svg> \
 			<div class="circle-data"> \
-				New<br />visitors<br /><span>'+numberWithCommas(parseInt(data.stats.new_visitors))+'</span> \
+				<p>New<br />visitors</p><span>'+numberWithCommas(parseInt(data.stats.new_visitors))+'</span> \
 			</div> \
-			<div class="circle-perc">'+new_visitor_perc+'%</div> \
-		    </li> \
-		    <li> \
-	        <svg viewBox="0 0 120 120"> \
+			<div class="circle-perc">'+new_visitor_perc+'<span>%</span></div>';
+		$('#new-visitors').html(html);
+			
+			
+		html = '<svg viewBox="0 0 120 120"> \
 	        <g fill="none" stroke-width="4" transform="translate(60,60)"> \
 			<circle cx="0" cy="0" r="58" stroke="#22606b" /> \
 	        </g> \
-	        <g fill="none" stroke-width="6" transform="translate(60,60)"> \
-			<circle cx="0" cy="0" r="54" stroke="#359e8f" /> \
+	        <g fill="none" stroke-width="8" transform="translate(60,60)"> \
+			<circle cx="0" cy="0" r="52" stroke="#359e8f" /> \
 	        </g> \
 	        <g fill="none" stroke-width="5" transform="translate(60,60)"> \
-			<circle cx="0" cy="0" r="49" stroke="#201f4a" /> \
+			<circle cx="0" cy="0" r="47" stroke="#ffffff" /> \
 	        </g> \
 	        </svg> \
-	        <svg viewBox="-22 -22 244 244"> \
+	        <svg viewBox="-28 -28 256 256"> \
 	        <path d="M200,100 C200,44.771525 155.228475,0 100,0 C44.771525,0 0,44.771525 0,100 C0,155.228475 44.771525,200 100,200 C155.228475,200 200,155.228475 200,100 Z" stroke-dashoffset="'+(629*returning_visitor_perc/100)+'"></path> \
 	        </svg> \
 			<div class="circle-data"> \
-				Returning<br />visitors<br /><span>'+numberWithCommas(parseInt(data.stats.returning_visitors))+'</span> \
+				<p>Returning<br />visitors</p><span>'+numberWithCommas(parseInt(data.stats.returning_visitors))+'</span> \
 			</div> \
-			<div class="circle-perc">'+returning_visitor_perc+'%</div> \
-		    </li> \
-		</ul>';
-		
-		$('#circles').html(html);
+			<div class="circle-perc">'+returning_visitor_perc+'<span>%</span></div>';
+		$('#returning-visitors').html(html);
 		
 		
 		

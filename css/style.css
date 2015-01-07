@@ -467,16 +467,17 @@ text.identity {
 }
 
 .sessions-users .columns {
-	padding: 65px 25px 40px;
+	padding: 65px 25px 0;
 	text-transform: uppercase;
 }
 
-.sessions-users .columns span {
+.progress-circles .columns span {
 	font-size: 50px;
 	font-weight: 700;
+	line-height: 75px;
 }
 
-.sessions-users p {
+.progress-circles p {
 	font-size: 21px;
 	line-height: 24px;
 	color: rgba(255,255,255,0.3);
@@ -606,22 +607,22 @@ text.identity {
 	padding-top: 10px;
 }
 
-.progress-circles {
+/*.progress-circles {
     position: relative;
     display: inline-block;
     padding: 0;
     text-align: center;
 	margin: 0 0 0 60px;
-}
+}*/
 /* Item */
-.progress-circles>li {
+/*.progress-circles>li {
     display: inline-block;
     position: relative;
     text-align: center;
     color: #93A2AC;
     font-weight: 100;
     margin: 20px;
-}
+}*/
 /*.progress-circles>li:before {
     content: attr(data-name);
     position: absolute;
@@ -639,8 +640,8 @@ text.identity {
     text-align: center;
 }*/
 .progress-circles svg {
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
 }
 .progress-circles svg:nth-child(2) {
     position: absolute;
@@ -651,9 +652,12 @@ text.identity {
     -moz-transform: rotate(-90deg);
     -ms-transform: rotate(-90deg);
 }
+
+
+
 .progress-circles svg:nth-child(2) path {
     fill: none;
-    stroke-width: 15;
+    stroke-width: 14;
     stroke-dasharray: 629;
     stroke: rgba(250, 250, 250, 1);
     -webkit-animation: load 10s;
@@ -662,6 +666,15 @@ text.identity {
     animation: load 10s;
 }
 
+.new-visitors svg:nth-child(2) path {
+	stroke: rgba(31,154,103,1);
+}
+
+.returning-visitors svg:nth-child(2) path {
+	stroke: rgba(64,174,81,1);
+}
+
+
 
 .progress-circles li {
 	margin-right: 200px;
@@ -669,28 +682,38 @@ text.identity {
 
 .circle-data {
 	position: absolute;
-	left: 140px;
-	top: 18px;
+	left: 0;
+	top: 11px;
 	color: #21204b;
 	text-align: left;
 	text-transform: uppercase;
 	font-size: 18px;
 	line-height: 20px;
+	width: 100%;
+	padding-left: 170px;
+	padding-right: 25px;
 }
 
 .circle-data span {
 	font-size: 40px;
 	font-weight: 700;
-	line-height: 1.2em;
 }
 
 .circle-perc {
 	position: absolute;
-	color: #21204b;
+	color: #29235c;
 	left: 0;
-	top: 43px;
-	width: 100%;
-	font-size: 22px;
+	top: 49px;
+	width: 140px;
+	font-size: 28px;
+	text-align: center;
+	font-weight: 500;
+}
+
+.circle-perc span {
+	font-size: 28px !important;
+	font-weight: 300 !important;
+	line-height: 32px !important;
 }
 
 /*.email {
@@ -1017,3 +1040,22 @@ text.identity {
 #arc1 {stroke: rgba(217, 217, 217, 1);}
 #arc2 {stroke: rgba(176, 176, 176, 1);}
 #arc3 {stroke: rgba(133, 133, 133, 1);}
+
+.new-visitors, .returning-visitors {
+	height: 192px;
+	
+	padding-left: 40px;
+	padding-top: 30px;
+}
+
+.new-visitors>div, .returning-visitors>div {
+	position: relative;
+}
+
+.new-visitors {
+	background: #1f9a67;
+}
+
+.returning-visitors {
+	background: #40ae51;
+}

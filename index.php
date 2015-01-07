@@ -127,7 +127,7 @@
 		<!-- <div class="bar-chart-num-box"></div> -->
 	</div>
 	
-	<div class="large-12 row">
+	<div class="large-12 row progress-circles">
 		<div class="large-4 columns sessions-users">
 			<div class="large-6 columns">
 				<p>Sessions</p>
@@ -138,11 +138,11 @@
 				<span id="users"></span>
 			</div>
 		</div>
-		<div class="large-4 columns new-visitors" id="new-visitors">
-			
+		<div class="large-4 columns new-visitors">
+			<div id="new-visitors"></div>
 		</div>
-		<div class="large-4 columns returning-visitors" id="returning-visitors">
-			
+		<div class="large-4 columns returning-visitors">
+			<div id="returning-visitors"></div>
 		</div>
 		
 	</div>
