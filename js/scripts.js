@@ -60,8 +60,14 @@ $(function() {
 		$.ajax({
 			url: "api/spotify.php",
 			dataType: "json"
-		}).done(function(data) {
-			//console.log(data);
+		}).done(function(data) {		
+			if ($.isEmptyObject(data)) {
+				if (spotify !== "offline") {
+					$('#spotify').html('<div class="offline">Offline</div>');
+					spotify = "offline";
+				}
+				return;
+			}
 			
 			if (spotify.artist == data.artist && spotify.name == data.name) {
 				return;
@@ -98,12 +104,12 @@ $(function() {
 		url: "api/instagram.php",
 		dataType: "json"
 	}).done(function(data) {
-		//console.log('instagram',data);
+		console.log('instagram',data);
 		
 		var html = '';
 		$(data).each(function(i, item) {
 			instagram_dates.push(item.created_time_nice);
-			html += '<div style="background-image:url('+item.standard_res+');"><span class="icon"><span></span>'+item.relative_time+'</span></div>';
+			html += '<div style="background-image:url('+item.standard_res+');"><span class="icon"><span></span>'+item.relative_time+'</span><span class="likes">'+item.likes+' likes</span></div>';
 		});
 		
 		$('#instagram').html(html).cycle({
@@ -139,7 +145,37 @@ $(function() {
 	});
 	
 	
+	// TWITTER STATS
+	$.ajax({
+		url: "api/twitter_stats.php",
+		dataType: "json"
+	}).done(function(data) {
+		$('#twitter-followers').html(data['followers']);
+		$('#twitter-following').html(data['following']);
+	});
 	
+	
+	// HARVEST
+	$.ajax({
+		url: "api/harvest.php",
+		dataType: "json"
+	}).done(function(data) {
+		//console.log(data);
+		
+		var html = '<ul>';
+		$(data).each(function(i, item) {
+			if (i>2) return;
+			var w = 100 * item.hours / 37.5;
+			if (w>100) w=100;
+			
+			var name_class = item.name.toLowerCase().replace(" ", "-");
+			
+			html += '<li><div class="harvest-pic '+name_class+'"></div><div class="harvest-name"><p>'+item.name+'</p><span><span style="width:'+w+'%;"></span></span></div><div class="harvest-time">'+Number(item.hours).toFixed(2)+'<small>hrs</small></div></li>';
+		});
+		html += '</ul>';
+		
+		$('#harvest').append(html);
+	});
 	
 	
 	// CALENDAR
@@ -208,7 +244,7 @@ $(function() {
 		    woeid: '',
 		    unit: 'c',
 		    success: function(weather) {
-		      html = '<i class="icon-'+weather.code+'"></i><br /><span>'+weather.temp+'&deg;'+weather.units.temp+'</span>';
+		      html = '<i class="icon-'+weather.code+'"></i><br /><span>'+weather.temp+'&deg;'+weather.units.temp+'<br /><span>LDN</span></span>';
   
 		      $("#temp").html(html);
 		    },
@@ -335,7 +371,7 @@ $(function() {
 			bar_labels.push(item[0]);
 		});
 		
-		console.log(bar_data,bar_labels);
+		//console.log(bar_data,bar_labels);
 
         /*var gdata = google.visualization.arrayToDataTable(analytics_data);
 
@@ -463,16 +499,24 @@ $(function() {
 		
 		var analytics_data = [['Country', 'Sessions']];
 		
+		var html = '<ul>';
 		
-		
-		/*$(data.map).each(function(i, item) {
-			analytics_data.push([item[0], parseInt(item[1])]);
+		$(data.map).each(function(i, item) {
+			//analytics_data.push([item[0], parseInt(item[1])]);
 
 			if (i>=4) return;
 			
-			$('#arc'+(3-i)).attr('d', describeArc(60, 60, 33+(i*5), 0, parseInt(item[1])/data.stats.sessions*360));
+			//$('#arc'+i).attr('d', describeArc(60, 60, 44-(i*6), 0, parseInt(item[1])/data.stats.sessions*360));
 			
-		});*/
+			$('#arc'+i).attr('d', describeArc(60, 60, 44-(i*6), 0, parseInt(item[1])/parseInt(data.map[0][1])*270));
+			
+			
+			html += '<li><span class="country-colour"></span><span class="country-name">'+item[0]+'</span><span class="country-value">'+item[1]+'</span></li>';
+		});
+		
+		html += '</ul>';
+		
+		$('#visits-country-graph').after(html);
 		
 		//console.log(analytics_data);
 		

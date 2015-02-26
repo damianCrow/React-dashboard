@@ -1105,7 +1105,6 @@
 					ctx.fill();
 
 					
-					
 					ctx.beginPath();
 					ctx.arc(this.x, this.y, 8, 0, Math.PI*2);
 					ctx.closePath();
@@ -1114,25 +1113,39 @@
 					
 					ctx.fill();
 					
-					
-					var i_x = this.x - 16,
-						i_y = this.y - 94;
-
-
-					if (this.twitter) {
+					if (this.twitter && this.instagram) {
+						var i_x = this.x - 16,
+							i_y = this.y - 94;
+						
 						ctx.drawImage(this.twitter_img, i_x, i_y);
-					} else if (this.instagram) {
-						ctx.drawImage(this.instagram_img, i_x, i_y);
+						ctx.drawImage(this.instagram_img, i_x, i_y-32);
+						
+						ctx.beginPath();
+						ctx.strokeStyle = "rgba(255,255,255,0.3)";
+						ctx.lineWidth = this.strokeWidth;
+						ctx.moveTo(this.x, this.y - 94);
+						ctx.lineTo(this.x, this.y - 96);
+						ctx.stroke();
+					} else {
+						var i_x = this.x - 16,
+							i_y = this.y - 94;
+
+						if (this.twitter) {
+							ctx.drawImage(this.twitter_img, i_x, i_y);
+						} else if (this.instagram) {
+							ctx.drawImage(this.instagram_img, i_x, i_y);
+						}
+
+						
 					}
 					
-
-
 					ctx.beginPath();
 					ctx.strokeStyle = "rgba(255,255,255,0.3)";
 					ctx.lineWidth = this.strokeWidth;
 					ctx.moveTo(this.x, this.y - 14);
 					ctx.lineTo(this.x, this.y - 64);
 					ctx.stroke();
+					
 					
 
 				} else {

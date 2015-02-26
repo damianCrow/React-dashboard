@@ -13,23 +13,6 @@
 	
   </head>
   <body>
-	
-	<!-- <div id="test">
-		<svg viewBox="0 0 120 120">
-	        <g fill="none" stroke-width="4" transform="translate(60,60)">
-			<circle cx="0" cy="0" r="58" stroke="#22606b" stroke-dasharray="629" />
-	        </g>
-	        <g fill="none" stroke-width="6" transform="translate(60,60)">
-			<circle cx="0" cy="0" r="54" stroke="#359e8f" />
-	        </g>
-
-			<path id="arc0"></path>
-			<path id="arc1"></path>
-			<path id="arc2"></path>
-			<path id="arc3"></path>
-		</svg>
-	</div> -->
-	
 	<div id="particles">
 	  <div class="intro">
 	    <h1><img src="img/new-icon.png"></h1>
@@ -38,16 +21,19 @@
 	
 	<div class="large-12 row top-row">
 		<div class="large-4 top-left">
-  			<div class="large-6 date">
-				<?php echo date('D'); ?><br />
-				<span><?php echo date('M'); ?></span><br />
-				<span><?php echo date('d'); ?></span>
+			<div class="large-12 time-row">
+				<div class="time" id="time"><?php echo date('H:i'); ?></div>
+				
+	  			<div class="date">
+					<?php echo date('D'); ?><br />
+					<span><?php echo date('M'); ?></span><br />
+					<span><?php echo date('d'); ?></span>
+				</div>
 			</div>
-			<div class="large-6 time">LDN<div id="time"><?php echo date('H:i'); ?></div></div>
 			<div class="large-6">
 				<div id="email" class="email">
 					<div class="inner">
-						<div class="page top email-logo"><p><img src="img/email.png" /></p></div>
+						<div class="page top email-logo"><p><img src="img/mail.png" /></p></div>
 						<div class="page panel1"><p><span>2,583</span><b>emails sent</b><i>this month</i></p></div>
 						<div class="page panel2"><p><span>26,873</span><b>emails received</b><i>this month</i></p></div>
 						<div class="page panel3"><p><span>12,123</span><b>spam emails</b><i>this month</i></p></div>
@@ -55,7 +41,11 @@
 				</div>
 			</div>
 			
-			<div class="large-6 temp" id="temp"><div class="loader"></div></div>
+			<div class="large-6">
+				<div class="temp" id="temp">
+					<div class="loader"></div>
+				</div>
+			</div>
 		</div>
 		<div class="large-4 spotify" id="spotify">
   			<div class="loader"></div>
@@ -123,11 +113,16 @@
 	
 	
 	<div class="large-12 row bar-chart">
-		<canvas id="myChart" width="1175" height="385"></canvas>
+		<canvas id="myChart" width="1080" height="385"></canvas>
 		<!-- <div class="bar-chart-num-box"></div> -->
+		
+		<div class="chart-top">
+			<div class="chart-site">interstateteam.com</div>
+			<p>Reports: <span><?php echo date('d M'); ?> - <?php echo date('d M', strtotime( '-1 month', time())); ?></span></p>
+		</div>
 	</div>
 	
-	<div class="large-12 row progress-circles">
+	<div class="large-12 row progress-circles stats">
 		<div class="large-4 columns sessions-users">
 			<div class="large-6 columns">
 				<p>Sessions</p>
@@ -147,16 +142,51 @@
 		
 	</div>
 	
-	<div class="large-12 row map">
-		<img src="img/harvestofsorrow.png" />
+	<div class="large-12 row">
+		<!-- <img src="img/harvestofsorrow.png" /> -->
+		<div class="large-6 columns country-visits">
+			<h2>Most visits by country</h2>
+			<div class="visits-country-graph" id="visits-country-graph">
+				<svg viewBox="0 0 120 120">
+			        <g fill="none" stroke-width="4" transform="translate(60,60)">
+					<circle cx="0" cy="0" r="58" stroke="#006c7e" />
+			        </g>
+			        <g fill="none" stroke-width="9" transform="translate(60,60)">
+					<circle cx="0" cy="0" r="51" stroke="#00a09a" />
+			        </g>
+
+					<path id="arc0"></path>
+					<path id="arc1"></path>
+					<path id="arc2"></path>
+					<path id="arc3"></path>
+				</svg>
+			</div>
+		</div>
+		<div class="large-6 columns harvest" id="harvest">
+			<div class="harvest-top">
+				<img src="img/harvest-logo.png">
+				<p>Week: <span><?php echo date("d M",strtotime('monday this week')); ?> - <?php echo date("d M",strtotime('friday this week')); ?></span></p>
+			</div>
+		</div>
 	</div>
 	
 	<div class="large-12 row twitter">
-		<div class="large-3 columns">
-			<div class="twitter-interstate"><span>Interstateteam</span></div>
-		</div>
-		<div class="large-9 columns">
+		<div class="large-8 columns tweet-wrapper">
+			<div class="twitter-interstate">
+				<img src="img/twitter-interstate-logo.png">
+				<span>@interstateteam</span>
+			</div>
 			<div id="tweets" class="tweets"></div>
+		</div>
+		<div class="large-4 columns twitter-stats stats">
+			<div class="large-6 columns">
+				<p>Followers</p>
+				<span id="twitter-followers"></span>
+			</div>
+			<div class="large-6 columns">
+				<p>Following</p>
+				<span id="twitter-following"></span>
+			</div>
 		</div>
 	</div>
 	
@@ -167,8 +197,8 @@
     <script>
 		$(document).foundation();
     </script>
-    <script src="js/landing/jquery.particleground.min.js"></script>
-    <script src="js/landing/demo.js"></script>
+    <!--<script src="js/landing/jquery.particleground.min.js"></script>
+    <script src="js/landing/demo.js"></script>-->
 	<script src="js/vendor/jquery.cycle2.js"></script>
 	<script src="js/vendor/jquery.cycle2.swipe.min.js"></script>
 	<script src="js/vendor/Chart.js"></script>
