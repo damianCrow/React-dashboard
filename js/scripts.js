@@ -104,12 +104,14 @@ $(function() {
 		url: "api/instagram.php",
 		dataType: "json"
 	}).done(function(data) {
-		console.log('instagram',data);
+		//console.log('instagram',data);
 		
 		var html = '';
 		$(data).each(function(i, item) {
 			instagram_dates.push(item.created_time_nice);
-			html += '<div style="background-image:url('+item.standard_res+');"><span class="icon"><span></span>'+item.relative_time+'</span><span class="likes">'+item.likes+' likes</span></div>';
+			if (item.image_video === "image") {
+				html += '<div style="background-image:url('+item.standard_res+');"><span class="icon"><span></span>'+item.relative_time+'</span><span class="likes">'+item.likes+' likes</span></div>';
+			}
 		});
 		
 		$('#instagram').html(html).cycle({
@@ -160,7 +162,7 @@ $(function() {
 		url: "api/harvest.php",
 		dataType: "json"
 	}).done(function(data) {
-		//console.log(data);
+		console.log(data);
 		
 		var html = '<ul>';
 		$(data).each(function(i, item) {
@@ -168,7 +170,7 @@ $(function() {
 			var w = 100 * item.hours / 37.5;
 			if (w>100) w=100;
 			
-			var name_class = item.name.toLowerCase().replace(" ", "-");
+			var name_class = item.name.toLowerCase().replace(/ /g, "-");
 			
 			html += '<li><div class="harvest-pic '+name_class+'"></div><div class="harvest-name"><p>'+item.name+'</p><span><span style="width:'+w+'%;"></span></span></div><div class="harvest-time">'+Number(item.hours).toFixed(2)+'<small>hrs</small></div></li>';
 		});
@@ -568,5 +570,6 @@ $(function() {
 		});
 	});
 	
+	//$('#myChart').width($(window).width());
 	
 });

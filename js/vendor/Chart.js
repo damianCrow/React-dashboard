@@ -25,7 +25,8 @@
 		this.ctx = context;
 
 		//Variables global to the chart
-		var width = this.width = context.canvas.width;
+		//var width = this.width = context.canvas.width;
+		var width = this.width = context.canvas.width = window.innerWidth;
 		var height = this.height = context.canvas.height;
 		this.aspectRatio = this.width / this.height;
 		//High pixel density displays - multiply the size of the canvas height/width by the device pixel ratio, then scale.
@@ -814,7 +815,8 @@
 		resize : function(callback){
 			this.stop();
 			var canvas = this.chart.canvas,
-				newWidth = getMaximumWidth(this.chart.canvas),
+				//newWidth = getMaximumWidth(this.chart.canvas),
+				newWidth = window.innerWidth,
 				newHeight = this.options.maintainAspectRatio ? newWidth / this.chart.aspectRatio : getMaximumHeight(this.chart.canvas);
 
 			canvas.width = this.chart.width = newWidth;
@@ -1115,7 +1117,7 @@
 					
 					if (this.twitter && this.instagram) {
 						var i_x = this.x - 16,
-							i_y = this.y - 94;
+							i_y = this.y - 69;
 						
 						ctx.drawImage(this.twitter_img, i_x, i_y);
 						ctx.drawImage(this.instagram_img, i_x, i_y-32);
@@ -1123,12 +1125,12 @@
 						ctx.beginPath();
 						ctx.strokeStyle = "rgba(255,255,255,0.3)";
 						ctx.lineWidth = this.strokeWidth;
-						ctx.moveTo(this.x, this.y - 94);
-						ctx.lineTo(this.x, this.y - 96);
+						ctx.moveTo(this.x, this.y - 69);
+						ctx.lineTo(this.x, this.y - 71);
 						ctx.stroke();
 					} else {
 						var i_x = this.x - 16,
-							i_y = this.y - 94;
+							i_y = this.y - 69;
 
 						if (this.twitter) {
 							ctx.drawImage(this.twitter_img, i_x, i_y);
@@ -1143,7 +1145,7 @@
 					ctx.strokeStyle = "rgba(255,255,255,0.3)";
 					ctx.lineWidth = this.strokeWidth;
 					ctx.moveTo(this.x, this.y - 14);
-					ctx.lineTo(this.x, this.y - 64);
+					ctx.lineTo(this.x, this.y - 39);
 					ctx.stroke();
 					
 					

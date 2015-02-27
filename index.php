@@ -118,7 +118,7 @@
 		
 		<div class="chart-top">
 			<div class="chart-site">interstateteam.com</div>
-			<p>Reports: <span><?php echo date('d M'); ?> - <?php echo date('d M', strtotime( '-1 month', time())); ?></span></p>
+			<p>Reports: <span><?php echo date('d M', strtotime( '-1 month', time())); ?> - <?php echo date('d M'); ?></span></p>
 		</div>
 	</div>
 	
