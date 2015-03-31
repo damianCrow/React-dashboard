@@ -53,6 +53,34 @@ $(function() {
 		$(this).removeClass('hover');
 	});*/
 	
+	
+	// TFL STATUS
+	function updateTFL() {
+		$.ajax({
+			url: "api/tfl.php",
+			dataType: "json"
+		}).done(function(data) {		
+			var html = '<table><tr><th>Line</th><th>Status</th><th>Description</th></tr>';
+			
+			
+			$(data.LineStatus).each(function(i, line) {
+				html += '<tr class="'+line.Status.CssClass+'"><td>'+line.Line.Name+'</td><td>'+line.Status.Description+'</td><td>'+line.StatusDetails+'</td></tr>';
+			});
+			//console.log(data);
+			
+			html += '</table>';
+			
+			$('#tfl').html(html);
+		});
+	}
+
+
+	// check every 15 sec
+	updateTFL();
+	setInterval(function() {
+		updateTFL();
+	}, 30000);
+	
 	// SPOTIFY
 	var spotify = {};
 	
@@ -162,7 +190,7 @@ $(function() {
 		url: "api/harvest.php",
 		dataType: "json"
 	}).done(function(data) {
-		console.log(data);
+		//console.log(data);
 		
 		var html = '<ul>';
 		$(data).each(function(i, item) {
