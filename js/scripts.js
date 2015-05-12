@@ -93,10 +93,11 @@ $(function() {
 		$.ajax({
 			url: "api/spotify.php",
 			dataType: "json"
-		}).done(function(data) {		
+		}).done(function(data) {	
 			if ($.isEmptyObject(data)) {
 				if (spotify !== "offline") {
-					$('#spotify').html('<div class="offline">Offline</div>');
+					$('#spotify > div').remove();
+					$('#spotify').append('<div class="offline" style="background-image:url(img/spotify-no-cover.gif);"><div class="album"><p>Offline</p></div></div>');
 					spotify = "offline";
 				}
 				return;
