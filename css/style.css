@@ -1431,3 +1431,69 @@ text.identity {
 .GoodService {
 	background: rgba(0,255,0,0.3) !important;
 }
+
+.Bakerloo {
+	background: #B36305;
+	color: #fff;
+}
+
+.Central {
+	background: #E32017;
+	color: #fff;
+}
+
+.Circle {
+	background: #FFD300;
+}
+
+.District {
+	background: #00782A;
+	color: #fff;
+}
+
+.DLR {
+	background: #00A4A7;
+	color: #fff;
+}
+
+.Hammersmith-and-City {
+	background: #F3A9BB;
+}
+
+.Jubilee {
+	background: #A0A5A9;
+}
+
+.Metropolitan {
+	background: #9B0056;
+	color: #fff;
+}
+
+.Northern {
+	background: #000000;
+	color: #fff;
+}
+
+.Overground {
+	background: #EE7C0E;
+	color: #fff;
+}
+
+.Piccadilly {
+	background: #003688;
+	color: #fff;
+}
+
+.Tramlink {
+	background: #84B817;
+	color: #fff;
+}
+
+.Victoria {
+	background: #0098D4;
+	color: #fff;
+}
+
+.Waterloo-and-City {
+	background: #95CDBA;
+}

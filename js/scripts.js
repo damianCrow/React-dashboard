@@ -59,18 +59,23 @@ $(function() {
 		$.ajax({
 			url: "api/tfl.php",
 			dataType: "json"
-		}).done(function(data) {		
+		}).done(function(data) {
+			//console.log(data);
+			if (data.error) {
+				console.log('Error: '+data.error);
+				$('#tfl').hide();
+				return;
+			}
+			
 			var html = '<table><tr><th>Line</th><th>Status</th><th>Description</th></tr>';
 			
-			
 			$(data.LineStatus).each(function(i, line) {
-				html += '<tr class="'+line.Status.CssClass+'"><td>'+line.Line.Name+'</td><td>'+line.Status.Description+'</td><td>'+line.StatusDetails+'</td></tr>';
+				html += '<tr><td class="'+line.Line.Name.replace(/ /g, '-')+'">'+line.Line.Name+'</td><td class="'+line.Status.CssClass+'">'+line.Status.Description+'</td><td>'+line.StatusDetails+'</td></tr>';
 			});
-			//console.log(data);
 			
 			html += '</table>';
 			
-			$('#tfl').html(html);
+			$('#tfl').html(html).show();
 		});
 	}
 

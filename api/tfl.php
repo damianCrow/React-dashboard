@@ -1,4 +1,11 @@
 <?php
+$now = time();
+
+if ($now < strtotime('17:50') || $now > strtotime('23:30')) {
+	echo '{"error": "Current time not within time range"}';
+	die();
+}
+
 /* Recursive function to remove '@attributes' keys */
 function flatten($array) {
 	$return = array();
