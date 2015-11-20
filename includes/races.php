@@ -104,29 +104,29 @@ $countdown = array(
 		array(
 			"start" => "2015-11-27",
 			"end" => "2015-11-29",
-			"name" => "2015 FORMULA 1 ETIHAD AIRWAYS ABU DHABI GRAND PRIX (Yas Marina)"
+			"name" => "2015 FORMULA 1 ETIHAD AIRWAYS ABU DHABI GRAND PRIX"
 		)
 	),
 	'wrc' => array(
 		array(
-			"start" => "2015-01-22",
-			"end" => "2015-01-25",
-			"name" => "Rallye Monte Carlo"
+			"start" => "2016-01-22",
+			"end" => "2016-01-24",
+			"name" => "Monte-Carlo"
 		),
 		array(
-			"start" => "2015-02-12",
-			"end" => "2015-02-15",
-			"name" => "Rally Sweden"
+			"start" => "2016-02-12",
+			"end" => "2016-02-14",
+			"name" => "Sweden"
 		),
 		array(
-			"start" => "2015-03-05",
-			"end" => "2015-03-08",
-			"name" => "Rally Guanajuato México"
+			"start" => "2016-03-04",
+			"end" => "2016-03-06",
+			"name" => "México"
 		),
 		array(
-			"start" => "2015-04-23",
-			"end" => "2015-04-26",
-			"name" => "Rally Argentina"
+			"start" => "2016-04-22",
+			"end" => "2016-04-24",
+			"name" => "Argentina"
 		),
 		array(
 			"start" => "2015-05-21",
