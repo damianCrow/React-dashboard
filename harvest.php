@@ -46,7 +46,6 @@ if ($result->code == 200) {
 	//var_dump($timesheets);
 	
 	//var_dump($people);
-	////test2
 }
 
 ?>
