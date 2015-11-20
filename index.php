@@ -34,9 +34,9 @@
 				<div id="email" class="email">
 					<div class="inner">
 						<div class="page top email-logo"><p><img src="img/mail.png" /></p></div>
-						<div class="page panel1"><p><span>2,583</span><b>emails sent</b><i>this month</i></p></div>
-						<div class="page panel2"><p><span>26,873</span><b>emails received</b><i>this month</i></p></div>
-						<div class="page panel3"><p><span>12,123</span><b>spam emails</b><i>this month</i></p></div>
+						<div class="page panel1"><p><span>3,137</span><b>emails sent</b><i>this month</i></p></div>
+						<div class="page panel2"><p><span>18,172</span><b>emails received</b><i>this month</i></p></div>
+						<div class="page panel3"><p><span>4,802</span><b>spam emails</b><i>this month</i></p></div>
 					</div>
 				</div>
 			</div>
