@@ -247,7 +247,7 @@
 			if (diff>0)
 				start = now;
 		
-			$('#time').html(checkTime(h-1)+':'+checkTime(m));
+			$('#time').html(checkTime(h)+':'+checkTime(m));
 		
 			var t = setTimeout(function(){startTime()},500);
 		}
