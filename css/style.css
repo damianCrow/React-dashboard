@@ -334,6 +334,10 @@ body, ul, li, p {
 	background: url('../img/logo_wrc2.png') no-repeat 10px 24px;
 	padding-left: 150px;
 }
+.fe .race-content {
+	background: url('../img/logo_fe.png') no-repeat 10px 22px;
+	background-size: 100px;
+}
 .xmas .race-content {
 	background: url('../img/logo_xmas2.png') no-repeat 10px 22px;
 	padding: 25px 20px 25px 60px;

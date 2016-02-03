@@ -119,69 +119,126 @@ $countdown = array(
 	),
 	'wrc' => array(
 		array(
-			"start" => "2016-01-22",
+			"start" => "2016-01-21",
 			"end" => "2016-01-24",
-			"name" => "Monte-Carlo"
+			"name" => "Rallye Monte-Carlo"
 		),
 		array(
-			"start" => "2016-02-12",
+			"start" => "2016-02-11",
 			"end" => "2016-02-14",
-			"name" => "Sweden"
+			"name" => "Rally Sweden"
 		),
 		array(
-			"start" => "2016-03-04",
+			"start" => "2016-03-03",
 			"end" => "2016-03-06",
-			"name" => "México"
+			"name" => "Guanajuato Rally México"
 		),
 		array(
-			"start" => "2016-04-22",
+			"start" => "2016-04-21",
 			"end" => "2016-04-24",
-			"name" => "Argentina"
+			"name" => "Rally Argentina"
 		),
 		array(
-			"start" => "2016-05-21",
-			"end" => "2016-05-24",
+			"start" => "2016-05-19",
+			"end" => "2016-05-22",
 			"name" => "Vodafone Rally de Portugal"
 		),
 		array(
-			"start" => "2016-06-11",
-			"end" => "2016-06-14",
+			"start" => "2016-06-09",
+			"end" => "2016-06-12",
 			"name" => "Rally Italia Sardegna"
 		),
 		array(
-			"start" => "2016-07-02",
-			"end" => "2016-07-05",
-			"name" => "LOTOS 72nd Rally Poland"
+			"start" => "2016-07-01",
+			"end" => "2016-07-03",
+			"name" => "73rd LOTOS Rally Poland	"
 		),
 		array(
-			"start" => "2016-07-30",
-			"end" => "2016-08-02",
-			"name" => "Neste Oil Rally Finland"
+			"start" => "2016-07-28",
+			"end" => "2016-07-31",
+			"name" => "Neste Rally Finland"
 		),
 		array(
-			"start" => "2016-08-20",
-			"end" => "2016-08-23",
+			"start" => "2016-08-18",
+			"end" => "2016-08-21",
 			"name" => "ADAC Rallye Deutschland"
 		),
 		array(
-			"start" => "2016-09-10",
-			"end" => "2016-09-13",
-			"name" => "Coates Hire Rally Australia"
+			"start" => "2016-09-08",
+			"end" => "2016-09-11",
+			"name" => "Rally China – Beijing"
 		),
 		array(
-			"start" => "2016-10-01",
-			"end" => "2016-10-04",
-			"name" => "Rallye de France"
+			"start" => "2016-09-29",
+			"end" => "2016-10-02",
+			"name" => "RTour de Corse - Rallye de France"
 		),
 		array(
-			"start" => "2016-10-22",
-			"end" => "2016-10-25",
-			"name" => "RallyRACC - Rally de Espana"
+			"start" => "2016-10-13",
+			"end" => "2016-10-16",
+			"name" => "RallyRACC Catalunya - Rally de España"
 		),
 		array(
-			"start" => "2016-11-12",
-			"end" => "2016-11-15",
+			"start" => "2016-10-27",
+			"end" => "2016-10-30",
 			"name" => "Wales Rally GB"
+		),
+		array(
+			"start" => "2016-11-17",
+			"end" => "2016-11-20",
+			"name" => "Rally Australia"
+		)
+	),
+	'fe' => array(
+		array(
+			"start" => "2015-10-24",
+			"end" => "2015-10-24",
+			"name" => "Beijing, China"
+		),
+		array(
+			"start" => "2015-11-07",
+			"end" => "2015-11-07",
+			"name" => "Putrajaya, Malaysia"
+		),
+		array(
+			"start" => "2015-12-19",
+			"end" => "2015-12-19",
+			"name" => "Punta del Este, Uruguay"
+		),
+		array(
+			"start" => "2016-02-06",
+			"end" => "2016-02-06",
+			"name" => "Buenos Aires, Argentina"
+		),
+		array(
+			"start" => "2016-03-12",
+			"end" => "2016-03-12",
+			"name" => "Mexico City, Mexico"
+		),
+		array(
+			"start" => "2016-04-02",
+			"end" => "2016-04-02",
+			"name" => "Long Beach, USA"
+		),
+		array(
+			"start" => "2016-04-23",
+			"end" => "2016-04-23",
+			"name" => "Paris, France"
+		),
+		array(
+			"start" => "2016-05-21",
+			"end" => "2016-05-21",
+			"name" => "Berlin, Germany"
+		),
+		array(
+			"start" => "2016-06-04",
+			"end" => "2016-06-04",
+			"name" => "Moscow, Russia"
+		),
+		array(
+			"start" => "2016-07-02",
+			"end" => "2016-07-03",
+			"name" => "Londion, United Kingdom"
 		)
 	)
 );
