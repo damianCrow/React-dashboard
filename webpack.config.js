@@ -3,7 +3,7 @@ var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 var ip = process.env.IP || '0.0.0.0'
-var port = process.env.PORT || 3000
+var port = process.env.PORT || 3002
 var DEBUG = process.env.NODE_ENV !== 'production'
 
 var config = {

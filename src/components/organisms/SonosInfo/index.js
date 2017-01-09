@@ -1,7 +1,9 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
 
-import { colors, fonts } from 'components/globals'
+// import { Icon } from 'components'
+
+import { fonts } from 'components/globals'
 
 const styles = ({ ...props, posts }) => css`
   display: flex;
@@ -12,7 +14,7 @@ const styles = ({ ...props, posts }) => css`
   font-style: normal;
   width: 100%;
   height: 100%;
-  background-image: url(${posts[0].coordinator.state.currentTrack.absoluteAlbumArtUri});
+  background-image: url(${posts[0].currentTrack.absoluteAlbumArtUri});
   background-size: cover;
 `
 
@@ -46,9 +48,16 @@ const Track = styled.span`
   font-style: bold;
 `
 
+// const PlaybackIcon = styled.Icon`
+//   display: absolute;
+// `
+
+// const StyledIcon = styled(Icon)`${iconStyles}`
+
 const SonosInfo = ({ children, ...props, posts, isFetching }) => {
-  console.log('comp posts: ', posts)
-  const currentTrack = posts[0].coordinator.state.currentTrack
+  console.log('component posts: ', posts)
+  const playbackState = posts[0].playbackState
+  const currentTrack = posts[0].currentTrack
   const isEmpty = posts.length === 0
   return (
     <SonosContainer>
@@ -62,6 +71,10 @@ const SonosInfo = ({ children, ...props, posts, isFetching }) => {
             <Track>
               {currentTrack.title}
             </Track>
+            {playbackState === 'PAUSED_PLAYBACK' &&
+              // <PlaybackIcon />
+              <span>PAUSED</span>
+            }
           </SonosCurrentTrack>
         </SonosCurrentTrackWrapper>
       }

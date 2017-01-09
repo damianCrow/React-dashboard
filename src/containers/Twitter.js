@@ -2,9 +2,9 @@ import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
 // import { fetchSonosDataIfNeeded, invalidateSonosData } from 'store/actions'
 
-import { SonosInfo } from 'components'
+import { Twitter } from 'components'
 
-class SonosInfoContainer extends Component {
+class TwitterContainer extends Component {
   static propTypes = {
     posts: PropTypes.array.isRequired,
     isFetching: PropTypes.bool.isRequired,
@@ -49,7 +49,7 @@ class SonosInfoContainer extends Component {
 
     if (!isEmpty) {
       return (
-        <SonosInfo posts={posts} isFetching={isFetching} />
+        <Twitter posts={posts} isFetching={isFetching} />
       )
     } else {
       return (
@@ -60,11 +60,11 @@ class SonosInfoContainer extends Component {
 }
 
 const mapStateToProps = state => {
-  const { sonos } = state
+  const { twitter } = state
   const {
     isFetching,
     items: posts
-  } = sonos['musicInfoFromSonos']['sonosData'] || {
+  } = twitter['twitterProcess']['twitterDetails'] || {
     isFetching: true,
     items: []
   }
@@ -75,4 +75,4 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(SonosInfoContainer)
+export default connect(mapStateToProps)(TwitterContainer)

@@ -13,6 +13,10 @@ const store = configureStore({}, browserHistory)
 const history = syncHistoryWithStore(browserHistory, store)
 const root = document.getElementById('app')
 
+store.subscribe(() => {
+  console.log('new client state', store.getState())
+})
+
 const renderApp = () => (
   <AppContainer>
     <Provider store={store}>

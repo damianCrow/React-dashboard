@@ -1,14 +1,5 @@
 import { combineReducers } from 'redux'
-import { INVALIDATE_SONOS, REQUEST_POSTS, RECEIVE_POSTS } from '../actions'
-
-// const selectedReddit = (state = 'reactjs', action) => {
-//   switch (action.type) {
-//     case SELECT_REDDIT:
-//       return action.reddit
-//     default:
-//       return state
-//   }
-// }
+import { INVALIDATE_SONOS, REQUEST_POSTS, RECEIVE_POSTS, MESSAGE } from '../actions'
 
 const posts = (state = {
   isFetching: false,
@@ -27,12 +18,12 @@ const posts = (state = {
         isFetching: true,
         didInvalidate: false
       }
-    case RECEIVE_POSTS:
+    case MESSAGE:
       return {
         ...state,
         isFetching: false,
         didInvalidate: false,
-        items: action.posts,
+        items: [action.data],
         lastUpdated: action.receivedAt
       }
     default:
@@ -45,6 +36,7 @@ const musicInfoFromSonos = (state = { }, action) => {
     case INVALIDATE_SONOS:
     case RECEIVE_POSTS:
     case REQUEST_POSTS:
+    case MESSAGE:
       return {
         ...state,
         sonosData: posts(state.sonosData, action)
