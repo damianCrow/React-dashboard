@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { Feature } from 'components'
-import { SonosInfo, Twitter } from 'containers'
+import { SonosInfo, Twitter, Instagram } from 'containers'
 
 const Grid = styled.div`
   display: block;
@@ -28,7 +28,7 @@ const FeatureList = ({ ...props }) => {
             <SonosInfo />
           </StyledFeature>
           <StyledFeature>
-            {/* Instagram Pics */}
+            <Instagram />
           </StyledFeature>
         </GridRow>
         <GridRow>
@@ -52,7 +52,6 @@ const FeatureList = ({ ...props }) => {
         <GridRow>
           <StyledFeature>
             <Twitter />
-            {/* Twitter Feed */}
           </StyledFeature>
         </GridRow>
       </Grid>

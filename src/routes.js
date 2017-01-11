@@ -7,7 +7,7 @@ import { MainDashboardPage, SamplePage, NotFoundPage } from 'components'
 const routes = (
   <Route path="/" component={App}>
     <IndexRoute component={MainDashboardPage} />
-    <Route path="/sample-page" component={SamplePage} />
+    <Route path="/handleauth" component={SamplePage} />
     <Route path="*" component={NotFoundPage} />
   </Route>
 )

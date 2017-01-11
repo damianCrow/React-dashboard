@@ -11,7 +11,7 @@ import sagas from './sagas'
 const loggerMiddleware = createLogger()
 
 let socket = io('http://localhost:3004')
-let socketIoMiddleware = createSocketIoMiddleware(socket, 'server/')
+let socketIoMiddleware = createSocketIoMiddleware(socket, 'SERVER_')
 
 const configureStore = (initialState, history) => {
   const hasWindow = typeof window !== 'undefined'

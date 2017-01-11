@@ -62,8 +62,11 @@
   "dependencies": {
     "axios": "^0.15.2",
     "babel-polyfill": "^6.16.0",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
     "history": "3.0.0",
     "http": "^0.0.0",
+    "instagram-node": "^0.5.8",
     "lodash": "^4.16.4",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
@@ -83,6 +86,7 @@
     "styled-components": "^1.0.7",
     "superagent": "^3.3.1",
     "twitter": "^1.7.0",
-    "validator": "^6.1.0"
+    "validator": "^6.1.0",
+    "webpack-hot-middleware": "^2.15.0"
   }
 }

@@ -1,5 +1,5 @@
 export const initialState = {
-  sonos: []
+  twitter: []
 }
 
-export const getSonosData = (state = initialState) => state.sonos || []
+export const getSonosData = (state = initialState) => state.twitter || []
