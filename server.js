@@ -27,8 +27,12 @@ if (isDevelopment) {
   app.use(require('webpack-dev-middleware')(compiler, {
 
     hot: true,
+    devServer: {
+      stats: 'errors-only'
+    },
     stats: {
       noInfo: true,
+      chunks: false,
       colors: true
     }
   }))
@@ -38,20 +42,25 @@ if (isDevelopment) {
   app.use(express.static(path.join(__dirname, '/public')))
 }
 
-let expressSessions = {}
+let expressSessions = {
+  instagramAccessToken: undefined
+}
 
 app.get('*', function (request, response) {
   console.log('please?')
-  expressSessions = request.session
+  console.log('request.session', request.session)
+  expressSessions = request.session || expressSessions
   response.sendFile(path.join(__dirname, '/public/index.html'))
 })
+
+// app.listen(port)
 
 app.listen(port, ip, function onStart (err) {
   if (err) {
     console.log(err)
   }
   console.info('🖥  Listening 👂  on port %s. Open 👐  up http://' + ip + ':%s/ in your browser 🌎 . 🤜  🤛', port, port)
-  // startSocketActionDispenser()
+  startSocketActionDispenser()
 })
 
 // const instagram = require('instagram-node').instagram()
@@ -121,8 +130,10 @@ var startSocketActionDispenser = function () {
 var getInstagramPosts = function () {
   // console.log('expressSessions ', expressSessions)
   if (typeof expressSessions.instagramAccessToken !== 'undefined') {
+    console.log('have access_token')
     instagram.use({ access_token: expressSessions.instagramAccessToken })
   } else {
+    console.log('need access_token')
     instagram.use({
       client_id: 'b4a58351058e43ee8717b690ae8fdc6e',
       client_secret: '23e103dbf5c44baf8efc205bb7d1d4bc'
@@ -156,13 +167,13 @@ var getInstagramPosts = function () {
   // This is your redirect URI
   app.get('/handleauth', exports.handleAuth)
 
-  instagram.user_follows('494086480', function (err, users, pagination, remaining, limit) {
-    if (err) {
-      console.log('err', err)
-    } else {
-      console.log(users, pagination, remaining, limit)
-    }
-  })
+  // instagram.user_follows('494086480', function (err, users, pagination, remaining, limit) {
+  //   if (err) {
+  //     console.log('err', err)
+  //   } else {
+  //     console.log(users, pagination, remaining, limit)
+  //   }
+  // })
 }
 
 var listenForClientRequests = function (socket) {

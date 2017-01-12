@@ -37,6 +37,9 @@ module.exports = {
 
   cache: isDevelopment,
   debug: isDevelopment,
+  devServer: {
+    stats: 'errors-only'
+  },
   entry: entry,
   module: {
     loaders: [
