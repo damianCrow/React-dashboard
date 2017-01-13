@@ -1,15 +1,17 @@
 export const REQUEST_INSTAGRAM = 'REQUEST_INSTAGRAM'
-export const RECEIVE_INSTAGRAM = 'RECEIVE_INSTAGRAM'
+export const RECEIVE_INSTAGRAM_POSTS = 'RECEIVE_INSTAGRAM_POSTS'
 export const INVALIDATE_INSTAGRAM = 'INVALIDATE_INSTAGRAM'
+
+// Server actions.
 export const SERVER_PULL_INSTAGRAM = 'SERVER_PULL_INSTAGRAM'
-// export const RECEIVE_INSTAGRAM = 'RECEIVE_INSTAGRAM'
+export const RECEIVE_INSTAGRAM_POSTS_ERROR = 'RECEIVE_INSTAGRAM_POSTS_ERROR'
 
 export const invalidateSonosData = ({
   type: INVALIDATE_INSTAGRAM
 })
 
 export const requestTweets = ({
-  type: RECEIVE_INSTAGRAM
+  type: RECEIVE_INSTAGRAM_POSTS
 })
 
 export const requestInstagramPosts = ({
@@ -44,7 +46,7 @@ const shouldFetchPosts = (state) => {
   return posts.didInvalidate
 }
 
-export const fetchPostsIfNeeded = reddit => (dispatch, getState) => {
+export const fetchInstagramIfNeeded = reddit => (dispatch, getState) => {
   if (shouldFetchPosts(getState())) {
     return dispatch(fetchPosts())
   }

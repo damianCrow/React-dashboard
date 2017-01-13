@@ -5,7 +5,7 @@ const port = process.env.PORT || 3002
 const socketPort = 3004
 const ip = process.env.IP || '0.0.0.0'
 const app = express()
-// const session = require('express-session')
+const session = require('express-session')
 
 // Socket.io
 // const server = require('http').Server(express)
@@ -18,7 +18,12 @@ const SonosDiscovery = require('sonos-discovery')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+let expressSessions = {
+  instagramAccessToken: undefined
+}
+
 if (isDevelopment) {
+  console.log('RUNNING DEVELOPMENT: ', isDevelopment)
   const webpack = require('webpack')
   const webpackConfig = require('./webpack.config')
 
@@ -26,32 +31,57 @@ if (isDevelopment) {
 
   app.use(require('webpack-dev-middleware')(compiler, {
 
-    hot: true,
-    devServer: {
-      stats: 'errors-only'
-    },
     stats: {
       noInfo: true,
       chunks: false,
       colors: true
-    }
+    },
+    noInfo: true,
+    publicPath: '/'
   }))
 
+  app.use(session({
+    secret: '7@6D94@6D#52%9z#5@6DPl',
+    resave: false,
+    saveUninitialized: true
+  }))
+
+  app.use('*', function (req, res, next) {
+    var filename = path.join(compiler.outputPath, 'index.html')
+    console.log('** EXPRESS STAR **')
+
+    // console.log('req.session', req.session)
+    // console.log('res', res)
+    // console.log('next', next)
+
+    expressSessions = req.session || expressSessions
+
+    compiler.outputFileSystem.readFile(filename, function (err, result) {
+      if (err) {
+        return next(err)
+      }
+
+      // res.set('content-type', 'text/html')
+      // res.send(result)
+
+      next()
+      // res.end()
+    })
+  })
+
+  // app.get('*', function (request, response) {
+  //   console.log('** STAR **')
+  //   expressSessions = request.session || expressSessions
+  //   console.log('request.session', request.session)
+  //   console.log('expressSessions', expressSessions)
+  //   response.sendFile(path.join(__dirname, '/public/index.html'))
+  // })
+
+  // Doesn't auto reload, clashes with express, idk why :(
   app.use(require('webpack-hot-middleware')(compiler))
 } else {
   app.use(express.static(path.join(__dirname, '/public')))
 }
-
-let expressSessions = {
-  instagramAccessToken: undefined
-}
-
-app.get('*', function (request, response) {
-  console.log('please?')
-  console.log('request.session', request.session)
-  expressSessions = request.session || expressSessions
-  response.sendFile(path.join(__dirname, '/public/index.html'))
-})
 
 // app.listen(port)
 
@@ -63,56 +93,6 @@ app.listen(port, ip, function onStart (err) {
   startSocketActionDispenser()
 })
 
-// const instagram = require('instagram-node').instagram()
-// const Twitter = require('twitter')
-
-// const SonosDiscovery = require('sonos-discovery')
-
-// const ip = process.env.IP || '0.0.0.0'
-// const port = process.env.PORT || 3002
-
-// const compiler = webpack(config)
-
-// app.use(webpackMiddleware(compiler, {
-//   noInfo: true,
-//   publicPath: config.output.publicPath
-// }))
-
-// app.use(session({
-//   secret: '7@6D94@6D#52%9z#5@6DPl',
-//   resave: false,
-//   saveUninitialized: true
-// }))
-
-// let expressSessions
-
-// app.get('*', function response (req, res, next) {
-//   console.log('EXPRESS * CATCH')
-//   expressSessions = req.session
-//   res.sendFile(path.join(__dirname, '/public/index.html'))
-//   // response.sendFile(__dirname + '/public/index.html')
-// })
-
-// app.use(webpackHotMiddleware(compiler))
-
-// // app.get('*', function (req, res, next) {
-// //   console.log('EXPRESS * CATCH')
-// //   req.url = 'index.html'
-// //   next('route')
-// // })
-
-// // app.use('/public', express.static('public'))
-
-// app.listen(port, ip, function onStart (err) {
-//   if (err) {
-//     console.log(err)
-//   }
-//   console.info('🖥  Listening 👂  on port %s. Open 👐  up http://' + ip + ':%s/ in your browser 🌎 . 🤜  🤛', port, port)
-//   // startSocketActionDispenser()
-// })
-
-// Action from the client to the server
-
 var startSocketActionDispenser = function () {
   // For express / socket server
   // server.listen(3004)
@@ -122,24 +102,52 @@ var startSocketActionDispenser = function () {
   io.on('connection', function (socket) {
     console.log('Socket connected: ' + socket.id)
     listenForClientRequests(socket)
-    startSonosDiscovery(socket)
-    getOldTweets(socket)
+
+    // These two need(!!!!!) to be moved to listenForClientRequests()
+    // startSonosDiscovery(socket)
+    // getOldTweets(socket)
   })
 }
 
-var getInstagramPosts = function () {
-  // console.log('expressSessions ', expressSessions)
+var requestInstagramPosts = function () {
+  console.log('running promise')
+  return new Promise(
+    function (resolve, reject) {
+      console.log('running promise')
+      instagram.user_media_recent('30605504', function (err, users, pagination, remaining, limit) {
+        if (err) {
+          console.log('err', err)
+          var reason = new Error({status: 'error', data: err})
+          reject(reason) // reject
+        } else {
+          console.log('pulled instagram data')
+          resolve({status: 'success', data: users}) // fulfilled
+          // socket.emit('action', {type: 'INSTAGRAM', data: users})
+          // console.log(users, pagination, remaining, limit)
+        }
+      })
+    }
+  )
+}
+
+var checkForInstagramKey = function () {
   if (typeof expressSessions.instagramAccessToken !== 'undefined') {
     console.log('have access_token')
     instagram.use({ access_token: expressSessions.instagramAccessToken })
+    return true
   } else {
     console.log('need access_token')
+
     instagram.use({
       client_id: 'b4a58351058e43ee8717b690ae8fdc6e',
       client_secret: '23e103dbf5c44baf8efc205bb7d1d4bc'
     })
+    return false
+    // return {status: 'error', data: 'No access'}
   }
+}
 
+var authorizeInstagram = function () {
   const redirectUri = 'http://' + 'localhost' + ':' + port + '/handleauth'
 
   exports.authorizeUser = (req, res) => {
@@ -166,14 +174,6 @@ var getInstagramPosts = function () {
   app.get('/authorize_user', exports.authorizeUser)
   // This is your redirect URI
   app.get('/handleauth', exports.handleAuth)
-
-  // instagram.user_follows('494086480', function (err, users, pagination, remaining, limit) {
-  //   if (err) {
-  //     console.log('err', err)
-  //   } else {
-  //     console.log(users, pagination, remaining, limit)
-  //   }
-  // })
 }
 
 var listenForClientRequests = function (socket) {
@@ -184,8 +184,25 @@ var listenForClientRequests = function (socket) {
     if (action.type === 'SERVER_PULL_INSTAGRAM') {
       console.log('[server] Got hello request: ', action.type)
       // Send a new action to the client with it's requested data
-      getInstagramPosts()
-      // socket.emit('action', {type: 'RECEIVE_INSTAGRAM_POSTS', data: getInstagramPosts})
+       // Need a promise here.
+
+      if (checkForInstagramKey() === true) {
+        requestInstagramPosts()
+          .then(function (fulfilled) {
+            // yay, you got a new phone
+            console.log(fulfilled)
+            socket.emit('action', {type: 'RECEIVE_INSTAGRAM_POSTS', data: fulfilled})
+            // output: { brand: 'Samsung', color: 'black' }
+          })
+          .catch(function (error) {
+              // oops, mom don't buy it
+            console.log(error)
+            socket.emit('action', {type: 'RECEIVE_INSTAGRAM_POSTS_ERROR', data: error})
+           // output: 'mom is not happy'
+          })
+      } else {
+        authorizeInstagram()
+      }
       // getInstagramPosts(socket)
       // socket.emit('action', {type: 'MESSAGE', data: action.data})
     }

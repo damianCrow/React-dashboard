@@ -7,7 +7,9 @@ import { fonts } from 'components/globals'
 
 const styles = ({ ...props, posts }) => css`
   display: flex;
-  align-items: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   font-family: ${fonts.primary};
   color: black;
   font-weight: 300;
@@ -19,16 +21,22 @@ const styles = ({ ...props, posts }) => css`
   background-size: cover;
 `
 
-const TwitterContainer = styled.div`
-  display: block;
-  width: 100%;
+const InstagramContainer = styled.div`
+  display: flex;
   height: 100%;
-  position: absolute;
   left: 0;
+  position: absolute;
   top: 0;
+  width: 100%;
 `
 
-const TwitterWrapper = styled.div`${styles}`
+const InstagramImage = styled.img`
+  display: block;
+  width: 150px;
+  position: relative;
+`
+
+const InstagramWrapper = styled.div`${styles}`
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
@@ -40,18 +48,16 @@ const Twitter = ({ children, ...props, posts, isFetching }) => {
   console.log('twitter posts: ', posts)
   const isEmpty = posts.length === 0
   return (
-    <TwitterContainer>
+    <InstagramContainer>
       {isEmpty
         ? (isFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
-        : <TwitterWrapper {...props} style={{ opacity: isFetching ? 0.5 : 1 }}>
-          <ul>
-            {posts.map((element, index) => {
-              return <li key={'mykey' + index}>{element.text}</li>
-            })}
-          </ul>
-        </TwitterWrapper>
+        : <InstagramWrapper {...props} style={{ opacity: isFetching ? 0.5 : 1 }}>
+          {posts.map((element, index) => {
+            return <InstagramImage src={element.images.standard_resolution.url} key={'mykey' + index} />
+          })}
+        </InstagramWrapper>
       }
-    </TwitterContainer>
+    </InstagramContainer>
   )
 }
 

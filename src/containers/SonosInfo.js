@@ -53,7 +53,7 @@ class SonosInfoContainer extends Component {
       )
     } else {
       return (
-        <span>nuffin</span>
+        <span>nuffing</span>
       )
     }
   }

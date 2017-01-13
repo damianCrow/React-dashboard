@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { INVALIDATE_INSTAGRAM, REQUEST_INSTAGRAM, RECEIVE_INSTAGRAM } from '../actions'
+import { INVALIDATE_INSTAGRAM, REQUEST_INSTAGRAM, RECEIVE_INSTAGRAM_POSTS, RECEIVE_INSTAGRAM_POSTS_ERROR } from '../actions'
 
 // const selectedReddit = (state = 'reactjs', action) => {
 //   switch (action.type) {
@@ -13,7 +13,8 @@ import { INVALIDATE_INSTAGRAM, REQUEST_INSTAGRAM, RECEIVE_INSTAGRAM } from '../a
 const posts = (state = {
   isFetching: false,
   didInvalidate: false,
-  items: []
+  items: [],
+  status: ''
 }, action) => {
   switch (action.type) {
     case INVALIDATE_INSTAGRAM:
@@ -27,12 +28,21 @@ const posts = (state = {
         isFetching: true,
         didInvalidate: false
       }
-    case RECEIVE_INSTAGRAM:
+    case RECEIVE_INSTAGRAM_POSTS_ERROR:
       return {
         ...state,
         isFetching: false,
         didInvalidate: false,
-        items: action.data,
+        status: action.data,
+        lastUpdated: action.receivedAt
+      }
+    case RECEIVE_INSTAGRAM_POSTS:
+      return {
+        ...state,
+        isFetching: false,
+        didInvalidate: false,
+        items: action.data.data,
+        status: action.data.status,
         lastUpdated: action.receivedAt
       }
     default:
@@ -55,7 +65,8 @@ const instagramProcess = (state = { }, action) => {
   switch (action.type) {
     case INVALIDATE_INSTAGRAM:
     case REQUEST_INSTAGRAM:
-    case RECEIVE_INSTAGRAM:
+    case RECEIVE_INSTAGRAM_POSTS_ERROR:
+    case RECEIVE_INSTAGRAM_POSTS:
       return {
         ...state,
         instagramDetails: posts(state.instagramDetails, action)

@@ -12,35 +12,16 @@ var entry = isDevelopment ? [
   entryPath
 ] : ['babel-polyfill', entryPath]
 
-var plugins = [
-
-  new webpack.DefinePlugin({
-
-    'process.env.NODE_ENV': JSON.stringify(isDevelopment ? 'development' : 'production'),
-    __DEV__: isDevelopment
-  }),
-  new HtmlWebpackPlugin({
-
-    template: path.join(__dirname, '/public/index.html'),
-    minify: {
-
-      removeComments: !isDevelopment,
-      collapseWhitespace: !isDevelopment
-    },
-    inject: true
-  })
-]
-
-isDevelopment && plugins.push(new webpack.HotModuleReplacementPlugin())
-
 module.exports = {
-
-  cache: isDevelopment,
-  debug: isDevelopment,
-  devServer: {
-    stats: 'errors-only'
+  resolve: {
+    modulesDirectories: ['src', 'node_modules']
   },
   entry: entry,
+  output: {
+    path: path.join(__dirname, 'dist'),
+    filename: 'app.[hash].js',
+    publicPath: '/'
+  },
   module: {
     loaders: [
       { test: /\.js$/, loader: 'babel', exclude: /node_modules/ },
@@ -52,48 +33,18 @@ module.exports = {
       { test: /\.json$/, loader: 'json' }
     ]
   },
-  output: {
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin({
 
-    path: path.join(__dirname, 'public'),
-    publicPath: '',
-    filename: 'app.[hash].js'
-  },
-  resolve: {
-    modulesDirectories: ['src', 'node_modules']
-  },
-  plugins: plugins
+      template: path.join(__dirname, '/public/index.html'),
+      minify: {
+
+        removeComments: !isDevelopment,
+        collapseWhitespace: !isDevelopment
+      },
+      inject: true
+    }),
+    new webpack.NoErrorsPlugin()
+  ]
 }
-
-// var path = require('path')
-// var webpack = require('webpack')
-// var HtmlWebpackPlugin = require('html-webpack-plugin')
-
-// // var ip = process.env.IP || '0.0.0.0'
-// // var port = process.env.PORT || 3002
-// var DEBUG = process.env.NODE_ENV !== 'production'
-
-// var config = {
-//   devtool: DEBUG ? 'eval' : false,
-//   entry: [
-//     'babel-polyfill',
-//     path.join(__dirname, 'src')
-//   ]
-// }
-
-// if (DEBUG) {
-//   config.entry.unshift(
-//     'webpack-hot-middleware/client?reload=true',
-//     'react-hot-loader/patch'
-//   )
-
-//   config.plugins = config.plugins.concat([
-//     new webpack.HotModuleReplacementPlugin()
-//   ])
-// } else {
-//   config.plugins = config.plugins.concat([
-//     new webpack.optimize.DedupePlugin(),
-//     new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false } })
-//   ])
-// }
-
-// module.exports = config
