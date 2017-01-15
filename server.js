@@ -189,18 +189,15 @@ var listenForClientRequests = function (socket) {
       if (checkForInstagramKey() === true) {
         requestInstagramPosts()
           .then(function (fulfilled) {
-            // yay, you got a new phone
             console.log(fulfilled)
             socket.emit('action', {type: 'RECEIVE_INSTAGRAM_POSTS', data: fulfilled})
-            // output: { brand: 'Samsung', color: 'black' }
           })
           .catch(function (error) {
-              // oops, mom don't buy it
             console.log(error)
             socket.emit('action', {type: 'RECEIVE_INSTAGRAM_POSTS_ERROR', data: error})
-           // output: 'mom is not happy'
           })
       } else {
+        socket.emit('action', {type: 'NEED_TO_AUTH_INSTAGRAM', data: {status: 'auth-failed'}})
         authorizeInstagram()
       }
       // getInstagramPosts(socket)

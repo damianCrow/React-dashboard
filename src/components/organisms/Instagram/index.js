@@ -44,7 +44,7 @@ const InstagramWrapper = styled.div`${styles}`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Twitter = ({ children, ...props, posts, isFetching }) => {
+const Instagram = ({ children, ...props, posts, isFetching }) => {
   console.log('twitter posts: ', posts)
   const isEmpty = posts.length === 0
   return (
@@ -61,13 +61,13 @@ const Twitter = ({ children, ...props, posts, isFetching }) => {
   )
 }
 
-Twitter.propTypes = {
+Instagram.propTypes = {
   children: PropTypes.any,
   posts: PropTypes.array.isRequired,
   isFetching: PropTypes.bool.isRequired
 }
 
-export default Twitter
+export default Instagram
 
 // import React, { PropTypes } from 'react'
 

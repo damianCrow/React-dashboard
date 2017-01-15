@@ -2,14 +2,15 @@ import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
 import { fetchInstagramIfNeeded } from 'store/actions'
 
-import { Instagram } from 'components'
+import { Instagram, InstagramAuth } from 'components'
 
 class InstagramContainer extends Component {
   static propTypes = {
     posts: PropTypes.array.isRequired,
     isFetching: PropTypes.bool.isRequired,
     status: PropTypes.string.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    message: PropTypes.string.isRequired
   }
 
   componentDidMount () {
@@ -44,15 +45,17 @@ class InstagramContainer extends Component {
   }
 
   render () {
-    const { posts, isFetching, status } = this.props
+    const { posts, isFetching, status, message } = this.props
     // console.log(posts)
     console.log('instagram status', status)
     const isEmpty = posts.length === 0
 
-    if (status !== 'success' && status !== '') {
+    if (status === 'failed' && status !== '') {
       return (
         <span>{status}</span>
       )
+    } else if (status === 'auth-failed') {
+      <InstagramAuth message={message} />
     } else {
       if (!isEmpty) {
         return (
@@ -72,17 +75,20 @@ const mapStateToProps = state => {
   const {
     isFetching,
     items: posts,
-    status
+    status,
+    message
   } = instagram['instagramProcess']['instagramDetails'] || {
     isFetching: true,
     items: [],
-    status: ''
+    status: '',
+    message: ''
   }
 
   return {
     posts,
     isFetching,
-    status
+    status,
+    message
   }
 }
 

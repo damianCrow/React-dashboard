@@ -1,5 +1,11 @@
 import { combineReducers } from 'redux'
-import { INVALIDATE_INSTAGRAM, REQUEST_INSTAGRAM, RECEIVE_INSTAGRAM_POSTS, RECEIVE_INSTAGRAM_POSTS_ERROR } from '../actions'
+import {
+  INVALIDATE_INSTAGRAM,
+  REQUEST_INSTAGRAM,
+  RECEIVE_INSTAGRAM_POSTS,
+  RECEIVE_INSTAGRAM_POSTS_ERROR,
+  NEED_TO_AUTH_INSTAGRAM
+} from '../actions'
 
 // const selectedReddit = (state = 'reactjs', action) => {
 //   switch (action.type) {
@@ -14,7 +20,8 @@ const posts = (state = {
   isFetching: false,
   didInvalidate: false,
   items: [],
-  status: ''
+  status: '',
+  message: ''
 }, action) => {
   switch (action.type) {
     case INVALIDATE_INSTAGRAM:
@@ -33,7 +40,8 @@ const posts = (state = {
         ...state,
         isFetching: false,
         didInvalidate: false,
-        status: action.data,
+        status: action.data.status,
+        message: action.data.err,
         lastUpdated: action.receivedAt
       }
     case RECEIVE_INSTAGRAM_POSTS:
@@ -42,6 +50,12 @@ const posts = (state = {
         isFetching: false,
         didInvalidate: false,
         items: action.data.data,
+        status: action.data.status,
+        lastUpdated: action.receivedAt
+      }
+    case NEED_TO_AUTH_INSTAGRAM:
+      return {
+        ...state,
         status: action.data.status,
         lastUpdated: action.receivedAt
       }
@@ -67,6 +81,7 @@ const instagramProcess = (state = { }, action) => {
     case REQUEST_INSTAGRAM:
     case RECEIVE_INSTAGRAM_POSTS_ERROR:
     case RECEIVE_INSTAGRAM_POSTS:
+    case NEED_TO_AUTH_INSTAGRAM:
       return {
         ...state,
         instagramDetails: posts(state.instagramDetails, action)
