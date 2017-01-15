@@ -50,19 +50,12 @@ if (isDevelopment) {
     var filename = path.join(compiler.outputPath, 'index.html')
     console.log('** EXPRESS STAR **')
 
-    // console.log('req.session', req.session)
-    // console.log('res', res)
-    // console.log('next', next)
-
     expressSessions = req.session || expressSessions
 
     compiler.outputFileSystem.readFile(filename, function (err, result) {
       if (err) {
         return next(err)
       }
-
-      // res.set('content-type', 'text/html')
-      // res.send(result)
 
       next()
       // res.end()

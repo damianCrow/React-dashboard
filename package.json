@@ -28,7 +28,7 @@
     }
   },
   "devDependencies": {
-    "babel-eslint": "^7.0.0",
+    "babel-eslint": "latest",
     "babel-jest": "^18.0.0",
     "babel-loader": "^6.2.5",
     "babel-plugin-transform-react-remove-prop-types": "^0.2.11",
@@ -40,7 +40,8 @@
     "cross-env": "^3.1.2",
     "del-cli": "^0.2.0",
     "enzyme": "^2.4.1",
-    "eslint": "^3.7.1",
+    "eslint": "latest",
+    "eslint-config-google": "^0.7.1",
     "eslint-config-standard": "^6.2.0",
     "eslint-config-standard-react": "^4.2.0",
     "eslint-plugin-promise": "^3.0.0",

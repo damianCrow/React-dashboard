@@ -50,7 +50,7 @@ class InstagramContainer extends Component {
     console.log('instagram status', status)
     const isEmpty = posts.length === 0
 
-    if (status === 'failed' && status !== '') {
+    if (status === 'failed' || status === '') {
       return (
         <span>{status}</span>
       )
