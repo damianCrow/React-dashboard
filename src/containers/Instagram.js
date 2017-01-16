@@ -15,14 +15,22 @@ class InstagramContainer extends Component {
   }
 
   componentDidMount () {
-    const { dispatch, allPosts } = this.props
+    const { dispatch } = this.props
 
     dispatch(fetchInstagramIfNeeded())
-    .then(function (fulfilled) {
-      if (allPosts.length !== 0) {
-        dispatch(startInstagramSlideshow(allPosts))
-      }
-    })
+  }
+
+  componentDidUpdate () {
+    const { slideShow, status, dispatch, allPosts } = this.props
+    console.log('InstagramContainer - componentDidUpdate fired')
+    console.log('slideShow - slideShow: ', slideShow)
+    console.log('status', status)
+    console.log('Object.keys(slideShow.currentPost).length', Object.keys(slideShow.currentPost).length)
+
+    if (status === 'success' && Object.keys(slideShow.currentPost).length === 0) {
+      console.log('fireing startInstagramSlideshow')
+      dispatch(startInstagramSlideshow(allPosts))
+    }
   }
 
   handleRefreshClick = e => {

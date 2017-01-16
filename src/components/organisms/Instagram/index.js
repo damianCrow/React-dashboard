@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+import Transition from 'react-inline-transition-group'
 
 // import { Icon } from 'components'
 
@@ -22,13 +22,24 @@ const styles = ({ ...props, posts }) => css`
   background-size: cover;
 `
 
+const leaveStyles = css`
+  transition: all 250ms;
+`
+
 const InstagramImage = styled.img`
   display: block;
   width: 150px;
   position: relative;
 `
 
-const InstagramWrapper = styled(ReactCSSTransitionGroup)`${styles}`
+const InstagramWrapper = Transition
+
+const transitionStyles = {
+  base: styles,
+  appear: leaveStyles,
+  enter: leaveStyles,
+  leave: leaveStyles
+}
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
@@ -39,18 +50,15 @@ const InstagramWrapper = styled(ReactCSSTransitionGroup)`${styles}`
 const Instagram = ({ children, ...props, posts, isFetching }) => {
   console.log('Instagram comp posts: ', posts)
   return (
-    <InstagramWrapper {...props} style={{ opacity: isFetching ? 0.5 : 1 }} transitionEnterTimeout={700} transitionLeaveTimeout={700}>
-
-      {posts.map((element, index) => {
-        return <InstagramImage src={element.images.standard_resolution.url} key={'mykey' + index} />
-      })}
+    <InstagramWrapper {...props} style={{ opacity: isFetching ? 0.5 : 1 }} childrenStyles={transitionStyles}>
+      <InstagramImage src={posts.images.standard_resolution.url} />
     </InstagramWrapper>
   )
 }
 
 Instagram.propTypes = {
   children: PropTypes.any,
-  posts: PropTypes.array.isRequired,
+  posts: PropTypes.object.isRequired,
   isFetching: PropTypes.bool.isRequired
 }
 
