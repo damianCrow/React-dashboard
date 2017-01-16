@@ -103,20 +103,17 @@ var startSocketActionDispenser = function () {
 }
 
 var requestInstagramPosts = function () {
-  console.log('running promise')
   return new Promise(
     function (resolve, reject) {
       console.log('running promise')
-      instagram.user_media_recent('30605504', function (err, users, pagination, remaining, limit) {
+      instagram.user_media_recent('30605504', function (err, posts, pagination, remaining, limit) {
         if (err) {
           console.log('err', err)
           var reason = new Error({status: 'error', data: err})
           reject(reason) // reject
         } else {
           console.log('pulled instagram data')
-          resolve({status: 'success', data: users}) // fulfilled
-          // socket.emit('action', {type: 'INSTAGRAM', data: users})
-          // console.log(users, pagination, remaining, limit)
+          resolve({status: 'success', data: posts}) // fulfilled
         }
       })
     }

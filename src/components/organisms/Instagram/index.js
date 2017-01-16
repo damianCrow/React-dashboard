@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 
 // import { Icon } from 'components'
 
@@ -21,22 +22,13 @@ const styles = ({ ...props, posts }) => css`
   background-size: cover;
 `
 
-const InstagramContainer = styled.div`
-  display: flex;
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-`
-
 const InstagramImage = styled.img`
   display: block;
   width: 150px;
   position: relative;
 `
 
-const InstagramWrapper = styled.div`${styles}`
+const InstagramWrapper = styled(ReactCSSTransitionGroup)`${styles}`
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
@@ -45,19 +37,14 @@ const InstagramWrapper = styled.div`${styles}`
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
 const Instagram = ({ children, ...props, posts, isFetching }) => {
-  console.log('twitter posts: ', posts)
-  const isEmpty = posts.length === 0
+  console.log('Instagram comp posts: ', posts)
   return (
-    <InstagramContainer>
-      {isEmpty
-        ? (isFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
-        : <InstagramWrapper {...props} style={{ opacity: isFetching ? 0.5 : 1 }}>
-          {posts.map((element, index) => {
-            return <InstagramImage src={element.images.standard_resolution.url} key={'mykey' + index} />
-          })}
-        </InstagramWrapper>
-      }
-    </InstagramContainer>
+    <InstagramWrapper {...props} style={{ opacity: isFetching ? 0.5 : 1 }} transitionEnterTimeout={700} transitionLeaveTimeout={700}>
+
+      {posts.map((element, index) => {
+        return <InstagramImage src={element.images.standard_resolution.url} key={'mykey' + index} />
+      })}
+    </InstagramWrapper>
   )
 }
 
@@ -68,19 +55,3 @@ Instagram.propTypes = {
 }
 
 export default Instagram
-
-// import React, { PropTypes } from 'react'
-
-// const SonosInfo = ({posts}) => (
-//   <ul>
-//     {posts.map((post, i) =>
-//       <li key={i}>{post.title}</li>
-//     )}
-//   </ul>
-// )
-
-// SonosInfo.propTypes = {
-//   posts: PropTypes.array.isRequired
-// }
-
-// export default SonosInfo

@@ -1,38 +1,28 @@
 import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
-import { fetchInstagramIfNeeded } from 'store/actions'
+import { fetchInstagramIfNeeded, startInstagramSlideshow } from 'store/actions'
 
 import { Instagram, InstagramAuth } from 'components'
 
 class InstagramContainer extends Component {
   static propTypes = {
-    posts: PropTypes.array.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    status: PropTypes.string.isRequired,
+    allPosts: PropTypes.array.isRequired,
     dispatch: PropTypes.func.isRequired,
-    message: PropTypes.string.isRequired
+    isFetching: PropTypes.bool.isRequired,
+    message: PropTypes.string.isRequired,
+    slideShow: PropTypes.object.isRequired,
+    status: PropTypes.string.isRequired
   }
 
   componentDidMount () {
-    const { dispatch } = this.props
+    const { dispatch, allPosts } = this.props
+
     dispatch(fetchInstagramIfNeeded())
-  }
-
-  // componentDidMount () {
-  //   // url (required), options (optional)
-  //   fetch('http://localhost:5005/zones', {
-  //     method: 'get'
-  //   })
-  //   .then((response) => response.json())
-  //   .then(responseJSON => {
-  //     console.log('response', responseJSON)
-  //   }).catch(err => {
-  //     console.log('err', err)
-  //   })
-  // }
-
-  listenForChanges () {
-
+    .then(function (fulfilled) {
+      if (allPosts.length !== 0) {
+        dispatch(startInstagramSlideshow(allPosts))
+      }
+    })
   }
 
   handleRefreshClick = e => {
@@ -45,27 +35,27 @@ class InstagramContainer extends Component {
   }
 
   render () {
-    const { posts, isFetching, status, message } = this.props
+    const { slideShow, isFetching, status, message } = this.props
     // console.log(posts)
     console.log('instagram status', status)
-    const isEmpty = posts.length === 0
+    const isEmpty = Object.keys(slideShow.currentPost).length === 0
 
     if (status === 'failed' || status === '') {
       return (
         <span>{status}</span>
       )
     } else if (status === 'auth-failed') {
-      <InstagramAuth message={message} />
+      return (
+        <InstagramAuth message={message} />
+      )
+    } else if (!isEmpty) {
+      return (
+        <Instagram posts={slideShow.currentPost} isFetching={isFetching} />
+      )
     } else {
-      if (!isEmpty) {
-        return (
-          <Instagram posts={posts} isFetching={isFetching} />
-        )
-      } else {
-        return (
-          <span>Awaiting images...</span>
-        )
-      }
+      return (
+        <span>Awaiting images...</span>
+      )
     }
   }
 }
@@ -73,22 +63,25 @@ class InstagramContainer extends Component {
 const mapStateToProps = state => {
   const { instagram } = state
   const {
+    allPosts,
     isFetching,
-    items: posts,
-    status,
-    message
+    message,
+    slideShow,
+    status
   } = instagram['instagramProcess']['instagramDetails'] || {
+    allPosts: [],
     isFetching: true,
-    items: [],
-    status: '',
-    message: ''
+    message: '',
+    slideShow: {currentPost: {}, currentInt: 0},
+    status: ''
   }
 
   return {
-    posts,
+    allPosts,
     isFetching,
-    status,
-    message
+    message,
+    slideShow,
+    status
   }
 }
 

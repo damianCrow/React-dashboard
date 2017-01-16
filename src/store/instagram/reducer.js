@@ -4,24 +4,17 @@ import {
   REQUEST_INSTAGRAM,
   RECEIVE_INSTAGRAM_POSTS,
   RECEIVE_INSTAGRAM_POSTS_ERROR,
-  NEED_TO_AUTH_INSTAGRAM
+  NEED_TO_AUTH_INSTAGRAM,
+  UPDATE_INSTAGRAM_SLIDESHOW
 } from '../actions'
 
-// const selectedReddit = (state = 'reactjs', action) => {
-//   switch (action.type) {
-//     case SELECT_REDDIT:
-//       return action.reddit
-//     default:
-//       return state
-//   }
-// }
-
 const posts = (state = {
-  isFetching: false,
   didInvalidate: false,
-  items: [],
-  status: '',
-  message: ''
+  isFetching: false,
+  allPosts: [],
+  message: '',
+  slideShow: {currentPost: {}, currentInt: 0},
+  status: ''
 }, action) => {
   switch (action.type) {
     case INVALIDATE_INSTAGRAM:
@@ -49,7 +42,7 @@ const posts = (state = {
         ...state,
         isFetching: false,
         didInvalidate: false,
-        items: action.data.data,
+        allPosts: action.data.data,
         status: action.data.status,
         lastUpdated: action.receivedAt
       }
@@ -58,6 +51,14 @@ const posts = (state = {
         ...state,
         status: action.data.status,
         lastUpdated: action.receivedAt
+      }
+    case UPDATE_INSTAGRAM_SLIDESHOW:
+      return {
+        ...state,
+        slideShow: {
+          currentPost: action.slideShow.currentPost,
+          currentInt: action.slideShow.currentInt
+        }
       }
     default:
       return state
@@ -82,6 +83,7 @@ const instagramProcess = (state = { }, action) => {
     case RECEIVE_INSTAGRAM_POSTS_ERROR:
     case RECEIVE_INSTAGRAM_POSTS:
     case NEED_TO_AUTH_INSTAGRAM:
+    case UPDATE_INSTAGRAM_SLIDESHOW:
       return {
         ...state,
         instagramDetails: posts(state.instagramDetails, action)

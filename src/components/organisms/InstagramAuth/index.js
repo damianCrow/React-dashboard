@@ -1,24 +1,26 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
 
-import { Icon } from 'components'
+import { Icon, Link, Paragraph } from 'components'
 
 import { fonts } from 'components/globals'
 
 const styles = ({ ...props }) => css`
-  display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  font-family: ${fonts.primary};
-  color: black;
-  font-weight: 300;
-  font-style: normal;
-  text-align: left;
-  width: 100%;
-  height: 100%;
-  background-color: lightblue;
   background-size: cover;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  font-family: ${fonts.primary};
+  font-style: normal;
+  font-weight: 300;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  text-align: left;
+  top: 0;
+  width: 100%;
 `
 
 // const InstagramImage = styled.img`
@@ -35,17 +37,19 @@ const InstagramAuthContainer = styled.div`${styles}`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const InstagramAuth = ({ children, ...props }) => {
+const InstagramAuth = ({ children, ...props, message }) => {
   return (
     <InstagramAuthContainer>
-      <Icon {...props} icon="instagram" />
-      <p>Please authrorise Instagram here: </p>
+      <Icon {...props} icon="instagram" size={48} />
+      <Paragraph>{message}</Paragraph>
+      <Link href="/authorize_user">Authrorise Instagram</Link>
     </InstagramAuthContainer>
   )
 }
 
 InstagramAuth.propTypes = {
-  children: PropTypes.any
+  children: PropTypes.any,
+  message: PropTypes.string
 }
 
 export default InstagramAuth

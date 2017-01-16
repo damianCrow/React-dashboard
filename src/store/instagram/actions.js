@@ -2,6 +2,8 @@ export const REQUEST_INSTAGRAM = 'REQUEST_INSTAGRAM'
 export const RECEIVE_INSTAGRAM_POSTS = 'RECEIVE_INSTAGRAM_POSTS'
 export const INVALIDATE_INSTAGRAM = 'INVALIDATE_INSTAGRAM'
 
+export const UPDATE_INSTAGRAM_SLIDESHOW = 'UPDATE_INSTAGRAM_SLIDESHOW'
+
 // Server actions.
 export const SERVER_PULL_INSTAGRAM = 'SERVER_PULL_INSTAGRAM'
 export const RECEIVE_INSTAGRAM_POSTS_ERROR = 'RECEIVE_INSTAGRAM_POSTS_ERROR'
@@ -23,6 +25,11 @@ export const pullInstagramPosts = ({
   type: SERVER_PULL_INSTAGRAM
 })
 
+export const updateSlideshow = (slideShow) => ({
+  type: UPDATE_INSTAGRAM_SLIDESHOW,
+  slideShow
+})
+
 const fetchPosts = reddit => dispatch => {
   // SEND SOCKET REQUEST TO DISTACH FETCH with callback like dispatch(requestPosts(reddit))
 
@@ -30,10 +37,6 @@ const fetchPosts = reddit => dispatch => {
   dispatch(requestInstagramPosts)
 
   dispatch(pullInstagramPosts)
-  // Listen for response, then return data
-  // return fetch(`https://www.reddit.com/r/${reddit}.json`)
-  //   .then(response => response.json())
-  //   .then(json => dispatch(receivePosts(reddit, json)))
 }
 
 const shouldFetchPosts = (state) => {
@@ -45,6 +48,23 @@ const shouldFetchPosts = (state) => {
     return false
   }
   return posts.didInvalidate
+}
+
+export const startInstagramSlideshow = allPosts => (dispatch, getState) => {
+  let currentInt = getState().instagram.instagramProcess.instagramDetails.slideShow.currentInt
+
+  setTimeout(() => {
+    if (currentInt === (allPosts.length - 1)) {
+      currentInt = 0
+    } else {
+      currentInt++
+    }
+
+    dispatch(updateSlideshow({
+      currentPost: allPosts[currentInt],
+      currentInt
+    }))
+  }, 5000)
 }
 
 export const fetchInstagramIfNeeded = reddit => (dispatch, getState) => {
