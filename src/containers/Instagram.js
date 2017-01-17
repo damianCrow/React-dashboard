@@ -22,10 +22,10 @@ class InstagramContainer extends Component {
 
   componentDidUpdate () {
     const { slideShow, status, dispatch, allPosts } = this.props
-    console.log('InstagramContainer - componentDidUpdate fired')
-    console.log('slideShow - slideShow: ', slideShow)
-    console.log('status', status)
-    console.log('Object.keys(slideShow.currentPost).length', Object.keys(slideShow.currentPost).length)
+    // console.log('InstagramContainer - componentDidUpdate fired')
+    // console.log('slideShow - slideShow: ', slideShow)
+    // console.log('status', status)
+    // console.log('Object.keys(slideShow.currentPost).length', Object.keys(slideShow.currentPost).length)
 
     if (status === 'success' && Object.keys(slideShow.currentPost).length === 0) {
       console.log('fireing startInstagramSlideshow')
@@ -45,7 +45,8 @@ class InstagramContainer extends Component {
   render () {
     const { slideShow, isFetching, status, message } = this.props
     // console.log(posts)
-    console.log('instagram status', status)
+    // console.log('instagram status', status)
+
     const isEmpty = Object.keys(slideShow.currentPost).length === 0
 
     if (status === 'failed' || status === '') {
@@ -58,7 +59,7 @@ class InstagramContainer extends Component {
       )
     } else if (!isEmpty) {
       return (
-        <Instagram posts={slideShow.currentPost} isFetching={isFetching} />
+        <Instagram posts={slideShow.currentPost} slideShowKey={slideShow.currentInt} isFetching={isFetching} />
       )
     } else {
       return (

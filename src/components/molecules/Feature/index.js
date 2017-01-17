@@ -5,13 +5,14 @@ import styled from 'styled-components'
 
 const Wrapper = styled.div`
   position: relative;
-  display: flex;
-  padding: 1rem;
-  padding-bottom: 30%;
-  box-sizing: border-box;
-  border: 1px solid black;
-  flex: 1;
-  text-align: center;
+  width: 33.33333%;
+
+  &:before{
+    display: block;
+    content: " ";
+    width: 100%;
+    padding-top: 30%;
+  }
 `
 
 const Feature = ({ children, ...props }) => {

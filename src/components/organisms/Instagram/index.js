@@ -1,45 +1,35 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
-import Transition from 'react-inline-transition-group'
+import ReactTransitionGroup from 'react-addons-transition-group'
 
-// import { Icon } from 'components'
+import { InstagramImage } from 'components'
 
 import { fonts } from 'components/globals'
 
-const styles = ({ ...props, posts }) => css`
-  display: flex;
-  flex-wrap: wrap;
+const styles = ({ ...props }) => css`
   align-items: center;
-  justify-content: center;
-  font-family: ${fonts.primary};
-  color: black;
-  font-weight: 300;
-  font-style: normal;
-  text-align: left;
-  width: 100%;
-  height: 100%;
   background-color: lightblue;
   background-size: cover;
+  color: black;
+  display: flex;
+  flex-wrap: wrap;
+  font-family: ${fonts.primary};
+  font-style: normal;
+  font-weight: 300;
+  height: 100%;
+  justify-content: center;
+  text-align: left;
+  width: 100%;
 `
 
-const leaveStyles = css`
-  transition: all 250ms;
-`
+// const InstagramImageStyles = css`
+//   display: block;
+//   position: relative;
+//   width: 150px;
+// `
 
-const InstagramImage = styled.img`
-  display: block;
-  width: 150px;
-  position: relative;
-`
-
-const InstagramWrapper = Transition
-
-const transitionStyles = {
-  base: styles,
-  appear: leaveStyles,
-  enter: leaveStyles,
-  leave: leaveStyles
-}
+// const InstagramImageStyled = styled(InstagramImage)`${InstagramImageStyles}`
+const InstagramWrapper = styled(ReactTransitionGroup)`${styles}`
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
@@ -47,19 +37,20 @@ const transitionStyles = {
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Instagram = ({ children, ...props, posts, isFetching }) => {
+const Instagram = ({ children, ...props, posts, isFetching, slideShowKey }) => {
   console.log('Instagram comp posts: ', posts)
   return (
-    <InstagramWrapper {...props} style={{ opacity: isFetching ? 0.5 : 1 }} childrenStyles={transitionStyles}>
-      <InstagramImage src={posts.images.standard_resolution.url} />
+    <InstagramWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
+      <InstagramImage key={slideShowKey} currentImage={posts.images.standard_resolution.url} />
     </InstagramWrapper>
   )
 }
 
 Instagram.propTypes = {
   children: PropTypes.any,
+  isFetching: PropTypes.bool.isRequired,
   posts: PropTypes.object.isRequired,
-  isFetching: PropTypes.bool.isRequired
+  slideShowKey: PropTypes.number.isRequired
 }
 
 export default Instagram
