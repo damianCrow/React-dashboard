@@ -6,46 +6,46 @@ import styled, { css } from 'styled-components'
 import { fonts } from 'components/globals'
 
 const styles = ({ ...props, posts }) => css`
-  display: flex;
   align-items: flex-end;
-  font-family: ${fonts.primary};
-  color: black;
-  font-weight: 300;
-  font-style: normal;
-  width: 100%;
-  height: 100%;
   background-image: url(${posts[0].currentTrack.absoluteAlbumArtUri});
   background-size: cover;
+  color: black;
+  display: flex;
+  font-family: ${fonts.primary};
+  font-style: normal;
+  font-weight: 300;
+  height: 100%;
+  width: 100%;
 `
 
 const SonosContainer = styled.div`
   display: block;
-  width: 100%;
   height: 100%;
-  position: absolute;
   left: 0;
+  position: absolute;
   top: 0;
+  width: 100%;
 `
 
 const SonosCurrentTrackWrapper = styled.div`${styles}`
 
 const SonosCurrentTrack = styled.div`
+  background: rgba(255, 255, 255, .5);
   display: block;
   width: 100%;
-  background: rgba(255, 255, 255, .5);
 `
 
 const Artist = styled.span`
-  display: block;
   color: #4a4a4a;
-  text-align: left;
+  display: block;
   font-size: 1.5rem;
+  text-align: left;
 `
 const Track = styled.span`
   display: block;
-  text-align: left;
   font-size: 3rem;
   font-style: bold;
+  text-align: left;
 `
 
 // const PlaybackIcon = styled.Icon`

@@ -16,19 +16,6 @@ class SonosInfoContainer extends Component {
     // dispatch(fetchSonosDataIfNeeded())
   }
 
-  // componentDidMount () {
-  //   // url (required), options (optional)
-  //   fetch('http://localhost:5005/zones', {
-  //     method: 'get'
-  //   })
-  //   .then((response) => response.json())
-  //   .then(responseJSON => {
-  //     console.log('response', responseJSON)
-  //   }).catch(err => {
-  //     console.log('err', err)
-  //   })
-  // }
-
   listenForChanges () {
 
   }
@@ -52,9 +39,7 @@ class SonosInfoContainer extends Component {
         <SonosInfo posts={posts} isFetching={isFetching} />
       )
     } else {
-      return (
-        <span>nuffing</span>
-      )
+      return null
     }
   }
 }

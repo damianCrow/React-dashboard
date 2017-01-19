@@ -43,20 +43,25 @@ const shouldFetchPosts = (state) => {
 }
 
 export const startInstagramSlideshow = allPosts => (dispatch, getState) => {
-  let currentInt = getState().instagram.instagramProcess.instagramDetails.slideShow.currentInt
+  let slideShowData = getState().instagram.instagramProcess.instagramDetails.slideShow
+  let currentInt = slideShowData.currentInt
 
-  setInterval(() => {
+  setTimeout(() => {
     console.log('startInstagramSlideshow')
+
     if (currentInt === (allPosts.length - 1)) {
       currentInt = 0
     } else {
       currentInt++
     }
     console.log('changing slide...')
+
     dispatch(updateSlideshow({
       currentPost: allPosts[currentInt],
       currentInt
     }))
+
+    dispatch(startInstagramSlideshow(allPosts))
   }, 5000)
 }
 

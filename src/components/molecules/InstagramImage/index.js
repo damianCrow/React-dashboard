@@ -4,22 +4,19 @@ import styled from 'styled-components'
 
 import { TweenMax } from 'gsap'
 
-const imageWrapper = styled.img`
+const ImageWrapper = styled.div`
   width: 100%;
   height: 100%;
-  object-fit: cover;
   position: absolute;
+  background: black;
   top: 0;
   left: 0;
 `
 
-const actualImage = styled.img`
+const InstagramImg = styled.img`
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
+  object-fit: contain;
 `
 
 class InstagramImage extends Component {
@@ -31,22 +28,22 @@ class InstagramImage extends Component {
     const el = ReactDOM.findDOMNode(this)
     console.log('componentWillEnter')
     // callback()
-    TweenMax.fromTo(el, 1, {x: 100, opacity: 0}, {x: 0, opacity: 1, onComplete: callback})
+    TweenMax.fromTo(el, 1, {opacity: 0}, {opacity: 1, onComplete: callback})
   }
 
   componentWillLeave (callback) {
     const el = ReactDOM.findDOMNode(this)
     console.log('componentWillLeave')
     // callback()
-    TweenMax.fromTo(el, 1, {x: 0, opacity: 1}, {x: -100, opacity: 0, onComplete: callback})
+    TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
   }
 
   render () {
     const { currentImage } = this.props
     return (
-      <imageWrapper>
-        <actualImage src={currentImage} />
-      </imageWrapper>
+      <ImageWrapper>
+        <InstagramImg src={currentImage} />
+      </ImageWrapper>
     )
   }
 }

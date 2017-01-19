@@ -11,7 +11,7 @@ const Wrapper = styled.div`
     display: block;
     content: " ";
     width: 100%;
-    padding-top: 30%;
+    padding-top: 100%;
   }
 `
 
