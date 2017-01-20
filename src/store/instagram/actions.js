@@ -42,26 +42,33 @@ const shouldFetchPosts = (state) => {
   return posts.didInvalidate
 }
 
-export const startInstagramSlideshow = allPosts => (dispatch, getState) => {
+const loadNextInstagramMedia = allPosts => (dispatch, getState) => {
   let slideShowData = getState().instagram.instagramProcess.instagramDetails.slideShow
   let currentInt = slideShowData.currentInt
 
+  console.log('loadNextInstagramMedia')
+
+  if (currentInt === (allPosts.length - 1)) {
+    currentInt = 0
+  } else {
+    currentInt++
+  }
+  // console.log('changing slide...')
+
+  // console.log('allPosts[currentInt].type ', allPosts[currentInt].type)
+
+  dispatch(updateSlideshow({
+    currentPost: allPosts[currentInt],
+    currentInt,
+    mediaType: allPosts[currentInt].type
+  }))
+}
+
+export const startInstagramSlideshow = allPosts => (dispatch, getState) => {
   setTimeout(() => {
     console.log('startInstagramSlideshow')
 
-    if (currentInt === (allPosts.length - 1)) {
-      currentInt = 0
-    } else {
-      currentInt++
-    }
-    console.log('changing slide...')
-
-    dispatch(updateSlideshow({
-      currentPost: allPosts[currentInt],
-      currentInt
-    }))
-
-    dispatch(startInstagramSlideshow(allPosts))
+    dispatch(loadNextInstagramMedia(allPosts))
   }, 5000)
 }
 

@@ -30,6 +30,8 @@ class InstagramContainer extends Component {
     if (status === 'success' && Object.keys(slideShow.currentPost).length === 0) {
       console.log('fireing startInstagramSlideshow')
       dispatch(startInstagramSlideshow(allPosts))
+    } else if (slideShow.mediaType === 'image' && status === 'success') {
+      dispatch(startInstagramSlideshow(allPosts))
     }
   }
 
@@ -59,7 +61,12 @@ class InstagramContainer extends Component {
       )
     } else if (!isEmpty) {
       return (
-        <Instagram posts={slideShow.currentPost} slideShowKey={slideShow.currentInt} isFetching={isFetching} />
+        <Instagram
+          mediaType={slideShow.mediaType}
+          posts={slideShow.currentPost}
+          slideShowKey={slideShow.currentInt}
+          isFetching={isFetching}
+        />
       )
     } else {
       return (
@@ -81,7 +88,7 @@ const mapStateToProps = state => {
     allPosts: [],
     isFetching: true,
     message: '',
-    slideShow: {currentPost: {}, currentInt: 0},
+    slideShow: {currentPost: {}, currentInt: 0, mediaType: ''},
     status: ''
   }
 

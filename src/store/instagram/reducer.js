@@ -13,7 +13,7 @@ const posts = (state = {
   isFetching: false,
   allPosts: [],
   message: '',
-  slideShow: {currentPost: {}, currentInt: 0},
+  slideShow: {currentPost: {}, currentInt: 0, mediaType: ''},
   status: ''
 }, action) => {
   switch (action.type) {
@@ -57,7 +57,8 @@ const posts = (state = {
         ...state,
         slideShow: {
           currentPost: action.slideShow.currentPost,
-          currentInt: action.slideShow.currentInt
+          currentInt: action.slideShow.currentInt,
+          mediaType: action.slideShow.mediaType
         }
       }
     default:
