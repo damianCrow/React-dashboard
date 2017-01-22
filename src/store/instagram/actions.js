@@ -9,9 +9,9 @@ export const RECEIVE_INSTAGRAM_POSTS = 'RECEIVE_INSTAGRAM_POSTS'
 export const RECEIVE_INSTAGRAM_POSTS_ERROR = 'RECEIVE_INSTAGRAM_POSTS_ERROR'
 export const NEED_TO_AUTH_INSTAGRAM = 'NEED_TO_AUTH_INSTAGRAM'
 
-export const invalidateSonosData = ({
-  type: INVALIDATE_INSTAGRAM
-})
+// export const invalidateSonosData = ({
+//   type: INVALIDATE_INSTAGRAM
+// })
 
 export const requestTweets = ({
   type: RECEIVE_INSTAGRAM_POSTS

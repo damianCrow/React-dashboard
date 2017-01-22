@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react'
+import { connect } from 'react-redux'
 import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import { startInstagramSlideshow } from 'store/actions'
@@ -23,26 +24,31 @@ const InstagramVideoSrc = styled.video`
 class InstagramVideo extends Component {
   static propTypes = {
     currentVideo: PropTypes.string.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    allPosts: PropTypes.array.isRequired
+  }
+
+  constructor () {
+    super()
+    this.onVideoEnd = this.onVideoEnd.bind(this)
   }
 
   componentWillEnter (callback) {
     const el = ReactDOM.findDOMNode(this)
     console.log('INSTAGRAM VIDEO ENTERING')
-    // callback()
     TweenMax.fromTo(el, 1, {opacity: 0}, {opacity: 1, onComplete: callback})
   }
 
   componentWillLeave (callback) {
     const el = ReactDOM.findDOMNode(this)
     console.log('componentWillLeave')
-    // callback()
     TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
   }
 
   onVideoEnd () {
-    const { dispatch } = this.props
-    dispatch(startInstagramSlideshow())
+    const { dispatch, allPosts } = this.props
+    console.log('instagramvideo allPosts', allPosts)
+    dispatch(startInstagramSlideshow(allPosts))
   }
 
   render () {
@@ -55,4 +61,17 @@ class InstagramVideo extends Component {
   }
 }
 
-export default InstagramVideo
+const mapStateToProps = state => {
+  const { instagram } = state
+  const {
+    allPosts
+  } = instagram['instagramProcess']['instagramDetails'] || {
+    allPosts: []
+  }
+  return {
+    allPosts
+  }
+}
+
+export default connect(mapStateToProps)(InstagramVideo)
+

@@ -82,7 +82,10 @@ app.listen(port, ip, function onStart (err) {
   if (err) {
     console.log(err)
   }
-  console.info('🖥  Listening 👂  on port %s. Open 👐  up http://' + ip + ':%s/ in your browser 🌎 . 🤜  🤛', port, port)
+
+  console.info('🖥  Listening 👂  on port %s. Open 👐  up http://' +
+    ip + ':%s/ in your browser 🌎 . 🤜  🤛', port, port)
+
   startSocketActionDispenser()
 })
 
@@ -180,14 +183,22 @@ var listenForClientRequests = function (socket) {
         requestInstagramPosts()
           .then(function (fulfilled) {
             console.log(fulfilled)
-            socket.emit('action', {type: 'RECEIVE_INSTAGRAM_POSTS', data: fulfilled})
+            socket.emit('action', {
+              type: 'RECEIVE_INSTAGRAM_POSTS',
+              data: fulfilled
+            })
           })
           .catch(function (error) {
             console.log(error)
-            socket.emit('action', {type: 'RECEIVE_INSTAGRAM_POSTS_ERROR', data: error})
+            socket.emit('action', {
+              type: 'RECEIVE_INSTAGRAM_POSTS_ERROR',
+              data: error
+            })
           })
       } else {
-        socket.emit('action', {type: 'NEED_TO_AUTH_INSTAGRAM', data: {status: 'auth-failed'}})
+        socket.emit('action', {type: 'NEED_TO_AUTH_INSTAGRAM',
+          data: {status: 'auth-failed'}}
+        )
         authorizeInstagram()
       }
       // getInstagramPosts(socket)
