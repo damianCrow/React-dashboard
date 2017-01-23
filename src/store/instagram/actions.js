@@ -42,7 +42,7 @@ const shouldFetchPosts = (state) => {
   return posts.didInvalidate
 }
 
-const loadNextInstagramMedia = allPosts => (dispatch, getState) => {
+export const loadNextInstagramMedia = allPosts => (dispatch, getState) => {
   let slideShowData = getState().instagram.instagramProcess.instagramDetails.slideShow
   let currentInt = slideShowData.currentInt
 

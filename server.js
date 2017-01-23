@@ -1,3 +1,8 @@
+// BUILD THIS AGAIN. USE THIS FOR HELP:
+// http://stackoverflow.com/questions/30773756/is-it-okay-to-use-babel-node-in-production
+
+require('babel-register')
+
 const express = require('express')
 const path = require('path')
 const port = process.env.PORT || 3002
@@ -15,6 +20,8 @@ const socketIo = require('socket.io')(socketPort)
 const instagram = require('instagram-node').instagram()
 const Twitter = require('twitter')
 const SonosDiscovery = require('sonos-discovery')
+
+const GoogleCalendar = require('./server_modules/GoogleCalendar.js')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -100,8 +107,11 @@ var startSocketActionDispenser = function () {
     listenForClientRequests(socket)
 
     // These two need(!!!!!) to be moved to listenForClientRequests()
-    // startSonosDiscovery(socket)
-    // getOldTweets(socket)
+    startSonosDiscovery(socket)
+    getOldTweets(socket)
+    console.log(GoogleCalendar)
+    GoogleCalendar()
+    // this.googleCal = new GoogleCalendar()
   })
 }
 
@@ -203,6 +213,8 @@ var listenForClientRequests = function (socket) {
       }
       // getInstagramPosts(socket)
       // socket.emit('action', {type: 'MESSAGE', data: action.data})
+    } else if (action.type === 'SERVER_PULL_CALENDAR') {
+      // googleCalendar()
     }
   })
 }

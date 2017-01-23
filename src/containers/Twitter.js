@@ -44,7 +44,6 @@ class TwitterContainer extends Component {
 
   render () {
     const { posts, isFetching } = this.props
-    console.log(posts)
     const isEmpty = posts.length === 0
 
     if (!isEmpty) {

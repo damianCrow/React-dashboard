@@ -2,16 +2,11 @@ import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
 import ReactTransitionGroup from 'react-addons-transition-group'
 
-import { InstagramImage, InstagramVideo } from 'components'
-
-import { fonts } from 'components/globals'
+import { InstagramTransitionWrapper, InstagramImage, InstagramVideo } from 'components'
 
 const styles = ({ ...props }) => css`
   color: black;
   display: block;
-  font-family: ${fonts.primary};
-  font-style: normal;
-  font-weight: 300;
   height: 100%;
   justify-content: center;
   left: 0;
@@ -22,8 +17,8 @@ const styles = ({ ...props }) => css`
   width: 100%;
 `
 
-// const InstagramImageStyled = styled(InstagramImage)`${InstagramImageStyles}`
-const InstagramWrapper = styled(ReactTransitionGroup)`${styles}`
+// const InstagramWrapperStyled = styled(InstagramTransitionWrapper)`${wrapperStyles}`
+const TransitionWrapper = styled(ReactTransitionGroup)`${styles}`
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
@@ -33,17 +28,26 @@ const InstagramWrapper = styled(ReactTransitionGroup)`${styles}`
 
 const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShowKey }) => {
   // console.log('Instagram comp posts: ', posts)
-  console.log('INSTAGRAM COMP mediaType', mediaType)
-  console.log('INSTAGRAM COMP posts', posts)
+  // console.log('INSTAGRAM COMP mediaType', mediaType)
+  // console.log('INSTAGRAM COMP posts', posts)
+  // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
 
   return (
-    <InstagramWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
-      {mediaType === 'image' ? (
-        <InstagramImage key={slideShowKey} currentImage={posts.images.standard_resolution.url} />
-      ) : (
-        <InstagramVideo key={slideShowKey} currentVideo={posts.videos.standard_resolution.url} />
-      )}
-    </InstagramWrapper>
+    <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
+      <InstagramTransitionWrapper key={slideShowKey}>
+        {mediaType === 'image' ? (
+          <InstagramImage
+            currentImage={posts.images.standard_resolution.url}
+            thumbnail={posts.images.thumbnail.url}
+          />
+        ) : (
+          <InstagramVideo
+            currentVideo={posts.videos.standard_resolution.url}
+            lowBandwidthVideo={posts.videos.low_bandwidth.url}
+          />
+        )}
+      </InstagramTransitionWrapper>
+    </TransitionWrapper>
   )
 }
 

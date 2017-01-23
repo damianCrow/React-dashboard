@@ -1,10 +1,10 @@
 import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
-import ReactDOM from 'react-dom'
+// import ReactDOM from 'react-dom'
 import styled from 'styled-components'
-import { startInstagramSlideshow } from 'store/actions'
+import { loadNextInstagramMedia } from 'store/actions'
 
-import { TweenMax } from 'gsap'
+// import { TweenMax } from 'gsap'
 
 const ImageWrapper = styled.div`
   width: 100%;
@@ -16,14 +16,30 @@ const ImageWrapper = styled.div`
 `
 
 const InstagramVideoSrc = styled.video`
-  width: 100%;
   height: 100%;
+  left: 0;
   object-fit: contain;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+`
+
+const ThumbnailVideoBackground = styled.video`
+  filter: blur(3px);
+  height: 100%;
+  left: 0;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  transform: scale(1.2)
+  width: 100%;
 `
 
 class InstagramVideo extends Component {
   static propTypes = {
     currentVideo: PropTypes.string.isRequired,
+    lowBandwidthVideo: PropTypes.string.isRequired,
     dispatch: PropTypes.func.isRequired,
     allPosts: PropTypes.array.isRequired
   }
@@ -33,29 +49,30 @@ class InstagramVideo extends Component {
     this.onVideoEnd = this.onVideoEnd.bind(this)
   }
 
-  componentWillEnter (callback) {
-    const el = ReactDOM.findDOMNode(this)
-    console.log('INSTAGRAM VIDEO ENTERING')
-    TweenMax.fromTo(el, 1, {opacity: 0}, {opacity: 1, onComplete: callback})
-  }
+  // componentWillEnter (callback) {
+  //   const el = ReactDOM.findDOMNode(this)
+  //   console.log('InstagramVideo componentWillEnter')
+  //   TweenMax.fromTo(el, 1, {opacity: 0}, {opacity: 1, onComplete: callback})
+  // }
 
-  componentWillLeave (callback) {
-    const el = ReactDOM.findDOMNode(this)
-    console.log('componentWillLeave')
-    TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
-  }
+  // componentWillLeave (callback) {
+  //   const el = ReactDOM.findDOMNode(this)
+  //   console.log('InstagramVideo componentWillLeave')
+  //   TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
+  // }
 
   onVideoEnd () {
     const { dispatch, allPosts } = this.props
     console.log('instagramvideo allPosts', allPosts)
-    dispatch(startInstagramSlideshow(allPosts))
+    dispatch(loadNextInstagramMedia(allPosts))
   }
 
   render () {
-    const { currentVideo } = this.props
+    const { currentVideo, lowBandwidthVideo } = this.props
     return (
       <ImageWrapper>
         <InstagramVideoSrc src={currentVideo} autoPlay="true" muted onEnded={this.onVideoEnd} />
+        <ThumbnailVideoBackground src={lowBandwidthVideo} autoPlay="true" muted />
       </ImageWrapper>
     )
   }
