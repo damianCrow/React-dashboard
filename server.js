@@ -109,9 +109,6 @@ var startSocketActionDispenser = function () {
     // These two need(!!!!!) to be moved to listenForClientRequests()
     startSonosDiscovery(socket)
     getOldTweets(socket)
-    console.log(GoogleCalendar)
-    GoogleCalendar()
-    // this.googleCal = new GoogleCalendar()
   })
 }
 
@@ -214,7 +211,9 @@ var listenForClientRequests = function (socket) {
       // getInstagramPosts(socket)
       // socket.emit('action', {type: 'MESSAGE', data: action.data})
     } else if (action.type === 'SERVER_PULL_CALENDAR') {
-      // googleCalendar()
+      // GoogleCalendar()
+      this.googleCal = new GoogleCalendar.default(app)
+      this.googleCal.listEvents()
     }
   })
 }

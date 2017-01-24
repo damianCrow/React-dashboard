@@ -1,10 +1,10 @@
 import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
-import { fetchInstagramIfNeeded, startInstagramSlideshow } from 'store/actions'
+import { fetchPosts } from 'store/actions'
 
-import { Instagram, InstagramAuth } from 'components'
+import { CalendarAuth } from 'components'
 
-class InstagramContainer extends Component {
+class GoogleCalendarContainer extends Component {
   static propTypes = {
     allPosts: PropTypes.array.isRequired,
     dispatch: PropTypes.func.isRequired,
@@ -16,23 +16,13 @@ class InstagramContainer extends Component {
 
   componentDidMount () {
     const { dispatch } = this.props
-
-    dispatch(fetchInstagramIfNeeded())
+    console.log('GoogleCalendarContainer mount')
+    // dispatch(fetchSonosDataIfNeeded())
+    dispatch(fetchPosts())
   }
 
-  componentDidUpdate () {
-    const { slideShow, status, dispatch, allPosts } = this.props
-    // console.log('InstagramContainer - componentDidUpdate fired')
-    // console.log('slideShow - slideShow: ', slideShow)
-    // console.log('status', status)
-    // console.log('Object.keys(slideShow.currentPost).length', Object.keys(slideShow.currentPost).length)
+  listenForChanges () {
 
-    if (status === 'success' && Object.keys(slideShow.currentPost).length === 0) {
-      console.log('fireing startInstagramSlideshow')
-      dispatch(startInstagramSlideshow(allPosts))
-    } else if (slideShow.mediaType === 'image' && status === 'success') {
-      dispatch(startInstagramSlideshow(allPosts))
-    }
   }
 
   render () {
@@ -48,16 +38,11 @@ class InstagramContainer extends Component {
       )
     } else if (status === 'auth-failed') {
       return (
-        <InstagramAuth message={message} />
+        <CalendarAuth message={message} />
       )
     } else if (!isEmpty) {
       return (
-        <Instagram
-          mediaType={slideShow.mediaType}
-          posts={slideShow.currentPost}
-          slideShowKey={slideShow.currentInt}
-          isFetching={isFetching}
-        />
+        <p>Here goes the calendar component</p>
       )
     } else {
       return (
@@ -68,14 +53,14 @@ class InstagramContainer extends Component {
 }
 
 const mapStateToProps = state => {
-  const { instagram } = state
+  const { calendar } = state
   const {
     allPosts,
     isFetching,
     message,
     slideShow,
     status
-  } = instagram['instagramProcess']['instagramDetails'] || {
+  } = calendar['calendarProcess']['calendarDetails'] || {
     allPosts: [],
     isFetching: true,
     message: '',
@@ -92,4 +77,4 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(InstagramContainer)
+export default connect(mapStateToProps)(GoogleCalendarContainer)

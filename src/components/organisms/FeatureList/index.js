@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { Feature } from 'components'
-import { SonosInfo, Twitter, Instagram } from 'containers'
+import { SonosInfo, Twitter, Instagram, GoogleCalendar } from 'containers'
 
 const Grid = styled.div`
   display: block;
@@ -33,7 +33,7 @@ const FeatureList = ({ ...props }) => {
         </GridRow>
         <GridRow>
           <StyledFeature>
-            {/* Calendar - Out of office and Meetings */}
+            <GoogleCalendar />
           </StyledFeature>
         </GridRow>
         <GridRow>
