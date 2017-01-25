@@ -1,6 +1,4 @@
-import fs from 'fs'
-import google from 'googleapis'
-import googleAuth from 'google-auth-library'
+import Harvest from 'harvest'
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
@@ -12,19 +10,21 @@ const TOKEN_PATH = `${TOKEN_DIR}calendar_token.json`
 // ===============================================================
 
 // A base class is defined using the new reserved 'class' keyword
-export default class GoogleCalendar {
+export default class Harvest {
 
   constructor (app, socket) {
     this.app = app
     this.socket = socket
   }
 
+
+
   checkAuth () {
     return new Promise((resolve, reject) => {
       console.log('GoogleCalendar checkAuth')
       // console.log('GoogleCalendar this: ', this)
       // Load client secrets from a local file.
-      fs.readFile('./.credentials/client_secret.json',
+      fs.readFile('./.credentials/harvest/login_details.json',
         function processClientSecrets (err, content) {
           if (err) {
             reject('Error loading client secret file: ' + err)
@@ -175,11 +175,6 @@ export default class GoogleCalendar {
   listEvents () {
     const calendar = google.calendar('v3')
 
-    // WEBHOOK CHANNEL PULL RESOURCES
-    // http://stackoverflow.com/questions/38447589/synchronize-resources-with-google-calendar-for-node-js
-    // http://stackoverflow.com/questions/35048160/googleapi-nodejs-calendar-events-watch-gets-error-push-webhookurlnothttps-or-pu
-    // http://stackoverflow.com/questions/35434828/google-api-calendar-watch-doesnt-work-but-channel-is-created
-
     this.checkAuth().then(auth => {
       calendar.events.list({
         auth,
@@ -187,16 +182,7 @@ export default class GoogleCalendar {
         timeMin: (new Date()).toISOString(),
         maxResults: 10,
         singleEvents: true,
-        orderBy: 'startTime',
-        resource: {
-          id: channel_id,
-          token: 'email=' + _token.provider_email,
-          address: 'https://dev-api.mycompany/google-watch/',
-          type: 'web_hook',
-          params: {
-            ttl: '36000'
-          }
-        }
+        orderBy: 'startTime'
       }, (err, response) => {
         if (err) {
           console.log(`The API returned an error: ${err}`)
@@ -218,7 +204,6 @@ export default class GoogleCalendar {
             data: events
           })
         }
-        // ADD SYNC HERE
       })
     }).catch(function (error) {
       console.log('error', error)
