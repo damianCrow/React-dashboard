@@ -1,5 +1,4 @@
 import fs from 'fs'
-// import readline from 'readline'
 import google from 'googleapis'
 import googleAuth from 'google-auth-library'
 
@@ -7,7 +6,7 @@ import googleAuth from 'google-auth-library'
 // at ~/.credentials/calendar-nodejs-quickstart.json
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 const TOKEN_DIR = `./.credentials/`
-const TOKEN_PATH = `${TOKEN_DIR}calendar-nodejs-quickstart.json`
+const TOKEN_PATH = `${TOKEN_DIR}calendar_token.json`
 
 // Example 1: Creating a new class (declaration-form)
 // ===============================================================
@@ -15,14 +14,15 @@ const TOKEN_PATH = `${TOKEN_DIR}calendar-nodejs-quickstart.json`
 // A base class is defined using the new reserved 'class' keyword
 export default class GoogleCalendar {
 
-  constructor (app) {
+  constructor (app, socket) {
     this.app = app
+    this.socket = socket
   }
 
   checkAuth () {
     return new Promise((resolve, reject) => {
       console.log('GoogleCalendar checkAuth')
-      console.log('GoogleCalendar this: ', this)
+      // console.log('GoogleCalendar this: ', this)
       // Load client secrets from a local file.
       fs.readFile('./.credentials/client_secret.json',
         function processClientSecrets (err, content) {
@@ -80,7 +80,7 @@ export default class GoogleCalendar {
           //   reject(error)
           // })
         } else {
-          console.log('token', token)
+          // We have a processed token stored and ready to go, use it.
           oauth2Client.credentials = JSON.parse(token)
           resolve(oauth2Client)
         }
@@ -96,17 +96,28 @@ export default class GoogleCalendar {
 
     console.log('Authorize this app by visiting this url: ', authUrl)
 
-    this.app.get('/handle_calendar_auth',
-      this.getNewToken(oauth2Client)
-        .then((oauth2Client, token) => {
-          this.storeToken(token)
-
-        })
-        .catch(error => {
-        })
+    // Dispatch a frontend action to push the auth link!!!!!!!!!
+    this.socket.emit('action', {type: 'NEED_TO_AUTH_CALENDAR',
+      data: {status: 'auth-failed'}}
     )
 
-    // Dispatch a frontend action to push the auth link!!!!!!!!!
+    this.app.get('/authorize_calendar', function (req, res) {
+      // This will redirect back to our setup '/handle_calendar_auth' with the code
+      res.redirect(authUrl)
+    })
+
+    this.app.get('/handle_calendar_auth', function (req, res) {
+      const authCode = req.query.code
+      // This needs to go back to autherise and fire our request with sucess
+      this.getNewToken(oauth2Client, authCode)
+        .then((token) => {
+          this.storeToken(token)
+          res.redirect('/')
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    }.bind(this))
   }
 
   /**
@@ -117,25 +128,19 @@ export default class GoogleCalendar {
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewToken (oauth2Client) {
-    console.log('getNewToken. this: ', this)
+  getNewToken (oauth2Client, authCode) {
+    console.log('--GET NEW TOKEN--')
     // console.log('getNewToken. oauth2Client: ', oauth2Client)
     return new Promise((resolve, reject) => {
-      console.log('running promise, this: ', this)
-
       // PULL NEW CODE FROM URL PARAM
-      // const CODE = '4/XMGwhF9vnEQ5wy_JGS70u2VVqiMfce_Wz0TNSi1p19w'
-
-      // console.log('this.storeToken()', this.storeToken())
-
-      oauth2Client.getToken(CODE, function (err, token) {
+      oauth2Client.getToken(authCode, function (err, token) {
         if (err) {
           console.log('Error while trying to retrieve access token', err)
           var reason = new Error({ status: 'error', data: err })
           reject(reason) // reject
         } else {
           oauth2Client.credentials = token
-          resolve(oauth2Client, token) // fulfilled
+          resolve(token) // fulfilled
         }
         // callback(oauth2Client);
       })
@@ -148,7 +153,7 @@ export default class GoogleCalendar {
    * @param {Object} token The token to store to disk.
    */
   storeToken (token) {
-    console.log('STORE TOKEN RUNNING')
+    console.log('--STORE TOKEN RUNNING--')
     try {
       fs.mkdirSync(TOKEN_DIR)
     } catch (err) {
@@ -156,6 +161,8 @@ export default class GoogleCalendar {
         throw err
       }
     }
+    console.log('NEW TOKEN: ', token)
+    console.log('NEW TOKEN JSON: ', JSON.stringify(token))
     fs.writeFile(TOKEN_PATH, JSON.stringify(token))
     console.log(`Token stored to ${TOKEN_PATH} 💾`)
   }
@@ -171,7 +178,7 @@ export default class GoogleCalendar {
     this.checkAuth().then(auth => {
       calendar.events.list({
         auth,
-        calendarId: 'primary',
+        calendarId: 'interstateteam.com_qondup0hrj9n1n52e5r1plr1kk@group.calendar.google.com',
         timeMin: (new Date()).toISOString(),
         maxResults: 10,
         singleEvents: true,
@@ -191,6 +198,11 @@ export default class GoogleCalendar {
             const start = event.start.dateTime || event.start.date
             console.log('%s - %s', start, event.summary)
           }
+
+          this.socket.emit('action', {
+            type: 'RECEIVE_CALENDAR_POSTS',
+            data: events
+          })
         }
       })
     }).catch(function (error) {

@@ -42,8 +42,7 @@ const posts = (state = {
         ...state,
         isFetching: false,
         didInvalidate: false,
-        allPosts: action.data.data,
-        status: action.data.status,
+        allPosts: action.data,
         lastUpdated: action.receivedAt
       }
     case NEED_TO_AUTH_CALENDAR:

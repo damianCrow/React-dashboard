@@ -40,9 +40,9 @@ const InstagramAuthContainer = styled.div`${styles}`
 const CalendarAuth = ({ children, ...props, message }) => {
   return (
     <InstagramAuthContainer>
-      <Icon {...props} icon="instagram" size={48} />
+      <h1>🗓</h1>
       <Paragraph>{message}</Paragraph>
-      <Link href="/authorize_calendar">Authrorise Calendar</Link>
+      <Link href="/authorize_calendar">Authorise Calendar</Link>
     </InstagramAuthContainer>
   )
 }

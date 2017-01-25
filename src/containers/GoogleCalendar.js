@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
 import { fetchPosts } from 'store/actions'
 
-import { CalendarAuth } from 'components'
+import { CalendarAuth, Meetings } from 'components'
 
 class GoogleCalendarContainer extends Component {
   static propTypes = {
@@ -26,13 +26,14 @@ class GoogleCalendarContainer extends Component {
   }
 
   render () {
-    const { slideShow, isFetching, status, message } = this.props
+    const { allPosts, isFetching, status, message } = this.props
     // console.log(posts)
-    // console.log('instagram status', status)
+    console.log('Calendar status', status)
+    console.log('Calendar message', message)
 
-    const isEmpty = Object.keys(slideShow.currentPost).length === 0
+    const isEmpty = allPosts.length === 0
 
-    if (status === 'failed' || status === '') {
+    if (status === 'failed') {
       return (
         <span>{status}</span>
       )
@@ -42,11 +43,11 @@ class GoogleCalendarContainer extends Component {
       )
     } else if (!isEmpty) {
       return (
-        <p>Here goes the calendar component</p>
+        <Meetings posts={allPosts} />
       )
     } else {
       return (
-        <span>Awaiting images...</span>
+        <span>Pulled nuffin m8 🤷</span>
       )
     }
   }

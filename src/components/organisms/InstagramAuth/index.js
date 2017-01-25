@@ -42,7 +42,7 @@ const InstagramAuth = ({ children, ...props, message }) => {
     <InstagramAuthContainer>
       <Icon {...props} icon="instagram" size={48} />
       <Paragraph>{message}</Paragraph>
-      <Link href="/authorize_user">Authrorise Instagram</Link>
+      <Link href="/authorize_user">Authorise Instagram</Link>
     </InstagramAuthContainer>
   )
 }
