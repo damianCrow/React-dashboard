@@ -6,6 +6,8 @@ require('babel-register')
 const express = require('express')
 const path = require('path')
 const port = process.env.PORT || 3002
+var basicAuth = require('basic-auth')
+
 // Has to be different for hot-middleware's SockJS
 const socketPort = 3004
 const ip = process.env.IP || '0.0.0.0'
@@ -28,6 +30,29 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 let expressSessions = {
   instagramAccessToken: undefined
 }
+
+var auth = function (req, res, next) {
+  function unauthorized (res) {
+    res.set('WWW-Authenticate', 'Basic realm=Authorization Required')
+    return res.send(401)
+  };
+
+  var user = basicAuth(req)
+
+  if (!user || !user.name || !user.pass) {
+    return unauthorized(res)
+  };
+
+  if (user.name === 'foo' && user.pass === 'bar') {
+    return next()
+  } else {
+    return unauthorized(res)
+  }
+}
+
+app.get('/', auth, function (req, res, next) {
+  return next()
+})
 
 if (isDevelopment) {
   console.log('RUNNING DEVELOPMENT: ', isDevelopment)
@@ -82,8 +107,6 @@ if (isDevelopment) {
 } else {
   app.use(express.static(path.join(__dirname, '/public')))
 }
-
-// app.listen(port)
 
 app.listen(port, ip, function onStart (err) {
   if (err) {
