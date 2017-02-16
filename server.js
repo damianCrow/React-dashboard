@@ -14,7 +14,7 @@ const ip = process.env.IP || '0.0.0.0'
 const app = express()
 const session = require('express-session')
 
-// Socket.io
+// Socket.io Test
 // const server = require('http').Server(express)
 const socketIo = require('socket.io')(socketPort)
 
