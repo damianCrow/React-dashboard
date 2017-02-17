@@ -1,6 +1,6 @@
 {
- "subdomin": "interstateteam",
+ "subdomain": "interstateteam",
  "client_id": "WWbd33QH0WQ0vIDvARW0DQ",
  "secret": "QK8jl37RAv4Gh9NQm61JYH2aSrRAKG8vI3N3HfSSdmHp8nvQ9UV8LYE41uyX2XVFHJR21S2cqU7zLemE2_O3EA",
- "redirect_uri": "localhost:3002/harvest_auth"
+ "redirect_uri": "http://localhost:3002/harvest_auth"
 }

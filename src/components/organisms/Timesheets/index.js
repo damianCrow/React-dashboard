@@ -27,7 +27,7 @@ import moment from 'moment'
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Timesheets = ({ children, ...props, posts, isFetching }) => {
+const Meetings = ({ children, ...props, posts, isFetching }) => {
   // console.log('Instagram comp posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
   console.log('MEETINGS COMP posts', posts)
@@ -42,10 +42,10 @@ const Timesheets = ({ children, ...props, posts, isFetching }) => {
   )
 }
 
-Timesheets.propTypes = {
+Meetings.propTypes = {
   children: PropTypes.any,
   isFetching: PropTypes.bool.isRequired,
   posts: PropTypes.object.isRequired
 }
 
-export default Timesheets
+export default Meetings

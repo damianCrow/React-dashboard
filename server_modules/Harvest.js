@@ -5,6 +5,7 @@ import Harvest from 'harvest'
 // at ~/.credentials/calendar-nodejs-quickstart.json
 // const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 const CRED_DIR = `./.credentials/harvest/`
+const HARVEST_HOST = `https://api.harvestapp.com`
 const TOKEN_PATH = `${CRED_DIR}harvest_token.json`
 const CLIENT_DETAILS = `${CRED_DIR}config.json`
 
@@ -17,11 +18,12 @@ export default class HarvestTimesheets {
   constructor (app, socket) {
     this.app = app
     this.socket = socket
+    this.credentials = {}
   }
 
   checkAuth () {
     return new Promise((resolve, reject) => {
-      console.log('GoogleCalendar checkAuth')
+      console.log('HarvestTimesheets checkAuth')
 
       // Load client secrets from a local file.
       fs.readFile(CLIENT_DETAILS,
@@ -29,14 +31,15 @@ export default class HarvestTimesheets {
           if (err) {
             reject('Error loading client secret file: ' + err)
           }
+
           // Authorize a client with the loaded credentials, then call the
           // Google Calendar API.
-          const CREDENTIALS = JSON.parse(content)
-          console.log('CREDENTIALS', JSON.parse(content))
+          this.credentials = JSON.parse(content)
+          // console.log('CREDENTIALS', JSON.parse(content))
 
-          this.authorize(CREDENTIALS)
-            .then(function (harvest, token) {
-              resolve(harvest, token)
+          this.authorize()
+            .then(function (token) {
+              resolve(token)
             })
             .catch(function (error) {
               // It ends here, the user needs to authenticate.
@@ -54,14 +57,13 @@ export default class HarvestTimesheets {
    * @param {Object} credentials The authorization client credentials.
    * @param {function} callback The callback to call with the authorized client.
    */
-  authorize (credentials) {
-    const harvest = new Harvest({
-      subdomain: credentials.subdomain,
-      redirect_uri: credentials.redirect_uri,
-      identifier: credentials.client_id,
-      secret: credentials.secret
-    })
-
+  authorize () {
+    // let harvest = new Harvest({
+    //   subdomain: credentials.subdomain,
+    //   redirect_uri: credentials.redirect_uri,
+    //   identifier: credentials.client_id,
+    //   secret: credentials.secret
+    // })
     // const clientSecret = credentials.installed.client_secret
     // const clientId = credentials.installed.client_id
     // const redirectUrl = credentials.installed.redirect_uris[0]
@@ -69,68 +71,44 @@ export default class HarvestTimesheets {
     // const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl)
 
     return new Promise((resolve, reject) => {
-      console.log('autherorize credentials', credentials)
       // Check if we have previously stored a token.
       fs.readFile(TOKEN_PATH, (err, token) => {
         if (err) {
           // No token stored, so get a new one.
-
           // Setup to catch authorize user in the consuctor
-          this.setupForNewToken(harvest)
+          this.setupForNewToken()
           reject(err)
-
-          // this.getNewToken(oauth2Client)
-          // .then((oauth2Client, token) => {
-          //   this.storeToken(token)
-          //   resolve(oauth2Client)
-          // })
-          // .catch(error => {
-          //   reject(error)
-          // })
         } else {
           // We have a processed token stored and ready to go, use it.
           // harvest.parseAccessCode(JSON.parse(token))
-          resolve(harvest, JSON.parse(token))
+          resolve(JSON.parse(token))
         }
       })
     })
   }
 
-  setupForNewToken (oauth2Client) {
-
-    // Send the user to harvest.getAccessTokenURL()) and grab the access code passed as a get parameter
-    // e.g. By running an express.js server at redirect_url
-    const accessCode = req.query.code
-
-
-    const authUrl = oauth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: SCOPES
-    })
-
-    console.log('Authorize this app by visiting this url: ', authUrl)
-
+  setupForNewToken () {
     // Dispatch a frontend action to push the auth link!!!!!!!!!
-    this.socket.emit('action', {type: 'NEED_TO_AUTH_CALENDAR',
+    this.socket.emit('action', {type: 'NEED_TO_AUTH_HARVEST',
       data: {status: 'auth-failed'}}
     )
 
-    this.app.get('/authorize_calendar', function (req, res) {
+    // Send the user to harvest.getAccessTokenURL()) and grab the access code passed as a get parameter
+    // e.g. By running an express.js server at redirect_url
+    // const accessCode = req.query.code
+
+    const authUrl = HARVEST_HOST + '/oauth2/authorize?client_id=' + this.credentials.client_id + '&redirect_uri=' + this.credentials.redirect_uri + '&state=optional-csrf-token&response_type=code';
+
+    this.app.get('/authorize_harvest', function (req, res) {
       // This will redirect back to our setup '/handle_calendar_auth' with the code
       res.redirect(authUrl)
     })
 
-    this.app.get('/handle_calendar_auth', function (req, res) {
-      const authCode = req.query.code
+    this.app.get('/harvest_auth', function (req, res) {
+      const accessCode = req.query.code
       // This needs to go back to autherise and fire our request with sucess
-      this.getNewToken(oauth2Client, authCode)
-        .then((token) => {
-          this.storeToken(token)
-          res.redirect('/')
-        })
-        .catch(error => {
-          console.log(error)
-        })
+      this.storeToken(this.getNewToken(accessCode))
+      res.redirect('/')
     }.bind(this))
   }
 
@@ -142,31 +120,29 @@ export default class HarvestTimesheets {
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewToken (oauth2Client, authCode) {
-    console.log('--GET NEW TOKEN--')
+  getNewToken (accessCode) {
+    console.log('--GET NEW ACCESS TOKEN WITH ACCESS CODE--')
     // console.log('getNewToken. oauth2Client: ', oauth2Client)
-    return new Promise((resolve, reject) => {
-      // PULL NEW CODE FROM URL PARAM
+    // console.log('this.credentials', this.credentials)
+    console.log('accessCode', accessCode)
 
-      // See https://platform.harvestapp.com/oauth2_clients to get these
-
-      // Send the user to harvest.getAccessTokenURL()) and grab the access code passed as a get parameter
-      // e.g. By running an express.js server at redirect_url
-      var access_code = req.query.code;
-
-      harvest.parseAccessCode(access_code, function(access_token) {
-        console.log('Grabbed the access token to save', access_token);
-
-        var TimeTracking = harvest.TimeTracking;
-
-        TimeTracking.daily({}, function(err, tasks) {
-          if (err) throw new Error(err);
-
-          console.log('Loaded tasks using oauth!');
-        });
-      });
-
+    var harvest = new Harvest({
+      subdomain: this.credentials.subdomain,
+      redirect_uri: this.credentials.redirect_uri,
+      identifier: this.credentials.client_id,
+      secret: this.credentials.secret,
+      debug: true
     })
+
+    console.log('harvest', harvest)
+    console.log('harvest.secret', harvest.secret)
+    console.log('harvest.redirect_uri', harvest.redirect_uri)
+    console.log('harvest.identifier', harvest.identifier)
+    console.log('harvest.subdomain', harvest.subdomain)
+
+    harvest.parseAccessCode(accessCode, function (access_token) {
+      this.storeToken(access_token)
+    }.bind(this))
   }
 
   /**
@@ -176,13 +152,13 @@ export default class HarvestTimesheets {
    */
   storeToken (token) {
     console.log('--STORE TOKEN RUNNING--')
-    try {
-      fs.mkdirSync(TOKEN_DIR)
-    } catch (err) {
-      if (err.code !== 'EEXIST') {
-        throw err
-      }
-    }
+    // try {
+    //   fs.mkdirSync(TOKEN_PATH)
+    // } catch (err) {
+    //   if (err.code !== 'EEXIST') {
+    //     throw err
+    //   }
+    // }
     console.log('NEW TOKEN: ', token)
     console.log('NEW TOKEN JSON: ', JSON.stringify(token))
     fs.writeFile(TOKEN_PATH, JSON.stringify(token))
@@ -194,21 +170,28 @@ export default class HarvestTimesheets {
    *
    * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
    */
-  listEvents () {
+  listUsers () {
     // const calendar = google.calendar('v3')
 
-    this.checkAuth().then((harvest, token) => {
-      harvest.parseAccessCode(token, function (token) {
-        console.log('Grabbed the access token to save', token)
-
-        var TimeTracking = harvest.TimeTracking
-
-        TimeTracking.daily({}, function (err, tasks) {
-          if (err) throw new Error(err)
-
-          console.log('Loaded tasks using oauth!')
-        })
+    this.checkAuth().then((accessToken) => {
+      const harvest = new Harvest({
+        subdomain: this.credentials.subdomain,
+        access_token: accessToken
       })
+
+      var People = harvest.People
+
+      People.list({}, function (err, users) {
+        if (err) throw new Error(err)
+
+        console.log('Loaded tasks using passed in auth_token!')
+        console.log('tasks', users)
+
+        this.socket.emit('action', {
+          type: 'RECEIVE_HARVEST_POSTS',
+          data: users
+        })
+      }.bind(this))
 
       // calendar.events.list({
       //   auth,

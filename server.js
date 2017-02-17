@@ -24,6 +24,7 @@ const Twitter = require('twitter')
 const SonosDiscovery = require('sonos-discovery')
 
 const GoogleCalendar = require('./server_modules/GoogleCalendar.js')
+const Harvest = require('./server_modules/Harvest.js')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -31,6 +32,7 @@ let expressSessions = {
   instagramAccessToken: undefined
 }
 
+// Dashboard user / pass
 var auth = function (req, res, next) {
   function unauthorized (res) {
     res.set('WWW-Authenticate', 'Basic realm=Authorization Required')
@@ -235,8 +237,12 @@ var listenForClientRequests = function (socket) {
       // socket.emit('action', {type: 'MESSAGE', data: action.data})
     } else if (action.type === 'SERVER_PULL_CALENDAR') {
       // GoogleCalendar()
-      this.googleCal = new GoogleCalendar.default(app, socket)
-      this.googleCal.listEvents()
+      // this.googleCal = new GoogleCalendar.default(app, socket)
+      // this.googleCal.listEvents()
+    } else if (action.type === 'SERVER_PULL_HARVEST') {
+      // GoogleCalendar()
+      this.harvestTime = new Harvest.default(app, socket)
+      this.harvestTime.listUsers()
     }
   })
 }
