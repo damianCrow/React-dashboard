@@ -1,5 +1,7 @@
 import fs from 'fs'
 import Harvest from 'harvest'
+import restler from 'restler'
+import moment from 'moment'
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
@@ -58,36 +60,45 @@ export default class HarvestTimesheets {
    * @param {function} callback The callback to call with the authorized client.
    */
   authorize () {
-    // let harvest = new Harvest({
-    //   subdomain: credentials.subdomain,
-    //   redirect_uri: credentials.redirect_uri,
-    //   identifier: credentials.client_id,
-    //   secret: credentials.secret
-    // })
-    // const clientSecret = credentials.installed.client_secret
-    // const clientId = credentials.installed.client_id
-    // const redirectUrl = credentials.installed.redirect_uris[0]
-    // const auth = new googleAuth()
-    // const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl)
-
     return new Promise((resolve, reject) => {
       // Check if we have previously stored a token.
       fs.readFile(TOKEN_PATH, (err, token) => {
         if (err) {
           // No token stored, so get a new one.
           // Setup to catch authorize user in the consuctor
-          this.setupForNewToken()
+          this.setupAccessForNewToken()
           reject(err)
         } else {
           // We have a processed token stored and ready to go, use it.
           // harvest.parseAccessCode(JSON.parse(token))
-          resolve(JSON.parse(token))
+          this.checkAccessToken(resolve, reject, JSON.parse(token))
+          // resolveAuth(JSON.parse(token).access_token)
         }
       })
     })
   }
 
-  setupForNewToken () {
+  checkAccessToken (resolveAuth, rejectAuth, tokenDetails) {
+    let date = new Date()
+    console.log('tokenDetails.expires_at', tokenDetails.expires_at)
+    console.log('date.getTime', date.getTime())
+
+    if (tokenDetails.expires_at > date.getTime()) {
+      this.getNewToken(tokenDetails.refresh_token, 'refresh')
+        .then(tokenDetails => {
+          this.storeToken(tokenDetails)
+          resolveAuth(tokenDetails.access_token)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    } else {
+      this.setupAccessForNewToken()
+      rejectAuth('access token expired')
+    }
+  }
+
+  setupAccessForNewToken () {
     // Dispatch a frontend action to push the auth link!!!!!!!!!
     this.socket.emit('action', {type: 'NEED_TO_AUTH_HARVEST',
       data: {status: 'auth-failed'}}
@@ -97,9 +108,11 @@ export default class HarvestTimesheets {
     // e.g. By running an express.js server at redirect_url
     // const accessCode = req.query.code
 
-    const authUrl = HARVEST_HOST + '/oauth2/authorize?client_id=' + this.credentials.client_id + '&redirect_uri=' + this.credentials.redirect_uri + '&state=optional-csrf-token&response_type=code';
+    const authUrl = HARVEST_HOST + '/oauth2/authorize?client_id='
+    + this.credentials.client_id + '&redirect_uri=' + this.credentials.redirect_uri +
+    '&state=optional-csrf-token&response_type=code'
 
-    this.app.get('/authorize_harvest', function (req, res) {
+    this.app.get('/authorize_harvest', (req, res) => {
       // This will redirect back to our setup '/handle_calendar_auth' with the code
       res.redirect(authUrl)
     })
@@ -107,42 +120,66 @@ export default class HarvestTimesheets {
     this.app.get('/harvest_auth', function (req, res) {
       const accessCode = req.query.code
       // This needs to go back to autherise and fire our request with sucess
-      this.storeToken(this.getNewToken(accessCode))
-      res.redirect('/')
+      this.getNewToken(accessCode, 'access')
+        .then(tokenDetails => {
+          this.storeToken(tokenDetails)
+          res.redirect('/')
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }.bind(this))
   }
 
   /**
-   * Get and store new token after prompting for user authorization, and then
-   * execute the given callback with the authorized OAuth2 client.
+   * Get a new token with either a refresh token or access code.
    *
    * @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewToken (accessCode) {
-    console.log('--GET NEW ACCESS TOKEN WITH ACCESS CODE--')
-    // console.log('getNewToken. oauth2Client: ', oauth2Client)
-    // console.log('this.credentials', this.credentials)
-    console.log('accessCode', accessCode)
+  getNewToken (code, codeType) {
+    return new Promise((resolve, reject) => {
+      console.log('--GET NEW ACCESS TOKEN WITH ACCESS CODE--')
+      console.log('accessCode', code)
 
-    var harvest = new Harvest({
-      subdomain: this.credentials.subdomain,
-      redirect_uri: this.credentials.redirect_uri,
-      identifier: this.credentials.client_id,
-      secret: this.credentials.secret,
-      debug: true
+      let tokenOptions = {
+        'client_id': this.credentials.client_id,
+        'client_secret': this.credentials.secret
+      }
+
+      var harvest = new Harvest({
+        subdomain: this.credentials.subdomain,
+        redirect_uri: this.credentials.redirect_uri,
+        identifier: this.credentials.client_id,
+        secret: this.credentials.secret,
+        debug: true
+      })
+
+      if (codeType === 'refresh') {
+        tokenOptions['refresh_token'] = code
+        tokenOptions['grant_type'] = 'refresh_token'
+      } else if (codeType === 'access') {
+        tokenOptions['code'] = code
+        tokenOptions['grant_type'] = 'authorization_code'
+        tokenOptions['redirect_uri'] = this.credentials.redirect_uri
+      }
+
+      restler.post(harvest.host + '/oauth2/token', {
+        data: tokenOptions
+      }).on('complete', response => {
+        if (!response.access_token) {
+          reject('Provided access code was rejected by Harvest, no token was returned')
+        } else {
+          let date = new Date()
+          response['expires_at'] = date.getTime() + (response.expires_in * 1000)
+          resolve(response)
+          console.log('response', response)
+        }
+
+        // cb(self.access_token);
+      })
     })
-
-    console.log('harvest', harvest)
-    console.log('harvest.secret', harvest.secret)
-    console.log('harvest.redirect_uri', harvest.redirect_uri)
-    console.log('harvest.identifier', harvest.identifier)
-    console.log('harvest.subdomain', harvest.subdomain)
-
-    harvest.parseAccessCode(accessCode, function (access_token) {
-      this.storeToken(access_token)
-    }.bind(this))
   }
 
   /**
@@ -159,71 +196,110 @@ export default class HarvestTimesheets {
     //     throw err
     //   }
     // }
-    console.log('NEW TOKEN: ', token)
-    console.log('NEW TOKEN JSON: ', JSON.stringify(token))
+    // console.log('NEW TOKEN: ', token)
+    // console.log('NEW TOKEN JSON: ', JSON.stringify(token))
     fs.writeFile(TOKEN_PATH, JSON.stringify(token))
     console.log(`Token stored to ${TOKEN_PATH} 💾`)
   }
 
-  /**
-   * Lists the next 10 events on the user's primary calendar.
-   *
-   * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
-   */
-  listUsers () {
-    // const calendar = google.calendar('v3')
-
+  getUsersAndTimes () {
     this.checkAuth().then((accessToken) => {
+      console.log('--AUTH FINE GETTING DATA--')
+
       const harvest = new Harvest({
         subdomain: this.credentials.subdomain,
         access_token: accessToken
       })
 
-      var People = harvest.People
+      // const TimeTracking = harvest.TimeTracking
 
-      People.list({}, function (err, users) {
-        if (err) throw new Error(err)
+      // let usersAndHours = []
+      // let usersHours = []
+      let userAndTimeLink = []
+      let allUsers = []
 
-        console.log('Loaded tasks using passed in auth_token!')
-        console.log('tasks', users)
+      this.getUserList(harvest)
+        .then(users => {
+          allUsers = users
+          for (var i = 0, len = allUsers.length; i < len; i++) {
+            // console.log('allUsers[i]', allUsers[i])
+            userAndTimeLink[i] = this.getUserTime(harvest, users[i].user.id)
+          }
+          console.log('BEFORE PROMISE ALL')
+          Promise.all(userAndTimeLink)
+            .then(values => {
+              // console.log('values', values)
+              // console.log('values[2]', values[2](users, 2))
+              // console.log('promise all values: ', values[2]())
+              for (var i = 0, len = users.length; i < len; i++) {
+                users[i].user['entries'] = values[i]
+              }
+              console.log('users[3].user.entries', users[3].user.entries)
+              console.log('users[3].user.entries[1]', users[3].user.entries[1])
 
-        this.socket.emit('action', {
-          type: 'RECEIVE_HARVEST_POSTS',
-          data: users
+              // console.log('values[2][0].day_entry', values[2][0].day_entry)
+              // console.log('values[3][0].day_entry', values[3][0].day_entry)
+              // console.log('values[4][0].day_entry', values[4][0].day_entry)
+              // console.log('values[5][0].day_entry', values[5][0].day_entry)
+
+              // this.socket.emit('action', {
+              //   type: 'RECEIVE_HARVEST_POSTS',
+              //   data: users
+              // })
+            })
+            .catch(reason => {
+              console.log(reason)
+            })
         })
-      }.bind(this))
-
-      // calendar.events.list({
-      //   auth,
-      //   calendarId: 'interstateteam.com_qondup0hrj9n1n52e5r1plr1kk@group.calendar.google.com',
-      //   timeMin: (new Date()).toISOString(),
-      //   maxResults: 10,
-      //   singleEvents: true,
-      //   orderBy: 'startTime'
-      // }, (err, response) => {
-      //   if (err) {
-      //     console.log(`The API returned an error: ${err}`)
-      //     return
-      //   }
-      //   const events = response.items
-      //   if (events.length === 0) {
-      //     console.log('No upcoming events found.')
-      //   } else {
-      //     console.log('Upcoming 10 events:')
-
-      //     for (const event of events) {
-      //       const start = event.start.dateTime || event.start.date
-      //       console.log('%s - %s', start, event.summary)
-      //     }
-
-      //     this.socket.emit('action', {
-      //       type: 'RECEIVE_CALENDAR_POSTS',
-      //       data: events
-      //     })
-      //   }
-      // })
+        .catch(error => {
+          console.log(error)
+        })
     }).catch(function (error) {
       console.log('error', error)
+    })
+  }
+
+  getUserList (harvest) {
+    return new Promise((resolve, reject) => {
+      const People = harvest.People
+      People.list({}, function (err, users) {
+        if (err) {
+          reject(JSON.stringify(err))
+        } else {
+          resolve(users)
+        }
+      })
+    })
+  }
+
+  getUserTime (harvest, userId) {
+    console.log('getUserTime fired: ', userId)
+    console.log('moment().format()', moment().format('YYYYMMDD'))
+    return new Promise((resolve, reject) => {
+      // restler.get(harvest.host + '/people/' + userId + '/entries?from=20170210&to=20170219' + '&access_token=jNL7kkpYcZMkLwAKVA30gERdtN6mYZTD2dOAL6PBdmhrV3ZnJj9fIcfpKZIKWNafXVn27WnWYU0maXDbQ0HSsQ', {
+      //   'Content-Type': 'application/json',
+      //   'Accept': 'application/json'
+      // }).on('complete', response => {
+      //   if (!response) {
+      //     reject('Provided access code was rejected by Harvest, no token was returned')
+      //   } else {
+      //     resolve(response)
+      //     console.log('response', response)
+      //   }
+      //   // cb(self.access_token);
+      // })
+      const Reports = harvest.Reports
+      Reports.timeEntriesByUser({
+        user_id: userId,
+        from: moment().startOf('week').format('YYYYMMDD'),
+        to: moment().format('YYYYMMDD')
+      }, function (err, users) {
+        if (err) {
+          reject(JSON.stringify(err))
+        } else {
+          resolve(users)
+        }
+      })
     })
   }
 

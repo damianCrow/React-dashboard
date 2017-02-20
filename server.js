@@ -242,7 +242,7 @@ var listenForClientRequests = function (socket) {
     } else if (action.type === 'SERVER_PULL_HARVEST') {
       // GoogleCalendar()
       this.harvestTime = new Harvest.default(app, socket)
-      this.harvestTime.listUsers()
+      this.harvestTime.getUsersAndTimes()
     }
   })
 }
