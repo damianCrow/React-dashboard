@@ -25,6 +25,7 @@ const SonosDiscovery = require('sonos-discovery')
 
 const GoogleCalendar = require('./server_modules/GoogleCalendar.js')
 const Harvest = require('./server_modules/Harvest.js')
+const Showcase = require('./server_modules/Showcase.js')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -81,9 +82,12 @@ if (isDevelopment) {
   }))
 
   app.use('*', function (req, res, next) {
-    var filename = path.join(compiler.outputPath, 'index.html')
-    console.log('** EXPRESS STAR **')
+    express.static('/public')
 
+    var filename = path.join(compiler.outputPath, 'index.html')
+    console.log('** EXPRESS STAR ** --')
+
+    // For Instagram, needs to change to JSON
     expressSessions = req.session || expressSessions
 
     compiler.outputFileSystem.readFile(filename, function (err, result) {
@@ -95,7 +99,6 @@ if (isDevelopment) {
       // res.end()
     })
   })
-
   // app.get('*', function (request, response) {
   //   console.log('** STAR **')
   //   expressSessions = request.session || expressSessions
@@ -109,6 +112,8 @@ if (isDevelopment) {
 } else {
   app.use(express.static(path.join(__dirname, '/public')))
 }
+
+app.use(express.static(path.join(__dirname, '/user-data')))
 
 app.listen(port, ip, function onStart (err) {
   if (err) {
@@ -240,9 +245,13 @@ var listenForClientRequests = function (socket) {
       // this.googleCal = new GoogleCalendar.default(app, socket)
       // this.googleCal.listEvents()
     } else if (action.type === 'SERVER_PULL_HARVEST') {
-      // GoogleCalendar()
+      // Harvest()
       this.harvestTime = new Harvest.default(app, socket)
       this.harvestTime.getUsersAndTimes()
+    } else if (action.type === 'SERVER_PULL_SHOWCASE') {
+      // Showcase()
+      this.showcase = new Showcase.default(app, socket)
+      this.showcase.pullLivePlaylist()
     }
   })
 }
