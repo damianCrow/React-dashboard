@@ -35,7 +35,7 @@ const Timesheets = ({ children, ...props, posts }) => {
   return (
     <ul>
       {posts.map(function (object, i) {
-        return <li key={i}> {object.user.first_name}  {object.user.last_name} </li>
+        return <li key={i}> {object.user.first_name} {object.user.last_name}: {object.user.total_hours} hours </li>
       })}
     </ul>
   )

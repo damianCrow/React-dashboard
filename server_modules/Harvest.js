@@ -211,10 +211,6 @@ export default class HarvestTimesheets {
         access_token: accessToken
       })
 
-      // const TimeTracking = harvest.TimeTracking
-
-      // let usersAndHours = []
-      // let usersHours = []
       let userAndTimeLink = []
       let allUsers = []
 
@@ -227,25 +223,8 @@ export default class HarvestTimesheets {
           }
           console.log('BEFORE PROMISE ALL')
           Promise.all(userAndTimeLink)
-            .then(values => {
-              // console.log('values', values)
-              // console.log('values[2]', values[2](users, 2))
-              // console.log('promise all values: ', values[2]())
-              for (var i = 0, len = users.length; i < len; i++) {
-                users[i].user['entries'] = values[i]
-              }
-              console.log('users[3].user.entries', users[3].user.entries)
-              console.log('users[3].user.entries[1]', users[3].user.entries[1])
-
-              // console.log('values[2][0].day_entry', values[2][0].day_entry)
-              // console.log('values[3][0].day_entry', values[3][0].day_entry)
-              // console.log('values[4][0].day_entry', values[4][0].day_entry)
-              // console.log('values[5][0].day_entry', values[5][0].day_entry)
-
-              // this.socket.emit('action', {
-              //   type: 'RECEIVE_HARVEST_POSTS',
-              //   data: users
-              // })
+            .then(dayEntries => {
+              this.calculateUserTime(users, dayEntries)
             })
             .catch(reason => {
               console.log(reason)
@@ -273,8 +252,6 @@ export default class HarvestTimesheets {
   }
 
   getUserTime (harvest, userId) {
-    console.log('getUserTime fired: ', userId)
-    console.log('moment().format()', moment().format('YYYYMMDD'))
     return new Promise((resolve, reject) => {
       // restler.get(harvest.host + '/people/' + userId + '/entries?from=20170210&to=20170219' + '&access_token=jNL7kkpYcZMkLwAKVA30gERdtN6mYZTD2dOAL6PBdmhrV3ZnJj9fIcfpKZIKWNafXVn27WnWYU0maXDbQ0HSsQ', {
       //   'Content-Type': 'application/json',
@@ -293,13 +270,37 @@ export default class HarvestTimesheets {
         user_id: userId,
         from: moment().startOf('week').format('YYYYMMDD'),
         to: moment().format('YYYYMMDD')
-      }, function (err, users) {
+      }, (err, users) => {
         if (err) {
           reject(JSON.stringify(err))
         } else {
           resolve(users)
         }
       })
+    })
+  }
+
+  calculateUserTime (users, dayEntries) {
+    for (var i = users.length - 1; i >= 0; i--) {
+      console.log('users[i]', users[i])
+      users[i].user['entries'] = dayEntries[i]
+      let userEntries = users[i].user.entries
+      let totalHours = 0
+
+      for (let g = 0, len = userEntries.length; g < len; g++) {
+        totalHours = totalHours + userEntries[g].day_entry.hours
+      }
+
+      if (totalHours === 0) {
+        users.splice(i, 1)
+      } else {
+        users[i].user['total_hours'] = totalHours
+      }
+    }
+
+    this.socket.emit('action', {
+      type: 'RECEIVE_HARVEST_POSTS',
+      data: users
     })
   }
 
