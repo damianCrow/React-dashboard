@@ -57,6 +57,7 @@
     "opn-cli": "^3.1.0",
     "raw-loader": "^0.5.1",
     "react-addons-test-utils": "^15.3.2",
+    "restler": "^3.4.0",
     "sinon": "^1.17.6",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.2"
@@ -70,7 +71,7 @@
     "google-auth-library": "^0.10.0",
     "googleapis": "^16.1.0",
     "gsap": "^1.19.0",
-    "harvest": "^0.2.0",
+    "harvest": "git://github.com/log0ymxm/node-harvest.git",
     "history": "3.0.0",
     "http": "^0.0.0",
     "instagram-node": "^0.5.8",

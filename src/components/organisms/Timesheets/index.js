@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-import moment from 'moment'
 // import styled, { css } from 'styled-components'
 // import ReactTransitionGroup from 'react-addons-transition-group'
 
@@ -27,25 +26,24 @@ import moment from 'moment'
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Meetings = ({ children, ...props, posts, isFetching }) => {
+const Timesheets = ({ children, ...props, posts }) => {
   // console.log('Instagram comp posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
   console.log('MEETINGS COMP posts', posts)
   // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
 
   return (
-    <ol>
+    <ul>
       {posts.map(function (object, i) {
-        return <li key={i}> {moment(object.start.dateTime).format('dddd MMM Do')} {object.summary} </li>
+        return <li key={i}> {object.user.first_name} {object.user.last_name}: {object.user.total_hours} hours </li>
       })}
-    </ol>
+    </ul>
   )
 }
 
-Meetings.propTypes = {
+Timesheets.propTypes = {
   children: PropTypes.any,
-  isFetching: PropTypes.bool.isRequired,
-  posts: PropTypes.object.isRequired
+  posts: PropTypes.array.isRequired
 }
 
-export default Meetings
+export default Timesheets

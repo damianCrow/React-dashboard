@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { Feature } from 'components'
-import { SonosInfo, Twitter, Instagram, GoogleCalendar } from 'containers'
+import { SonosInfo, Twitter, Instagram, GoogleCalendar, Harvest } from 'containers'
 
 const Grid = styled.div`
   display: block;
@@ -46,7 +46,7 @@ const FeatureList = ({ ...props }) => {
             {/* Emjoii / message of the day */}
           </StyledFeature>
           <StyledFeature>
-            {/* Harvest */}
+            <Harvest />
           </StyledFeature>
         </GridRow>
         <GridRow>
