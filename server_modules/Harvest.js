@@ -84,6 +84,11 @@ export default class HarvestTimesheets {
     console.log('date.getTime', date.getTime())
 
     if (tokenDetails.expires_at > date.getTime()) {
+      // Token still fine, send it back
+      resolveAuth(tokenDetails.access_token)
+    } else {
+      // Token expired
+      // Get a new token using the refresh token
       this.getNewToken(tokenDetails.refresh_token, 'refresh')
         .then(tokenDetails => {
           this.storeToken(tokenDetails)
@@ -91,10 +96,8 @@ export default class HarvestTimesheets {
         })
         .catch(error => {
           console.log(error)
+          rejectAuth(error)
         })
-    } else {
-      this.setupAccessForNewToken()
-      rejectAuth('access token expired')
     }
   }
 
