@@ -140,7 +140,7 @@ export default class HarvestTimesheets {
    */
   getNewToken (code, codeType) {
     return new Promise((resolve, reject) => {
-      console.log('--GET NEW ACCESS TOKEN WITH ACCESS CODE--')
+      console.log(`--GET NEW ACCESS TOKEN WITH ${codeType} CODE--`)
       console.log('accessCode', code)
 
       let tokenOptions = {
@@ -189,15 +189,6 @@ export default class HarvestTimesheets {
    */
   storeToken (token) {
     console.log('--STORE TOKEN RUNNING--')
-    // try {
-    //   fs.mkdirSync(TOKEN_PATH)
-    // } catch (err) {
-    //   if (err.code !== 'EEXIST') {
-    //     throw err
-    //   }
-    // }
-    // console.log('NEW TOKEN: ', token)
-    // console.log('NEW TOKEN JSON: ', JSON.stringify(token))
     fs.writeFile(TOKEN_PATH, JSON.stringify(token))
     console.log(`Token stored to ${TOKEN_PATH} 💾`)
   }
@@ -253,18 +244,6 @@ export default class HarvestTimesheets {
 
   getUserTime (harvest, userId) {
     return new Promise((resolve, reject) => {
-      // restler.get(harvest.host + '/people/' + userId + '/entries?from=20170210&to=20170219' + '&access_token=jNL7kkpYcZMkLwAKVA30gERdtN6mYZTD2dOAL6PBdmhrV3ZnJj9fIcfpKZIKWNafXVn27WnWYU0maXDbQ0HSsQ', {
-      //   'Content-Type': 'application/json',
-      //   'Accept': 'application/json'
-      // }).on('complete', response => {
-      //   if (!response) {
-      //     reject('Provided access code was rejected by Harvest, no token was returned')
-      //   } else {
-      //     resolve(response)
-      //     console.log('response', response)
-      //   }
-      //   // cb(self.access_token);
-      // })
       const Reports = harvest.Reports
       Reports.timeEntriesByUser({
         user_id: userId,
@@ -282,7 +261,6 @@ export default class HarvestTimesheets {
 
   calculateUserTime (users, dayEntries) {
     for (var i = users.length - 1; i >= 0; i--) {
-      console.log('users[i]', users[i])
       users[i].user['entries'] = dayEntries[i]
       let userEntries = users[i].user.entries
       let totalHours = 0
