@@ -1,13 +1,12 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
 
-// import { Icon } from 'components'
+import { SonosGroupInfo } from 'components'
 
 import { fonts } from 'components/globals'
 
 const styles = ({ ...props, posts }) => css`
   align-items: flex-end;
-  background-image: url(${posts[0].currentTrack.absoluteAlbumArtUri});
   background-size: cover;
   color: black;
   display: flex;
@@ -18,8 +17,9 @@ const styles = ({ ...props, posts }) => css`
   width: 100%;
 `
 
-const SonosContainer = styled.div`
-  display: block;
+const PlayerContainer = styled.div`
+  display: flex;
+  flex-direction: column;
   height: 100%;
   left: 0;
   position: absolute;
@@ -54,41 +54,40 @@ const Track = styled.span`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const SonosInfo = ({ children, ...props, posts, isFetching }) => {
-  console.log('component posts: ', posts)
-  const playbackState = posts[0].playbackState
-  const currentTrack = posts[0].currentTrack
-  const isEmpty = posts.length === 0
+const SonosPlayer = ({ children, ...props, playerState, speakers }) => {
+  console.log('SonosPlayer, playerState: ', playerState)
+  // console.log('component posts: ', playerState)
+  const playbackState = playerState.state.playbackState
+  const currentTrack = playerState.state.currentTrack
+  // const isEmpty = posts.length === 0
   return (
-    <SonosContainer>
-      {isEmpty
-        ? (isFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
-        : <SonosCurrentTrackWrapper {...props} style={{ opacity: isFetching ? 0.5 : 1 }}>
-          <SonosCurrentTrack>
-            <Artist>
-              {currentTrack.artist}
-            </Artist>
-            <Track>
-              {currentTrack.title}
-            </Track>
-            {playbackState === 'PAUSED_PLAYBACK' &&
-              // <PlaybackIcon />
-              <span>PAUSED</span>
-            }
-          </SonosCurrentTrack>
-        </SonosCurrentTrackWrapper>
-      }
-    </SonosContainer>
+    <PlayerContainer>
+      <SonosGroupInfo speakers={speakers} />
+      <SonosCurrentTrackWrapper {...props}>
+        <SonosCurrentTrack>
+          <Artist>
+            {currentTrack.artist}
+          </Artist>
+          <Track>
+            {currentTrack.title}
+          </Track>
+          {playbackState === 'PAUSED_PLAYBACK' &&
+            // <PlaybackIcon />
+            <span>PAUSED</span>
+          }
+        </SonosCurrentTrack>
+      </SonosCurrentTrackWrapper>
+    </PlayerContainer>
   )
 }
 
-SonosInfo.propTypes = {
+SonosPlayer.propTypes = {
   children: PropTypes.any,
-  posts: PropTypes.array.isRequired,
-  isFetching: PropTypes.bool.isRequired
+  speakers: PropTypes.array.isRequired,
+  playerState: PropTypes.object.isRequired
 }
 
-export default SonosInfo
+export default SonosPlayer
 
 // import React, { PropTypes } from 'react'
 

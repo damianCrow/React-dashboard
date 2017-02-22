@@ -24,6 +24,7 @@ const SonosDiscovery = require('sonos-discovery')
 
 const GoogleCalendar = require('./server_modules/GoogleCalendar.js')
 const Harvest = require('./server_modules/Harvest.js')
+const Sonos = require('./server_modules/Sonos.js')
 const Showcase = require('./server_modules/Showcase.js')
 const Instagram = require('./server_modules/Instagram.js')
 
@@ -165,6 +166,10 @@ var listenForClientRequests = function (socket) {
       // Showcase()
       this.showcase = new Showcase.default(app, socket)
       this.showcase.pullLivePlaylist()
+    } else if (action.type === 'SERVER_PULL_SONOS') {
+      // Showcase()
+      this.sonos = new Sonos.default(app, socket)
+      this.sonos.listenForState()
     }
   })
 }

@@ -1,41 +1,68 @@
 import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
-// import { fetchSonosDataIfNeeded, invalidateSonosData } from 'store/actions'
+import { fetchSonosDataIfNeeded } from 'store/actions'
 
-import { SonosInfo } from 'components'
+import { SonosContainer, SonosGroupQueue, SonosPlayer } from 'components'
 
 class SonosInfoContainer extends Component {
   static propTypes = {
-    posts: PropTypes.array.isRequired,
+    groups: PropTypes.array.isRequired,
+    sonosState: PropTypes.object.isRequired,
     isFetching: PropTypes.bool.isRequired,
     dispatch: PropTypes.func.isRequired
   }
 
   componentDidMount () {
-    // const { dispatch } = this.props
-    // dispatch(fetchSonosDataIfNeeded())
+    const { dispatch } = this.props
+    dispatch(fetchSonosDataIfNeeded())
   }
 
   listenForChanges () {
 
   }
 
-  handleRefreshClick = e => {
-    e.preventDefault()
-
-    // const { dispatch } = this.props
-    // Clear out old data, to load in the new (refresh).
-    // dispatch(invalidateSonosData())
-    // dispatch(fetchSonosDataIfNeeded())
+  speakerNames (members) {
+    let speakerNames = []
+    for (let i = 0; i < members.length; i++) {
+      speakerNames[i] = members[i].roomName
+    }
+    return speakerNames
   }
 
   render () {
-    const { posts, isFetching } = this.props
-    const isEmpty = posts.length === 0
+    const { groups, isFetching, sonosState } = this.props
 
-    if (!isEmpty) {
+    const isGroupsEmpty = groups.length === 0
+    const isStateEmpty = Object.keys(sonosState).length === 0 && sonosState.constructor === Object
+
+    if (!isGroupsEmpty && !isStateEmpty) {
+      let players = []
+      for (let i = 0; i < groups.length; i++) {
+        let playerState = {}
+
+        if (sonosState.uuid === groups[i].uuid) {
+          playerState = sonosState
+        }
+
+        console.log('groups[i]', groups[i])
+
+        players.push(
+          <SonosPlayer
+            key={groups[i].uuid}
+            speakers={this.speakerNames(groups[i].members)}
+            playerState={playerState}
+          />
+        )
+      }
+
       return (
-        <SonosInfo posts={posts} isFetching={isFetching} />
+        <SonosContainer isFetching={isFetching} >
+          {players}
+          {groups.length === 1 &&
+            <span>Sonos Queue</span>
+            // <SonosGroupQueue />
+          }
+        </SonosContainer>
       )
     } else {
       return null
@@ -46,16 +73,25 @@ class SonosInfoContainer extends Component {
 const mapStateToProps = state => {
   const { sonos } = state
   const {
+    groups,
+    sonosState,
     isFetching,
-    items: posts
-  } = sonos['musicInfoFromSonos']['sonosData'] || {
+    message,
+    status
+  } = sonos['sonosProcess']['sonosDetails'] || {
+    groups: [],
+    sonosState: {},
     isFetching: true,
-    items: []
+    message: '',
+    status: ''
   }
 
   return {
-    posts,
-    isFetching
+    groups,
+    sonosState,
+    isFetching,
+    message,
+    status
   }
 }
 

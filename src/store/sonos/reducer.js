@@ -1,10 +1,20 @@
 import { combineReducers } from 'redux'
-import { INVALIDATE_SONOS, REQUEST_POSTS, RECEIVE_POSTS, MESSAGE } from '../actions'
+import {
+  INVALIDATE_SONOS,
+  REQUEST_SONOS,
+  RECEIVE_SONOS_GROUPS,
+  RECEIVE_SONOS_STATE,
+  RECEIVE_SONOS_POSTS_ERROR,
+  NEED_TO_AUTH_SONOS
+} from '../actions'
 
 const posts = (state = {
-  isFetching: false,
   didInvalidate: false,
-  items: []
+  isFetching: false,
+  message: '',
+  status: '',
+  groups: [],
+  sonosState: {}
 }, action) => {
   switch (action.type) {
     case INVALIDATE_SONOS:
@@ -12,18 +22,39 @@ const posts = (state = {
         ...state,
         didInvalidate: true
       }
-    case REQUEST_POSTS:
+    case REQUEST_SONOS:
       return {
         ...state,
         isFetching: true,
         didInvalidate: false
       }
-    case MESSAGE:
+    case RECEIVE_SONOS_POSTS_ERROR:
       return {
         ...state,
         isFetching: false,
         didInvalidate: false,
-        items: [action.data],
+        status: action.data.status,
+        message: action.data.err,
+        lastUpdated: action.receivedAt
+      }
+    case RECEIVE_SONOS_GROUPS:
+      return {
+        ...state,
+        groups: action.data.data,
+        status: action.data.status,
+        lastUpdated: action.receivedAt
+      }
+    case RECEIVE_SONOS_STATE:
+      return {
+        ...state,
+        sonosState: action.data.data,
+        status: action.data.status,
+        lastUpdated: action.receivedAt
+      }
+    case NEED_TO_AUTH_SONOS:
+      return {
+        ...state,
+        status: action.data.status,
         lastUpdated: action.receivedAt
       }
     default:
@@ -31,15 +62,17 @@ const posts = (state = {
   }
 }
 
-const musicInfoFromSonos = (state = { }, action) => {
+const sonosProcess = (state = { }, action) => {
   switch (action.type) {
     case INVALIDATE_SONOS:
-    case RECEIVE_POSTS:
-    case REQUEST_POSTS:
-    case MESSAGE:
+    case REQUEST_SONOS:
+    case RECEIVE_SONOS_POSTS_ERROR:
+    case RECEIVE_SONOS_GROUPS:
+    case RECEIVE_SONOS_STATE:
+    case NEED_TO_AUTH_SONOS:
       return {
         ...state,
-        sonosData: posts(state.sonosData, action)
+        sonosDetails: posts(state.sonosDetails, action)
       }
     default:
       return state
@@ -47,7 +80,7 @@ const musicInfoFromSonos = (state = { }, action) => {
 }
 
 const rootReducer = combineReducers({
-  musicInfoFromSonos
+  sonosProcess
 })
 
 export default rootReducer
