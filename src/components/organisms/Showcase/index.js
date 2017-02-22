@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
 import ReactTransitionGroup from 'react-addons-transition-group'
 
-import { InstagramTransitionWrapper, ImageFeature, InstagramVideo } from 'components'
+import { InstagramTransitionWrapper, ImageFeature, YouTubeVideo } from 'components'
 
 const styles = ({ ...props }) => css`
   color: black;
@@ -26,7 +26,7 @@ const TransitionWrapper = styled(ReactTransitionGroup)`${styles}`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShowKey }) => {
+const Showcase = ({ children, ...props, media, mediaType, isFetching, slideShowKey }) => {
   // console.log('Instagram comp posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
   // console.log('INSTAGRAM COMP posts', posts)
@@ -37,13 +37,12 @@ const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShow
       <InstagramTransitionWrapper key={slideShowKey}>
         {mediaType === 'image' ? (
           <ImageFeature
-            currentImage={posts.images.standard_resolution.url}
-            thumbnail={posts.images.thumbnail.url}
+            currentImage={media.file_name}
+            thumbnail={media.file_name}
           />
         ) : (
-          <InstagramVideo
-            currentVideo={posts.videos.standard_resolution.url}
-            lowBandwidthVideo={posts.videos.low_bandwidth.url}
+          <YouTubeVideo
+            youtubeId={media.youtube_id}
           />
         )}
       </InstagramTransitionWrapper>
@@ -51,12 +50,12 @@ const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShow
   )
 }
 
-Instagram.propTypes = {
+Showcase.propTypes = {
   children: PropTypes.any,
   isFetching: PropTypes.bool.isRequired,
-  posts: PropTypes.object.isRequired,
+  media: PropTypes.object.isRequired,
   slideShowKey: PropTypes.number.isRequired,
   mediaType: PropTypes.string
 }
 
-export default Instagram
+export default Showcase

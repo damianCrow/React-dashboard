@@ -33,7 +33,7 @@ const ThumbnailBackground = styled.img`
   width: 100%;
 `
 
-class InstagramImage extends Component {
+class ImageFeature extends Component {
   static propTypes = {
     currentImage: PropTypes.string.isRequired,
     thumbnail: PropTypes.string.isRequired
@@ -64,4 +64,4 @@ class InstagramImage extends Component {
   }
 }
 
-export default InstagramImage
+export default ImageFeature
