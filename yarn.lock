@@ -2127,8 +2127,8 @@ event-emitter@~0.3.4:
     es5-ext "~0.10.7"
 
 "eventemitter2@>= 0.4.9":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-3.0.0.tgz#fec69ba0b1cde27a1bb0bd52df549fd6f65b0f45"
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-3.0.1.tgz#180765bed7b8e6a7b52d353c508a4a24534bfdcb"
 
 events@^1.0.0:
   version "1.1.1"
@@ -2821,9 +2821,13 @@ iconv-lite@0.2.11:
   version "0.2.11"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.2.11.tgz#1ce60a3a57864a292d1321ff4609ca4bb965adc8"
 
-iconv-lite@0.4.13, iconv-lite@~0.4.13:
+iconv-lite@0.4.13:
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.13.tgz#1f88aba4ab0b1508e8312acc39345f36e992e2f2"
+
+iconv-lite@~0.4.13:
+  version "0.4.15"
+  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.15.tgz#fe265a218ac6a57cfe854927e9d04c19825eddeb"
 
 ieee754@^1.1.4:
   version "1.1.8"
@@ -4410,11 +4414,11 @@ qs@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-1.2.0.tgz#ed079be28682147e6fd9a34cc2b0c1e0ec6453ee"
 
-qs@6.2.0, qs@^6.1.0:
+qs@6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.0.tgz#3b7848c03c2dece69a9522b0fae8c4126d745f3b"
 
-qs@^6.3.0, qs@~6.3.0:
+qs@^6.1.0, qs@^6.3.0, qs@~6.3.0:
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.3.1.tgz#918c0b3bcd36679772baf135b1acb4c1651ed79d"
 
@@ -4597,8 +4601,8 @@ readable-stream@1.0, readable-stream@~1.0.26, readable-stream@~1.0.31:
     string_decoder "~0.10.x"
 
 readable-stream@^2.0.0, "readable-stream@^2.0.0 || ^1.1.13", readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.5, readable-stream@^2.1.0, readable-stream@^2.1.5, readable-stream@^2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.2.2.tgz#a9e6fec3c7dda85f8bb1b3ba7028604556fc825e"
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.2.3.tgz#9cf49463985df016c8ae8813097a9293a9b33729"
   dependencies:
     buffer-shims "^1.0.0"
     core-util-is "~1.0.0"
