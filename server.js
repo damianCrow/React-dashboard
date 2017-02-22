@@ -18,14 +18,14 @@ const session = require('express-session')
 // const server = require('http').Server(express)
 const socketIo = require('socket.io')(socketPort)
 
-// Node liberaies for components
-const instagram = require('instagram-node').instagram()
+// Node liberaies for components - BREAK THESE INTO THEIR OWN DEDICATED SERVER MODULES
 const Twitter = require('twitter')
 const SonosDiscovery = require('sonos-discovery')
 
 const GoogleCalendar = require('./server_modules/GoogleCalendar.js')
 const Harvest = require('./server_modules/Harvest.js')
 const Showcase = require('./server_modules/Showcase.js')
+const Instagram = require('./server_modules/Instagram.js')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -142,70 +142,6 @@ var startSocketActionDispenser = function () {
   })
 }
 
-var requestInstagramPosts = function () {
-  return new Promise(
-    function (resolve, reject) {
-      console.log('running promise')
-      instagram.user_media_recent('30605504', function (err, posts, pagination, remaining, limit) {
-        if (err) {
-          console.log('err', err)
-          var reason = new Error({status: 'error', data: err})
-          reject(reason) // reject
-        } else {
-          console.log('pulled instagram data')
-          resolve({status: 'success', data: posts}) // fulfilled
-        }
-      })
-    }
-  )
-}
-
-var checkForInstagramKey = function () {
-  if (typeof expressSessions.instagramAccessToken !== 'undefined') {
-    console.log('have access_token')
-    instagram.use({ access_token: expressSessions.instagramAccessToken })
-    return true
-  } else {
-    console.log('need access_token')
-
-    instagram.use({
-      client_id: 'b4a58351058e43ee8717b690ae8fdc6e',
-      client_secret: '23e103dbf5c44baf8efc205bb7d1d4bc'
-    })
-    return false
-    // return {status: 'error', data: 'No access'}
-  }
-}
-
-var authorizeInstagram = function () {
-  const redirectUri = 'http://' + 'localhost' + ':' + port + '/handleauth'
-
-  exports.authorizeUser = (req, res) => {
-    console.log('authorizeUser')
-    res.redirect(instagram.get_authorization_url(redirectUri, {
-      scope: ['likes', 'follower_list', 'basic', 'public_content'], state: 'a state'
-    }))
-  }
-
-  exports.handleAuth = (req, res) => {
-    instagram.authorize_user(req.query.code, redirectUri, (err, result) => {
-      if (err) {
-        console.log(err.body)
-        res.send("Didn't work")
-      } else {
-        console.log(`Yay! Access token is ${result.access_token}`)
-        req.session.instagramAccessToken = result.access_token
-        res.redirect('/')
-      }
-    })
-  }
-
-  // This is where you would initially send users to authorize
-  app.get('/authorize_user', exports.authorizeUser)
-  // This is your redirect URI
-  app.get('/handleauth', exports.handleAuth)
-}
-
 var listenForClientRequests = function (socket) {
   // Listen for a component to request data
   socket.on('action', (action) => {
@@ -214,32 +150,9 @@ var listenForClientRequests = function (socket) {
     if (action.type === 'SERVER_PULL_INSTAGRAM') {
       console.log('[server] Got hello request: ', action.type)
       // Send a new action to the client with it's requested data
-       // Need a promise here.
-
-      if (checkForInstagramKey() === true) {
-        requestInstagramPosts()
-          .then(function (fulfilled) {
-            console.log(fulfilled)
-            socket.emit('action', {
-              type: 'RECEIVE_INSTAGRAM_POSTS',
-              data: fulfilled
-            })
-          })
-          .catch(function (error) {
-            console.log(error)
-            socket.emit('action', {
-              type: 'RECEIVE_INSTAGRAM_POSTS_ERROR',
-              data: error
-            })
-          })
-      } else {
-        socket.emit('action', {type: 'NEED_TO_AUTH_INSTAGRAM',
-          data: {status: 'auth-failed'}}
-        )
-        authorizeInstagram()
-      }
-      // getInstagramPosts(socket)
-      // socket.emit('action', {type: 'MESSAGE', data: action.data})
+      // Instagram()
+      this.instagram = new Instagram.default(app, socket, port)
+      this.instagram.grabPosts()
     } else if (action.type === 'SERVER_PULL_CALENDAR') {
       // GoogleCalendar()
       // this.googleCal = new GoogleCalendar.default(app, socket)
