@@ -13,6 +13,7 @@ export default class Sonos {
   constructor (app, socket) {
     this.app = app
     this.socket = socket
+    this.maxGroups = 4
     console.log('server module sonos constructor')
   }
 
@@ -24,6 +25,8 @@ export default class Sonos {
       cacheDir: './.cache'
     })
 
+    // let groupStates = []
+
     discovery.on('topology-change', sonosGroups => {
       // THIS SPITS OUT DETAILS ABOUT ALL GROUPS
 
@@ -33,6 +36,7 @@ export default class Sonos {
       // console.log('discovery.players[0].coordinator.roomName', discovery.players[0].coordinator.roomName)
       // console.log('topology-change data: ', data)
       // console.log('player.members:')
+
       this.socket.emit('action', {type: 'RECEIVE_SONOS_GROUPS', data: {data: sonosGroups, status: 'success'}})
 
       // for (const player of data) {
@@ -46,16 +50,20 @@ export default class Sonos {
       // }
     })
 
-    discovery.on('transport-state', sonosState => {
+    discovery.on('transport-state', newSonosState => {
       // THIS SPITS OUT EACH GROUPS DETAILS (EACH IN THEIR OWN CALL)
+
+      // if (groupStates[newSonosState.uuid]) {
+      //   groupStates[newSonosState.uuid] =
+      // }
 
       // console.log(data)
       // if (data.roomName === 'Back Studio') {
       //   this.socket.emit('action', {type: 'MESSAGE', data: data.state})
       // }
-      console.log('transport-state')
-      console.log(sonosState)
-      this.socket.emit('action', {type: 'RECEIVE_SONOS_STATE', data: {data: sonosState, status: 'success'}})
+      // console.log('transport-state')
+      // console.log(newSonosState)
+      this.socket.emit('action', {type: 'RECEIVE_SONOS_STATE', data: {data: newSonosState, status: 'success'}})
 
       // socketServer.sockets.emit('transport-state', data)
     })

@@ -8,7 +8,11 @@ const CRED_DIR = `./.credentials/instagram/`
 const STORED_CREDENTIALS = `${CRED_DIR}credentials.json`
 const STORED_TOKEN = `${CRED_DIR}token.json`
 
-const INSTAGRAM_USER_ID = '30605504'
+// https://www.instagram.com/psysize/
+// const INSTAGRAM_USER_ID = '30605504'
+
+// https://www.instagram.com/interstateteam/
+const INSTAGRAM_USER_ID = '494086480'
 
 // Example 1: Creating a new class (declaration-form)
 // ===============================================================

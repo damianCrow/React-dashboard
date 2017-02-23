@@ -5,6 +5,7 @@ import {
   RECEIVE_SONOS_GROUPS,
   RECEIVE_SONOS_STATE,
   RECEIVE_SONOS_POSTS_ERROR,
+  UPDATE_SONOS_STATES,
   NEED_TO_AUTH_SONOS
 } from '../actions'
 
@@ -14,7 +15,8 @@ const posts = (state = {
   message: '',
   status: '',
   groups: [],
-  sonosState: {}
+  newSonosState: {},
+  sonosStates: []
 }, action) => {
   switch (action.type) {
     case INVALIDATE_SONOS:
@@ -47,9 +49,14 @@ const posts = (state = {
     case RECEIVE_SONOS_STATE:
       return {
         ...state,
-        sonosState: action.data.data,
+        newSonosState: action.data.data,
         status: action.data.status,
         lastUpdated: action.receivedAt
+      }
+    case UPDATE_SONOS_STATES:
+      return {
+        ...state,
+        sonosStates: action.data
       }
     case NEED_TO_AUTH_SONOS:
       return {
@@ -69,6 +76,7 @@ const sonosProcess = (state = { }, action) => {
     case RECEIVE_SONOS_POSTS_ERROR:
     case RECEIVE_SONOS_GROUPS:
     case RECEIVE_SONOS_STATE:
+    case UPDATE_SONOS_STATES:
     case NEED_TO_AUTH_SONOS:
       return {
         ...state,

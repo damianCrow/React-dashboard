@@ -1,51 +1,17 @@
 import React, { PropTypes } from 'react'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
-import { SonosGroupInfo } from 'components'
+import { SonosGroupInfo, SonosTrack } from 'components'
 
-import { fonts } from 'components/globals'
-
-const styles = ({ ...props, posts }) => css`
-  align-items: flex-end;
-  background-size: cover;
-  color: black;
-  display: flex;
-  font-family: ${fonts.primary};
-  font-style: normal;
-  font-weight: 300;
-  height: 100%;
-  width: 100%;
-`
+// background-image: url(${playerState.state.currentTrack.absoluteAlbumArtUri});
 
 const PlayerContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
   width: 100%;
-`
-
-const SonosCurrentTrackWrapper = styled.div`${styles}`
-
-const SonosCurrentTrack = styled.div`
-  background: rgba(255, 255, 255, .5);
-  display: block;
-  width: 100%;
-`
-
-const Artist = styled.span`
-  color: #4a4a4a;
-  display: block;
-  font-size: 1.5rem;
-  text-align: left;
-`
-const Track = styled.span`
-  display: block;
-  font-size: 3rem;
-  font-style: bold;
-  text-align: left;
+  flex: 1 1 50%;
+  overflow: hidden;
+  position: relative;
 `
 
 // const PlaybackIcon = styled.Icon`
@@ -54,29 +20,23 @@ const Track = styled.span`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const SonosPlayer = ({ children, ...props, playerState, speakers }) => {
-  console.log('SonosPlayer, playerState: ', playerState)
-  // console.log('component posts: ', playerState)
-  const playbackState = playerState.state.playbackState
-  const currentTrack = playerState.state.currentTrack
+const SonosPlayer = ({playerState, speakers, children, ...props}) => {
+
+  let isEmpty = true
+
+  if (Object.keys(playerState).length !== 0 && playerState.constructor === Object) {
+    isEmpty = false
+  }
+
+  // console.log('playerState', playerState)
+  console.log('SonosPlayer playerState: ', playerState)
+  // console.log('SonosPlayer isEmpty: ', isEmpty)
+
   // const isEmpty = posts.length === 0
   return (
     <PlayerContainer>
       <SonosGroupInfo speakers={speakers} />
-      <SonosCurrentTrackWrapper {...props}>
-        <SonosCurrentTrack>
-          <Artist>
-            {currentTrack.artist}
-          </Artist>
-          <Track>
-            {currentTrack.title}
-          </Track>
-          {playbackState === 'PAUSED_PLAYBACK' &&
-            // <PlaybackIcon />
-            <span>PAUSED</span>
-          }
-        </SonosCurrentTrack>
-      </SonosCurrentTrackWrapper>
+      {!isEmpty ? (<SonosTrack trackInfo={playerState.state} />) : null}
     </PlayerContainer>
   )
 }
@@ -84,7 +44,7 @@ const SonosPlayer = ({ children, ...props, playerState, speakers }) => {
 SonosPlayer.propTypes = {
   children: PropTypes.any,
   speakers: PropTypes.array.isRequired,
-  playerState: PropTypes.object.isRequired
+  playerState: PropTypes.object
 }
 
 export default SonosPlayer

@@ -6,13 +6,12 @@ import styled from 'styled-components'
 import { fonts } from 'components/globals'
 
 const SonosContainerStyled = styled.div`
-  align-items: flex-end;
-  color: black;
   display: flex;
-  font-family: ${fonts.primary};
-  font-style: normal;
-  font-weight: 300;
+  flex-direction: column;
   height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
   width: 100%;
 `
 

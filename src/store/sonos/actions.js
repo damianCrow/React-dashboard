@@ -1,5 +1,6 @@
 export const REQUEST_SONOS = 'REQUEST_SONOS'
 export const INVALIDATE_SONOS = 'INVALIDATE_SONOS'
+export const UPDATE_SONOS_STATES = 'UPDATE_SONOS_STATES'
 
 // Server actions.
 export const SERVER_PULL_SONOS = 'SERVER_PULL_SONOS'
@@ -32,6 +33,33 @@ const shouldFetchPosts = (state) => {
     return false
   }
   return posts.didInvalidate
+}
+
+export const sonosStateMatch = reddit => (dispatch, getState) => {
+  const sonosInfo = getState().sonos.sonosProcess.sonosDetails
+
+  // console.log('sonosStateMatch, sonosInfo = ', sonosInfo)
+
+  if (sonosInfo.sonosStates.length === 0) {
+    sonosInfo.sonosStates[0] = sonosInfo.newSonosState
+  } else {
+    for (let i = 0; i < sonosInfo.sonosStates.length; i++) {
+      if (sonosInfo.sonosStates[i].uuid === sonosInfo.newSonosState.uuid) {
+        sonosInfo.sonosStates[i] = sonosInfo.newSonosState
+        break
+      } else if (i === 4) {
+        sonosInfo.sonosStates[0] = sonosInfo.newSonosState
+        break
+      } else if (i === (sonosInfo.sonosStates.length - 1)) {
+        sonosInfo.sonosStates.push(sonosInfo.newSonosState)
+        break
+      }
+    }
+  }
+
+  console.log('sonosStateMatch, data = ', sonosInfo.sonosStates)
+
+  dispatch({ type: UPDATE_SONOS_STATES, data: sonosInfo.sonosStates })
 }
 
 export const fetchSonosDataIfNeeded = reddit => (dispatch, getState) => {
