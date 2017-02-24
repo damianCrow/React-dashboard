@@ -12,6 +12,7 @@ const styles = ({ ...props, trackInfo }) => css`
   font-weight: 300;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 
   &:before {
     background-image: url(${trackInfo.currentTrack.absoluteAlbumArtUri});
@@ -33,18 +34,23 @@ const SonosCurrentTrackWrapper = styled.div`${styles}`
 const SonosCurrentTrack = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100%;
   width: 100%;
-  flex: 0 0 15rem;
+  flex: 0 0 100%;
   z-index: 1;
   align-items: center;
   flex: 1;
-  justify-content: center;
+  justify-content: space-around;
   color: white;
 `
 
 const TrackInfo = styled.div`
-  display: block;
+  display: flex;
+  flex-direction: column;
   text-align: center;
+  flex: 1 0 5rem;
+  align-items: center;
+  justify-content: center;
 `
 
 const Artist = styled.span`
@@ -59,10 +65,20 @@ const Track = styled.span`
   text-align: center;
 `
 
-const CurrentAlbumArt = styled.img`
+const AlbumArtContainer = styled.div`
   display: block;
   position: relative;
-  max-width: 10rem;
+  width: 100%;
+  margin: 1rem;
+  flex: 0 1 100%;
+`
+
+const AlbumArt = styled.img`
+  display: block;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
 `
 
 // const PlaybackIcon = styled.Icon`
@@ -78,7 +94,9 @@ const SonosTrack = ({...props, trackInfo}) => {
   return (
     <SonosCurrentTrackWrapper {...props}>
       <SonosCurrentTrack>
-        <CurrentAlbumArt src={trackInfo.currentTrack.absoluteAlbumArtUri} />
+        <AlbumArtContainer>
+          <AlbumArt src={trackInfo.currentTrack.absoluteAlbumArtUri} />
+        </AlbumArtContainer>
         <TrackInfo>
           <Track>
             {currentTrack.title}

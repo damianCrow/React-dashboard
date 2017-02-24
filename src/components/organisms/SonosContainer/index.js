@@ -13,6 +13,7 @@ const SonosContainerStyled = styled.div`
   position: absolute;
   top: 0;
   width: 100%;
+  font-family: ${fonts.primary};
 `
 
 // const PlaybackIcon = styled.Icon`

@@ -7,39 +7,23 @@ import { loadNextInstagramMedia } from 'store/actions'
 // import { TweenMax } from 'gsap'
 
 const ImageWrapper = styled.div`
-  width: 100%;
   height: 100%;
-  position: absolute;
-  background: black;
-  top: 0;
   left: 0;
+  top: 0;
+  width: 100%;
 `
 
 const InstagramVideoSrc = styled.video`
   height: 100%;
-  left: 0;
   object-fit: contain;
-  position: absolute;
-  top: 0;
+  position: relative;
   width: 100%;
   z-index: 1;
-`
-
-const ThumbnailVideoBackground = styled.video`
-  filter: blur(3px);
-  height: 100%;
-  left: 0;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  transform: scale(1.2)
-  width: 100%;
 `
 
 class InstagramVideo extends Component {
   static propTypes = {
     currentVideo: PropTypes.string.isRequired,
-    lowBandwidthVideo: PropTypes.string.isRequired,
     dispatch: PropTypes.func.isRequired,
     allPosts: PropTypes.array.isRequired
   }
@@ -68,11 +52,10 @@ class InstagramVideo extends Component {
   }
 
   render () {
-    const { currentVideo, lowBandwidthVideo } = this.props
+    const { currentVideo } = this.props
     return (
       <ImageWrapper>
         <InstagramVideoSrc src={currentVideo} autoPlay="true" muted onEnded={this.onVideoEnd} />
-        <ThumbnailVideoBackground src={lowBandwidthVideo} autoPlay="true" muted />
       </ImageWrapper>
     )
   }

@@ -6,6 +6,8 @@ const Wrapper = styled.div`
   flex-direction: column;
   min-height: 100vh;
   box-sizing: border-box;
+  background: linear-gradient(to right,  #00928f 0%, #50b848 100%);
+  padding: 1rem;
 `
 
 const Content = styled.section`

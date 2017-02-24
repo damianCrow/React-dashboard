@@ -4,25 +4,16 @@ import styled from 'styled-components'
 
 // import { TweenMax } from 'gsap'
 
-const ImageWrapper = styled.div`
+const MediaWrapper = styled.div`
   height: 100%;
   left: 0;
   top: 0;
   width: 100%;
+  position: absolute;
 `
 
-const InstagramImg = styled.img`
-  height: 100%;
-  // left: 0;
-  object-fit: contain;
-  position: relative;
-  // top: 0;
-  width: 100%;
-  z-index: 1;
-`
-
-const ThumbnailBackground = styled.img`
-  filter: blur(3px);
+const Image = styled.img`
+  filter: blur(8px);
   height: 100%;
   left: 0;
   object-fit: cover;
@@ -32,10 +23,21 @@ const ThumbnailBackground = styled.img`
   width: 100%;
 `
 
-class ImageFeature extends Component {
+const Video = styled.video`
+  filter: blur(8px);
+  height: 100%;
+  left: 0;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  transform: scale(1.1)
+  width: 100%;
+`
+
+class MediaBluredBack extends Component {
   static propTypes = {
-    currentImage: PropTypes.string.isRequired,
-    thumbnail: PropTypes.string.isRequired
+    type: PropTypes.string.isRequired,
+    media: PropTypes.string.isRequired
   }
 
   // componentWillEnter (callback) {
@@ -53,14 +55,17 @@ class ImageFeature extends Component {
   // }
 
   render () {
-    const { currentImage, thumbnail } = this.props
+    const { type, media } = this.props
     return (
-      <ImageWrapper>
-        <InstagramImg src={currentImage} />
-        <ThumbnailBackground src={thumbnail} />
-      </ImageWrapper>
+      <MediaWrapper>
+        {type === 'image' ? (
+          <Image src={media} />
+        ) : (
+          <Video src={media} autoPlay="true" muted />
+        )}
+      </MediaWrapper>
     )
   }
 }
 
-export default ImageFeature
+export default MediaBluredBack

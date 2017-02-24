@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react'
+import styled from 'styled-components'
 import ReactDOM from 'react-dom'
 
 import { TweenMax } from 'gsap'
@@ -23,7 +24,16 @@ class InstagramTransitionWrapper extends Component {
   render () {
     const { children } = this.props
 
-    return (<div>{ children }</div>)
+    const InstagramWrapper = styled.div`
+      display: flex;
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    `
+
+    return (<InstagramWrapper>{ children }</InstagramWrapper>)
   }
 }
 

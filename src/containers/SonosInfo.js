@@ -83,10 +83,10 @@ class SonosInfoContainer extends Component {
       return (
         <SonosContainer isFetching={isFetching} >
           {players}
-          {groups.length === 1 &&
+          {/*groups.length === 1 &&
             <span>Sonos Queue</span>
             // <SonosGroupQueue />
-          }
+          */}
         </SonosContainer>
       )
     } else {

@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { Feature } from 'components'
-import { SonosInfo, Twitter, Instagram, GoogleCalendar, Harvest, Showcase } from 'containers'
+import { SonosInfo, Twitter, Instagram, GoogleCalendar, Harvest, Showcase, Header } from 'containers'
 
 const Grid = styled.div`
   display: block;
@@ -12,8 +12,9 @@ const GridRow = styled.div`
   display: flex;
 `
 
-const StyledFeature = styled(Feature)`
-  margin: 0rem;
+const GridColumn = styled.div`
+  display: flex;
+  flex-direction: column;
 `
 
 const FeatureList = ({ ...props }) => {
@@ -21,38 +22,38 @@ const FeatureList = ({ ...props }) => {
     <div {...props}>
       <Grid>
         <GridRow>
-          <StyledFeature>
+          <Header />
+        </GridRow>
+        <GridRow>
+          <Feature>
             {/* Time / Date */}
-          </StyledFeature>
-          <StyledFeature>
+          </Feature>
+          <Feature double>
             <SonosInfo />
-          </StyledFeature>
-          <StyledFeature>
-            <Instagram />
-          </StyledFeature>
+          </Feature>
+          <Feature>
+            <GridColumn>
+              <Instagram />
+            </GridColumn>
+          </Feature>
         </GridRow>
         <GridRow>
-          <StyledFeature>
-            <GoogleCalendar />
-          </StyledFeature>
-        </GridRow>
-        <GridRow>
-          <StyledFeature>
+          <Feature>
             <Showcase />
-          </StyledFeature>
+          </Feature>
         </GridRow>
         <GridRow>
-          <StyledFeature>
-            {/* Emjoii / message of the day */}
-          </StyledFeature>
-          <StyledFeature>
+          <Feature>
+            <GoogleCalendar />
+          </Feature>
+          <Feature>
             <Harvest />
-          </StyledFeature>
+          </Feature>
         </GridRow>
         <GridRow>
-          <StyledFeature>
+          <Feature>
             <Twitter />
-          </StyledFeature>
+          </Feature>
         </GridRow>
       </Grid>
     </div>
