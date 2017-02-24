@@ -17,6 +17,7 @@ const styles = ({ ...props, trackInfo }) => css`
   &:before {
     background-image: url(${trackInfo.currentTrack.absoluteAlbumArtUri});
     background-size: cover;
+    background-position: center;
     content: '';
     filter: blur(10px);
     height: 100%;
