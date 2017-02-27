@@ -32,13 +32,11 @@ const FeatureList = ({ ...props }) => {
             <SonosInfo />
           </Feature>
           <Feature>
-            <GridColumn>
-              <Instagram />
-            </GridColumn>
+            <Instagram />
           </Feature>
         </GridRow>
         <GridRow>
-          <Feature>
+          <Feature fullWidth>
             <Showcase />
           </Feature>
         </GridRow>

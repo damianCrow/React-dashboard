@@ -3,10 +3,12 @@ import styled, { css } from 'styled-components'
 
 // import { Icon, Link, Heading, Badge } from 'components'
 
-const WrapperStyles = ({ double }) => css`
+const WrapperStyles = ({ double, fullWidth }) => css`
   position: relative;
-  width: 33.33333%;
+  width: ${fullWidth ? '100%' : '33.33333%'};
   margin: 0;
+  display: flex;
+  flex-direction: column;
 
   &:before{
     display: block;
@@ -27,7 +29,7 @@ const Feature = ({ children, ...props }) => {
 }
 
 Feature.propTypes = {
-  full: PropTypes.bool,
+  fullWidth: PropTypes.bool,
   half: PropTypes.bool,
   third: PropTypes.bool,
   children: PropTypes.any

@@ -35,7 +35,7 @@ const ThumbnailBackground = styled.img`
 class ImageFeature extends Component {
   static propTypes = {
     currentImage: PropTypes.string.isRequired,
-    thumbnail: PropTypes.string.isRequired
+    thumbnail: PropTypes.string
   }
 
   // componentWillEnter (callback) {
@@ -54,10 +54,17 @@ class ImageFeature extends Component {
 
   render () {
     const { currentImage, thumbnail } = this.props
+
+    let thumbnailImage = null
+
+    if (thumbnail) {
+      thumbnailImage = <ThumbnailBackground src={thumbnail} />
+    }
+
     return (
       <ImageWrapper>
         <InstagramImg src={currentImage} />
-        <ThumbnailBackground src={thumbnail} />
+        {thumbnailImage}
       </ImageWrapper>
     )
   }

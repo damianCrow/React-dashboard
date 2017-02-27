@@ -27,7 +27,7 @@ const InstagramWrapper = styled.section`
   color: white;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 50%;
   justify-content: center;
   left: 0;
   overflow: hidden;
