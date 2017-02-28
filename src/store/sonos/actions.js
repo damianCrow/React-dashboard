@@ -1,6 +1,7 @@
 export const REQUEST_SONOS = 'REQUEST_SONOS'
 export const INVALIDATE_SONOS = 'INVALIDATE_SONOS'
 export const UPDATE_SONOS_STATES = 'UPDATE_SONOS_STATES'
+export const UPDATE_SONOS_GROUPS = 'UPDATE_SONOS_GROUPS'
 
 // Server actions.
 export const SERVER_PULL_SONOS = 'SERVER_PULL_SONOS'
@@ -33,6 +34,26 @@ const shouldFetchPosts = (state) => {
     return false
   }
   return posts.didInvalidate
+}
+
+export const featuredSpeaker = reddit => (dispatch, getState) => {
+  const posts = getState().sonos.sonosProcess.sonosDetails
+  const groups = posts.groups
+  for (let i = 0; i < groups.length; i++) {
+    let speakerIndex
+    setInterval(function () {
+      if (typeof groups[i].featuredSpeaker === 'undefined') {
+        const posts = getState().sonos.sonosProcess.sonosDetails
+        let groups = posts.groups
+
+        console.log('groups to dispatch', groups)
+
+        speakerIndex = (speakerIndex > groups[i].members.length ? 0 : speakerIndex + 1)
+        groups[i]['featuredSpeaker'] = groups[i].members[speakerIndex]
+        dispatch({ type: UPDATE_SONOS_GROUPS, data: groups })
+      }
+    }, 3000)
+  }
 }
 
 export const sonosStateMatch = reddit => (dispatch, getState) => {

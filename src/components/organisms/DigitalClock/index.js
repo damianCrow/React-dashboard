@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 import { fonts } from 'components/globals'
 
@@ -41,7 +41,9 @@ class DigitalClock extends Component {
   render () {
     return (
       <Wrapper>
-        <span>{moment(this.state.time).format('LT')}</span>
+        <span>🇬🇧 {moment(this.state.time).format('LT')}</span>
+        <span>🇭🇰 {moment(this.state.time).tz('Asia/Hong_Kong').format('LT')}</span>
+        <span>🇩🇪 {moment(this.state.time).tz('Europe/Berlin').format('LT')}</span>
       </Wrapper>
     )
   }

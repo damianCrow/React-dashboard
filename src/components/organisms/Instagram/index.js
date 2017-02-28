@@ -4,7 +4,7 @@ import ReactTransitionGroup from 'react-addons-transition-group'
 
 import { fonts } from 'components/globals'
 
-import { InstagramTransitionWrapper, ImageFeature, InstagramVideo, Icon, MediaBluredBack } from 'components'
+import { FadingTransitionWrapper, ImageFeature, InstagramVideo, Icon, MediaBluredBack } from 'components'
 
 const TransitionWrapper = styled(ReactTransitionGroup)`
   color: black;
@@ -27,7 +27,7 @@ const InstagramWrapper = styled.section`
   color: white;
   display: flex;
   flex-direction: column;
-  height: 50%;
+  height: 100%;
   justify-content: center;
   left: 0;
   overflow: hidden;
@@ -112,7 +112,7 @@ const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShow
   return (
     <InstagramWrapper>
       <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
-        <InstagramTransitionWrapper key={slideShowKey}>
+        <FadingTransitionWrapper key={slideShowKey}>
           {mediaType === 'image' ? (
             <MediaBluredBack
               media={posts.images.thumbnail.url}
@@ -124,7 +124,7 @@ const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShow
               type="video"
             />
           )}
-        </InstagramTransitionWrapper>
+        </FadingTransitionWrapper>
       </TransitionWrapper>
       <InstagramFrame>
         <Header>
@@ -142,7 +142,7 @@ const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShow
         </Header>
         <InstagramMedia>
           <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
-            <InstagramTransitionWrapper key={slideShowKey}>
+            <FadingTransitionWrapper key={slideShowKey}>
               {mediaType === 'image' ? (
                 <ImageFeature
                   currentImage={posts.images.standard_resolution.url}
@@ -152,7 +152,7 @@ const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShow
                   currentVideo={posts.videos.standard_resolution.url}
                 />
               )}
-            </InstagramTransitionWrapper>
+            </FadingTransitionWrapper>
           </TransitionWrapper>
         </InstagramMedia>
         <Footer>

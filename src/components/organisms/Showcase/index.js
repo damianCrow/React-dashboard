@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
 import ReactTransitionGroup from 'react-addons-transition-group'
 
-import { InstagramTransitionWrapper, ImageFeature, YouTubeVideo } from 'components'
+import { FadingTransitionWrapper, ImageFeature, YouTubeVideo } from 'components'
 
 const styles = ({ ...props }) => css`
   color: black;
@@ -34,7 +34,7 @@ const Showcase = ({ children, ...props, media, mediaType, isFetching, slideShowK
 
   return (
     <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
-      <InstagramTransitionWrapper key={slideShowKey}>
+      <FadingTransitionWrapper key={slideShowKey}>
         {mediaType === 'image' ? (
           <ImageFeature
             currentImage={media.file_name}
@@ -45,7 +45,7 @@ const Showcase = ({ children, ...props, media, mediaType, isFetching, slideShowK
             youtubeId={media.youtube_id}
           />
         )}
-      </InstagramTransitionWrapper>
+      </FadingTransitionWrapper>
     </TransitionWrapper>
   )
 }

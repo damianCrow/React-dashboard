@@ -15,6 +15,7 @@ const GridRow = styled.div`
 const GridColumn = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1 1 33.3333333333%
 `
 
 const FeatureList = ({ ...props }) => {
@@ -31,9 +32,14 @@ const FeatureList = ({ ...props }) => {
           <Feature double>
             <SonosInfo />
           </Feature>
-          <Feature>
-            <Instagram />
-          </Feature>
+          <GridColumn>
+            <Feature fullWidth>
+              <Instagram />
+            </Feature>
+            <Feature fullWidth>
+              <Twitter />
+            </Feature>
+          </GridColumn>
         </GridRow>
         <GridRow>
           <Feature fullWidth>
@@ -50,7 +56,7 @@ const FeatureList = ({ ...props }) => {
         </GridRow>
         <GridRow>
           <Feature>
-            <Twitter />
+            {/* Something */}
           </Feature>
         </GridRow>
       </Grid>

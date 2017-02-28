@@ -11,13 +11,20 @@ const styles = ({ ...props, trackInfo }) => css`
   font-style: normal;
   font-weight: 300;
   height: 100%;
-  width: 100%;
   overflow: hidden;
+  width: 100%;
 
   &:before {
-    background-image: url(${trackInfo.currentTrack.absoluteAlbumArtUri});
+    background:
+      linear-gradient(
+        rgba(0, 0, 0, .5),
+        rgba(0, 0, 0, .5)
+      ),
+      url(${trackInfo.currentTrack.absoluteAlbumArtUri})
     background-size: cover;
     background-position: center;
+    transform: scale(1.2);
+    opacity: 1;
     content: '';
     filter: blur(10px);
     height: 100%;

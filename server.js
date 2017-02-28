@@ -19,7 +19,6 @@ const session = require('express-session')
 const socketIo = require('socket.io')(socketPort)
 
 // Node liberaies for components - BREAK THESE INTO THEIR OWN DEDICATED SERVER MODULES
-const Twitter = require('twitter')
 const SonosDiscovery = require('sonos-discovery')
 
 const GoogleCalendar = require('./server_modules/GoogleCalendar.js')
@@ -27,6 +26,7 @@ const Harvest = require('./server_modules/Harvest.js')
 const Sonos = require('./server_modules/Sonos.js')
 const Showcase = require('./server_modules/Showcase.js')
 const Instagram = require('./server_modules/Instagram.js')
+const TwitterApi = require('./server_modules/Twitter.js')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -170,6 +170,10 @@ var listenForClientRequests = function (socket) {
       // Showcase()
       this.sonos = new Sonos.default(app, socket)
       this.sonos.listenForState()
+    } else if (action.type === 'SERVER_PULL_TWITTER') {
+      // Showcase()
+      this.twitter = new TwitterApi.default(app, socket, port)
+      this.twitter.grabPosts()
     }
   })
 }

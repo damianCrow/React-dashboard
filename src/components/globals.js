@@ -1,4 +1,4 @@
-import { keyframes } from 'styled-components'
+import { keyframes, css } from 'styled-components'
 
 export const colors = {
   primary: ['#1976d2', '#2196f3', '#71bcf7', '#c2e2fb'],
@@ -31,3 +31,15 @@ export const animations = {
     }
   `
 }
+
+export const compBumpers = css`
+  background-color: rgba(0,0,0,.5);
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  flex: 0 0 3rem;
+  align-items: center;
+  margin-top: auto;
+  flex-direction: row;
+  z-index: 100;
+`

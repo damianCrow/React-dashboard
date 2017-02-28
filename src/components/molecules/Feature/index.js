@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components'
 
 const WrapperStyles = ({ double, fullWidth }) => css`
   position: relative;
-  width: ${fullWidth ? '100%' : '33.33333%'};
+  flex: 1 1 ${fullWidth ? '100%' : '33.33333%'};
   margin: 0;
   display: flex;
   flex-direction: column;

@@ -6,6 +6,7 @@ import {
   RECEIVE_SONOS_STATE,
   RECEIVE_SONOS_POSTS_ERROR,
   UPDATE_SONOS_STATES,
+  UPDATE_SONOS_GROUPS,
   NEED_TO_AUTH_SONOS
 } from '../actions'
 
@@ -58,6 +59,11 @@ const posts = (state = {
         ...state,
         sonosStates: action.data
       }
+    case UPDATE_SONOS_GROUPS:
+      return {
+        ...state,
+        groups: action.groups
+      }
     case NEED_TO_AUTH_SONOS:
       return {
         ...state,
@@ -77,6 +83,7 @@ const sonosProcess = (state = { }, action) => {
     case RECEIVE_SONOS_GROUPS:
     case RECEIVE_SONOS_STATE:
     case UPDATE_SONOS_STATES:
+    case UPDATE_SONOS_GROUPS:
     case NEED_TO_AUTH_SONOS:
       return {
         ...state,

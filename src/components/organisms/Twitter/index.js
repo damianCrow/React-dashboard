@@ -1,34 +1,97 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
+import ReactTransitionGroup from 'react-addons-transition-group'
 
-// import { Icon } from 'components'
+import moment from 'moment-timezone'
 
-import { fonts } from 'components/globals'
+import { fonts, compBumpers } from 'components/globals'
 
-const styles = ({ ...props, posts }) => css`
-  display: flex;
-  align-items: flex-end;
-  font-family: ${fonts.primary};
+import { FadingTransitionWrapper, Icon, Tweet, MediaBluredBack } from 'components'
+
+const TransitionWrapper = styled(ReactTransitionGroup)`
   color: black;
-  font-weight: 300;
-  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   text-align: left;
+  flex: 1;
   width: 100%;
   height: 100%;
-  background-color: lightblue;
-  background-size: cover;
 `
 
-const TwitterContainer = styled.div`
-  display: block;
-  width: 100%;
+const IconStyles = css`
+  z-index: 59;
+  padding: .25rem;
+  flex: 0 0 auto;
+`
+
+const TwitterWrapper = styled.section`
+  color: white;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  position: absolute;
+  justify-content: center;
   left: 0;
+  overflow: hidden;
+  position: absolute;
+  text-align: left;
   top: 0;
+  font-family: ${fonts.primary};
+  width: 100%;
 `
 
-const TwitterWrapper = styled.div`${styles}`
+const TwitterMedia = styled.div`
+  position: relative;
+  overflow: hidden;
+  flex: 1 0 auto;
+  margin: 0rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+`
+
+const TwitterCaption = styled.span`
+  display: inline-block;
+  flex: 1 1 auto;
+  margin: 1rem .5rem;
+`
+
+// const footerStyles = ({ ...props }) => css`
+//   background-color: rgba(0,0,0,.5);
+//   display: flex;
+//   width: 100%;
+//   overflow: hidden;
+//   flex: 0 0 3rem;
+//   align-items: center;
+//   margin-top: auto;
+//   flex-direction: row;
+// `
+const TwitterFrame = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  text-align: left;
+  top: 0;
+  width: 100%;
+`
+
+const TwitterBackground = styled.div`
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+`
+
+const StyledIcon = styled(Icon)`${IconStyles}`
+const Footer = styled.footer`${compBumpers}`
+const Header = styled.header`${compBumpers}`
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
@@ -36,45 +99,47 @@ const TwitterWrapper = styled.div`${styles}`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Twitter = ({ children, ...props, posts, isFetching }) => {
-  console.log('twitter posts: ', posts)
-  const isEmpty = posts.length === 0
+const Twitter = ({ children, ...props, posts, isFetching, slideShowKey }) => {
+  console.log('Twitter comp posts: ', posts.user.profile_banner_url)
+  // console.log('TWITTER COMP mediaType', mediaType)
+  // console.log('TWITTER COMP posts', posts)
+  // console.log('TWITTER COMP THUMBNAIL: ', posts.images.thumbnail.url)
+
   return (
-    <TwitterContainer>
-      {isEmpty
-        ? (isFetching ? <h2>Loading...</h2> : <h2>Empty.</h2>)
-        : <TwitterWrapper {...props} style={{ opacity: isFetching ? 0.5 : 1 }}>
-          <ul>
-            {posts.map((element, index) => {
-              return <li key={'mykey' + index}>{element.text}</li>
-            })}
-          </ul>
-        </TwitterWrapper>
-      }
-    </TwitterContainer>
+    <TwitterWrapper>
+      <TwitterFrame>
+        <TwitterBackground>
+          <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
+            <FadingTransitionWrapper key={posts.user.id}>
+              <MediaBluredBack type="image" media={posts.user.profile_banner_url} />
+            </FadingTransitionWrapper>
+          </TransitionWrapper>
+        </TwitterBackground>
+        <Header>
+          <StyledIcon icon="twitter" size={35} />
+          <span>@{posts.user.screen_name}</span>
+        </Header>
+        <TwitterMedia>
+          <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
+            <FadingTransitionWrapper key={slideShowKey}>
+              <Tweet allTweetDetails={posts} />
+            </FadingTransitionWrapper>
+          </TransitionWrapper>
+        </TwitterMedia>
+        <Footer>
+          <TwitterCaption>{moment(posts.created_at).calendar()}</TwitterCaption>
+        </Footer>
+      </TwitterFrame>
+
+    </TwitterWrapper>
   )
 }
 
 Twitter.propTypes = {
   children: PropTypes.any,
-  posts: PropTypes.array.isRequired,
-  isFetching: PropTypes.bool.isRequired
+  isFetching: PropTypes.bool.isRequired,
+  posts: PropTypes.object.isRequired,
+  slideShowKey: PropTypes.number.isRequired
 }
 
 export default Twitter
-
-// import React, { PropTypes } from 'react'
-
-// const SonosInfo = ({posts}) => (
-//   <ul>
-//     {posts.map((post, i) =>
-//       <li key={i}>{post.title}</li>
-//     )}
-//   </ul>
-// )
-
-// SonosInfo.propTypes = {
-//   posts: PropTypes.array.isRequired
-// }
-
-// export default SonosInfo

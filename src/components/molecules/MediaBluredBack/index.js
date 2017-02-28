@@ -10,6 +10,7 @@ const MediaWrapper = styled.div`
   top: 0;
   width: 100%;
   position: absolute;
+  background: black;
 `
 
 const Image = styled.img`
@@ -19,7 +20,8 @@ const Image = styled.img`
   object-fit: cover;
   position: absolute;
   top: 0;
-  transform: scale(1.1)
+  transform: scale(1.1);
+  opacity: .5;
   width: 100%;
 `
 

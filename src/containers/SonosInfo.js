@@ -1,8 +1,8 @@
 import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
-import { fetchSonosDataIfNeeded, sonosStateMatch } from 'store/actions'
+import { fetchSonosDataIfNeeded, sonosStateMatch, featuredSpeaker } from 'store/actions'
 
-import { SonosContainer, SonosGroupQueue, SonosPlayer } from 'components'
+import { SonosContainer, SonosGroupQueue, SonosPlayer, SplashScreen } from 'components'
 
 class SonosInfoContainer extends Component {
   static propTypes = {
@@ -13,31 +13,81 @@ class SonosInfoContainer extends Component {
     dispatch: PropTypes.func.isRequired
   }
 
+  constructor () {
+    super()
+
+    this.state = {
+      players: []
+    }
+  }
+
   componentDidMount () {
     const { dispatch } = this.props
     dispatch(fetchSonosDataIfNeeded())
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    const { newSonosState, dispatch } = this.props
+    if (this.props.newSonosState !== nextProps.newSonosState) {
+      return true
+    } else {
+      return false
+    }
+  }
 
+  componentWillReceiveProps (nextProps) {
+    const { groups, newSonosState, dispatch } = this.props
+    console.log('componentWillReceiveProps')
+
+    // dispatch(featuredSpeaker())
     // Need to save the new Sonos state, before it gets replaced
     if (newSonosState !== nextProps.newSonosState) {
       dispatch(sonosStateMatch())
-      return true
     }
 
-    return true
+    this.buildPlayers(nextProps)
   }
 
-  listenForChanges () {
+  buildPlayers (props) {
+    const { newSonosState, sonosStates, groups } = props
 
+    // console.log('componentWillReceiveProps newPlayers', newPlayers)
+
+    console.log('newSonosState', newSonosState)
+    console.log('groups', groups)
+
+    const isGroupsEmpty = groups.length === 0
+    const isStateEmpty = newSonosState.length === 0
+
+    // for (let i = 0; i < sonosStates.length; i++) {
+    //   if (sonosStates[i].uuid === newSonosState.uuid) {
+    //     this.props.sonosStates[i] = newSonosState
+    //   } else if (i === sonosStates.length) {
+    //     this.props.sonosStates[i] = newSonosState
+    //   }
+    // }
+
+    if (!isGroupsEmpty && !isStateEmpty) {
+      this.state.players = groups.map(group => {
+        // if (matachedGroupAndState !== false) {
+        return <SonosPlayer
+          key={group.uuid}
+          speakers={this.speakerNames(group.members)}
+          playerState={this.matchGroupWithState(group, sonosStates)}
+        />
+        // }
+      })
+    }
+
+    // if (newPlayers.length > 0) {
+    //   this.state.players = newPlayers
+    //   this.forceUpdate()
+    // }
   }
 
   speakerNames (members) {
     let speakerNames = []
     for (let i = 0; i < members.length; i++) {
-      speakerNames[i] = ` 🔈 ${members[i].roomName}`
+      speakerNames[i] = ` ${members[i].roomName}`
     }
     return speakerNames
   }
@@ -48,27 +98,29 @@ class SonosInfoContainer extends Component {
         return sonosStates[i]
       }
     }
-
     return {}
   }
 
   render () {
     const { groups, isFetching, sonosStates } = this.props
 
-    const isGroupsEmpty = groups.length === 0
-    const isStateEmpty = sonosStates.length === 0
+    // const isGroupsEmpty = groups.length === 0
+    // const isStateEmpty = sonosStates.length === 0
 
-    console.log('isGroupsEmpty ', isGroupsEmpty)
-    console.log('isStateEmpty ', isStateEmpty)
+    // console.log('isGroupsEmpty ', isGroupsEmpty)
+    // console.log('isStateEmpty ', isStateEmpty)
 
-    if (!isGroupsEmpty && !isStateEmpty) {
-      let players = groups.map(group => {
-        return <SonosPlayer
-          key={group.uuid}
-          speakers={this.speakerNames(group.members)}
-          playerState={this.matchGroupWithState(group, sonosStates)}
-        />
-      })
+    console.log('SONOSINFO RENDER this.state.players.length', this.state.players.length)
+
+    if (this.state.players.length !== 0) {
+      // let players = groups.map(group => {
+      //   return <SonosPlayer
+      //     key={group.uuid}
+      //     speakers={this.speakerNames(group.members)}
+      //     speakerFeature={this.state.featuredSpeaker}
+      //     playerState={this.state.playerState}
+      //   />
+      // })
 
       // if (newSonosState.uuid === groups[i].uuid) {
       //   players = groups.map(item => {
@@ -82,15 +134,13 @@ class SonosInfoContainer extends Component {
 
       return (
         <SonosContainer isFetching={isFetching} >
-          {players}
-          {/*groups.length === 1 &&
-            <span>Sonos Queue</span>
-            // <SonosGroupQueue />
-          */}
+          {this.state.players}
         </SonosContainer>
       )
     } else {
-      return null
+      return (
+        <SplashScreen icon="sonos" service="Sonos" />
+      )
     }
   }
 }
