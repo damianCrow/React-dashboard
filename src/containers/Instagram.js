@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
 import { fetchInstagramIfNeeded, startInstagramSlideshow } from 'store/actions'
 
-import { Instagram, InstagramAuth } from 'components'
+import { Instagram, InstagramAuth, SplashScreen } from 'components'
 
 class InstagramContainer extends Component {
   static propTypes = {
@@ -61,7 +61,7 @@ class InstagramContainer extends Component {
       )
     } else {
       return (
-        <span>Awaiting images...</span>
+        <SplashScreen icon="instagram" service="Instagram" />
       )
     }
   }

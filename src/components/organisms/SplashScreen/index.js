@@ -26,6 +26,7 @@ const styles = ({ ...props }) => css`
 const LoadingMessage = styled.span`
   font-family: ${fonts.primary};
   color: white;
+  margin: 1rem;
 `
 
 const SplashScreenContainer = styled.div`${styles}`
