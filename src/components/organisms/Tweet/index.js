@@ -1,9 +1,11 @@
-import React, { PropTypes } from 'react'
-import styled, { css } from 'styled-components'
+import React, { PropTypes, Component } from 'react'
+import styled from 'styled-components'
+import ReactDOM from 'react-dom'
 
 import { fonts } from 'components/globals'
 
-import { MediaBluredBack } from 'components'
+import theaterJS from 'theaterjs/dist/theater.js'
+import { TweenMax } from 'gsap'
 
 const TweetAndBack = styled.div`
   position: absolute;
@@ -25,21 +27,86 @@ const TweetWrapper = styled.div`
   left: 0;
 `
 
-// const PlaybackIcon = styled.Icon`
-//   display: absolute;
-// `
+class Tweet extends Component {
+  static propTypes = {
+    children: PropTypes.any
+  }
 
-// const StyledIcon = styled(Icon)`${iconStyles}`
+  constructor () {
+    super()
+    this.theater = theaterJS({minSpeed: {erase: 10, type: 50}, maxSpeed: {erase: 25, type: 75}})
 
-const Tweet = ({...props, allTweetDetails}) => {
-  console.log('Twitter comp posts: ', allTweetDetails)
-  return (
-    <TweetAndBack>
-      <TweetWrapper>
-        <span>{allTweetDetails.text}</span>
-      </TweetWrapper>
-    </TweetAndBack>
-  )
+    this.theater
+      .on('type:start, erase:start', () => {
+        // add a class to actor's dom element when he starts typing/erasing
+        const actor = this.theater.getCurrentActor()
+        actor.$element.classList.add('is-typing')
+      })
+      .on('type:end, erase:end', () => {
+        // and then remove it when he's done
+        const actor = this.theater.getCurrentActor()
+        actor.$element.classList.remove('is-typing')
+      })
+  }
+
+  componentDidMount () {
+    const { allTweetDetails } = this.props
+    console.log('allTweetDetails', allTweetDetails)
+    // console.log('this._tweetText', this._tweetText)
+
+    this._tweetText.id = 'tweet-' + allTweetDetails.id_str
+
+    this._tweetText.setAttribute('id', 'tweet-' + allTweetDetails.id_str)
+
+    this.tweetId = `tweet-${allTweetDetails.id_str}`
+
+    this.theater
+      .addActor(this.tweetId)
+  }
+
+  componentWillEnter (callback) {
+    // const el = ReactDOM.findDOMNode(this)
+    // TweenMax.fromTo(el, 1, {opacity: 0}, {opacity: 1, onComplete: callback})
+    this.startTyping(callback)
+  }
+
+  componentWillLeave (callback) {
+    // const el = ReactDOM.findDOMNode(this)
+    this.removeType(callback)
+    // TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
+  }
+
+  startTyping (callback) {
+    const { allTweetDetails } = this.props
+
+    this.theater
+      .addScene(3500)
+      .addScene(`${this.tweetId}:${allTweetDetails.text}`, 100)
+      .addScene(function (done) {
+        callback()
+        done()
+      })
+  }
+
+  removeType (callback) {
+    this.theater
+      .addScene(`${this.tweetId}: `, 50)
+      .addScene(function (done) {
+        callback()
+        done()
+      })
+  }
+
+  render () {
+    const { allTweetDetails } = this.props
+    return (
+      <TweetAndBack>
+        <TweetWrapper>
+          <span ref={(el) => { this._tweetText = el }}></span>
+        </TweetWrapper>
+      </TweetAndBack>
+    )
+  }
 }
 
 Tweet.propTypes = {
@@ -47,3 +114,4 @@ Tweet.propTypes = {
 }
 
 export default Tweet
+

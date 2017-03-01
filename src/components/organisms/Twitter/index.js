@@ -4,9 +4,9 @@ import ReactTransitionGroup from 'react-addons-transition-group'
 
 import moment from 'moment-timezone'
 
-import { fonts, compBumpers } from 'components/globals'
+import { fonts, compHeader } from 'components/globals'
 
-import { FadingTransitionWrapper, Icon, Tweet, MediaBluredBack } from 'components'
+import { FadingTransitionWrapper, Icon, Tweet, MediaBluredBack, InfoBlockHeader, MetaTags } from 'components'
 
 const TransitionWrapper = styled(ReactTransitionGroup)`
   color: black;
@@ -88,10 +88,16 @@ const TwitterBackground = styled.div`
   width: 100%;
   height: 100%;
 `
+const HeaderLevel = styled.div`
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex: 0 0 100%;
+`
 
 const StyledIcon = styled(Icon)`${IconStyles}`
-const Footer = styled.footer`${compBumpers}`
-const Header = styled.header`${compBumpers}`
+const Header = styled(InfoBlockHeader)`${compHeader}`
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
@@ -105,6 +111,11 @@ const Twitter = ({ children, ...props, posts, isFetching, slideShowKey }) => {
   // console.log('TWITTER COMP posts', posts)
   // console.log('TWITTER COMP THUMBNAIL: ', posts.images.thumbnail.url)
 
+  const metaTags = [
+    {icon: 'heart', metaInfo: posts.favorite_count},
+    {icon: 'retweet', metaInfo: posts.retweet_count}
+  ]
+
   return (
     <TwitterWrapper>
       <TwitterFrame>
@@ -115,20 +126,20 @@ const Twitter = ({ children, ...props, posts, isFetching, slideShowKey }) => {
             </FadingTransitionWrapper>
           </TransitionWrapper>
         </TwitterBackground>
-        <Header>
-          <StyledIcon icon="twitter" size={35} />
-          <span>@{posts.user.screen_name}</span>
+        <Header icon="twitter">
+          <HeaderLevel>
+            <span>@{posts.user.screen_name}</span>
+            <TwitterCaption>{moment(posts.created_at).calendar()}</TwitterCaption>
+          </HeaderLevel>
+          <HeaderLevel>
+            <MetaTags tags={metaTags} />
+          </HeaderLevel>
         </Header>
         <TwitterMedia>
           <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
-            <FadingTransitionWrapper key={slideShowKey}>
-              <Tweet allTweetDetails={posts} />
-            </FadingTransitionWrapper>
+            <Tweet allTweetDetails={posts} key={slideShowKey} />
           </TransitionWrapper>
         </TwitterMedia>
-        <Footer>
-          <TwitterCaption>{moment(posts.created_at).calendar()}</TwitterCaption>
-        </Footer>
       </TwitterFrame>
 
     </TwitterWrapper>

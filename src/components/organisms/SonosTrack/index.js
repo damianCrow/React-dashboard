@@ -3,6 +3,8 @@ import styled, { css } from 'styled-components'
 
 import { fonts } from 'components/globals'
 
+import { WaveAnimation } from 'components'
+
 const styles = ({ ...props, trackInfo }) => css`
   color: white;
   display: flex;
@@ -59,6 +61,9 @@ const TrackInfo = styled.div`
   flex: 1 0 5rem;
   align-items: center;
   justify-content: center;
+  position: relative;
+  width: 100%;
+  padding: 2rem 0;
 `
 
 const Artist = styled.span`
@@ -88,6 +93,12 @@ const AlbumArt = styled.img`
   object-fit: contain;
 `
 
+const StyledWave = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+`
+
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
 // `
@@ -115,6 +126,7 @@ const SonosTrack = ({...props, trackInfo}) => {
             // <PlaybackIcon />
             <span>PAUSED</span>
           }
+          <WaveAnimation />
         </TrackInfo>
       </SonosCurrentTrack>
     </SonosCurrentTrackWrapper>

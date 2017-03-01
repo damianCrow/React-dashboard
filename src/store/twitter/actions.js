@@ -68,7 +68,7 @@ export const startTwitterSlideshow = allPosts => (dispatch, getState) => {
     console.log('startTwitterSlideshow')
 
     dispatch(loadNextTwitterMedia(allPosts))
-  }, 5000)
+  }, 20000)
 }
 
 export const fetchTwitterIfNeeded = reddit => (dispatch, getState) => {

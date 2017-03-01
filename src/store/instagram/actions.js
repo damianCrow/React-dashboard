@@ -69,7 +69,7 @@ export const startInstagramSlideshow = allPosts => (dispatch, getState) => {
     console.log('startInstagramSlideshow')
 
     dispatch(loadNextInstagramMedia(allPosts))
-  }, 5000)
+  }, 15000)
 }
 
 export const fetchInstagramIfNeeded = reddit => (dispatch, getState) => {

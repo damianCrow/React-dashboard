@@ -6,9 +6,12 @@ import styled, { css } from 'styled-components'
 const WrapperStyles = ({ double, fullWidth }) => css`
   position: relative;
   flex: 1 1 ${fullWidth ? '100%' : '33.33333%'};
-  margin: 0;
+  margin: .5rem;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  border-radius: 1rem;
+  will-change: transform;
 
   &:before{
     display: block;

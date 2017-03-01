@@ -32,8 +32,8 @@ export const animations = {
   `
 }
 
-export const compBumpers = css`
-  background-color: rgba(0,0,0,.5);
+export const compHeader = css`
+  border-bottom: 1px solid rgba(256,256,256,.5);
   display: flex;
   width: 100%;
   overflow: hidden;
