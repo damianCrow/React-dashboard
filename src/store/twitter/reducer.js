@@ -55,27 +55,30 @@ const posts = (state = {
     case UPDATE_TWITTER_SLIDESHOW:
       return {
         ...state,
-        slideShow: {
-          currentPost: action.slideShow.currentPost,
-          currentInt: action.slideShow.currentInt,
-          mediaType: action.slideShow.mediaType
-        }
+        slideShow: twitterSlideshow(state.slideShow, action)
       }
     default:
       return state
   }
 }
 
-// const sonosInfoStream = (state = { }, action) => {
-//   switch (action.type) {
-//     case MESSAGE:
-//       return Object.assign({}, {
-//         message: action.data
-//       })
-//     default:
-//       return state
-//   }
-// }
+const twitterSlideshow = (state = {
+  currentPost: {},
+  currentInt: 0,
+  mediaType: ''
+}, action) => {
+  switch (action.type) {
+    case UPDATE_TWITTER_SLIDESHOW:
+      return {
+        ...state,
+        currentPost: action.slideShow.currentPost,
+        currentInt: action.slideShow.currentInt,
+        mediaType: action.slideShow.mediaType
+      }
+    default:
+      return state
+  }
+}
 
 const twitterProcess = (state = { }, action) => {
   switch (action.type) {
