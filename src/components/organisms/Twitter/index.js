@@ -6,7 +6,7 @@ import moment from 'moment-timezone'
 
 import { fonts, compHeader } from 'components/globals'
 
-import { FadingTransitionWrapper, Icon, Tweet, MediaBluredBack, InfoBlockHeader, MetaTags } from 'components'
+import { FadingTransitionWrapper, Icon, Tweet, MediaBluredBack, Ticker, MetaTags } from 'components'
 
 const TransitionWrapper = styled(ReactTransitionGroup)`
   color: black;
@@ -91,13 +91,15 @@ const TwitterBackground = styled.div`
 const HeaderLevel = styled.div`
   flex: 1;
   width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   flex: 0 0 100%;
+  justify-content: space-between;
 `
 
 const StyledIcon = styled(Icon)`${IconStyles}`
-const Header = styled(InfoBlockHeader)`${compHeader}`
+const Header = styled(Ticker)`${compHeader}`
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
@@ -106,10 +108,7 @@ const Header = styled(InfoBlockHeader)`${compHeader}`
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
 const Twitter = ({ children, ...props, posts, isFetching, slideShowKey }) => {
-  console.log('Twitter comp posts: ', posts.user.profile_banner_url)
-  // console.log('TWITTER COMP mediaType', mediaType)
-  // console.log('TWITTER COMP posts', posts)
-  // console.log('TWITTER COMP THUMBNAIL: ', posts.images.thumbnail.url)
+  console.log('Twitter comp slideShowKey: ', slideShowKey)
 
   const metaTags = [
     {icon: 'heart', metaInfo: posts.favorite_count},
@@ -126,7 +125,7 @@ const Twitter = ({ children, ...props, posts, isFetching, slideShowKey }) => {
             </FadingTransitionWrapper>
           </TransitionWrapper>
         </TwitterBackground>
-        <Header icon="twitter">
+        <Header icon="twitter" slideShowKey={slideShowKey}>
           <HeaderLevel>
             <span>@{posts.user.screen_name}</span>
             <TwitterCaption>{moment(posts.created_at).calendar()}</TwitterCaption>
@@ -141,7 +140,6 @@ const Twitter = ({ children, ...props, posts, isFetching, slideShowKey }) => {
           </TransitionWrapper>
         </TwitterMedia>
       </TwitterFrame>
-
     </TwitterWrapper>
   )
 }

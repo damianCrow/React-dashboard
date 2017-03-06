@@ -32,7 +32,8 @@ const youTubeOpts = {
     controls: 1,
     modestbranding: 1,
     showinfo: 0,
-    rel: 0
+    rel: 0,
+    disablekb: 1
   }
 }
 
@@ -48,17 +49,14 @@ class YouTubeVideo extends Component {
     this.onVideoEnd = this.onVideoEnd.bind(this)
   }
 
-  // componentWillEnter (callback) {
-  //   const el = ReactDOM.findDOMNode(this)
-  //   console.log('InstagramVideo componentWillEnter')
-  //   TweenMax.fromTo(el, 1, {opacity: 0}, {opacity: 1, onComplete: callback})
-  // }
-
-  // componentWillLeave (callback) {
-  //   const el = ReactDOM.findDOMNode(this)
-  //   console.log('InstagramVideo componentWillLeave')
-  //   TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
-  // }
+  /**
+   * Handles the event when the video is ready to play
+   *
+   * @returns {void}
+   */
+  handleVideoReady (event) {
+    event.target.mute();
+  }
 
   onVideoEnd () {
     console.log('YouTubeVideo onVideoEnd fired')
@@ -74,6 +72,7 @@ class YouTubeVideo extends Component {
           videoId={youtubeId}
           opts={youTubeOpts}
           onEnd={this.onVideoEnd}
+          onReady={this.handleVideoReady.bind(this)}
         />
       </YouTubeContainer>
     )

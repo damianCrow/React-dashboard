@@ -102,7 +102,7 @@ class Tweet extends Component {
     return (
       <TweetAndBack>
         <TweetWrapper>
-          <span ref={(el) => { this._tweetText = el }}></span>
+          <span ref={(el) => { this._tweetText = el }} />
         </TweetWrapper>
       </TweetAndBack>
     )

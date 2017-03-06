@@ -5,10 +5,9 @@ import { Icon } from 'components'
 
 const MetaContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   margin: 0 .5rem;
-  flex: 0 0 100%;
+  flex: 1 1 100%;
   height: 100%;
 `
 const Meta = styled.div`
@@ -17,7 +16,7 @@ const Meta = styled.div`
   justify-content: center;
   align-items: center;
   margin: 0 .25rem;
-  flex: 0 0 100%;
+  flex: 0 0 auto;
   height: 100%;
 `
 
