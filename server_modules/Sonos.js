@@ -25,10 +25,14 @@ export default class Sonos {
       cacheDir: './.cache'
     })
 
+    console.log('discovery', discovery)
+
     // let groupStates = []
 
     discovery.on('topology-change', sonosGroups => {
       // THIS SPITS OUT DETAILS ABOUT ALL GROUPS
+
+      console.log('sonosGroups', sonosGroups)
 
       // socketServer.sockets.emit('topology-change', discovery.players)
       // console.log('topology-change (data)')

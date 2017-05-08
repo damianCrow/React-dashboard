@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import { colors } from 'components/globals'
-import { Icon, DigitalClock } from 'components'
+import { Icon, DigitalClock, WeatherIcon } from 'components'
 
 const Wrapper = styled.div`
   display: flex;
@@ -22,6 +22,7 @@ const Header = (props) => {
     <Wrapper {...props}>
       <Icon size={75} icon="interwink" />
       <DigitalClock />
+      <WeatherIcon />
     </Wrapper>
   )
 }

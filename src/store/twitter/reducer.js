@@ -5,7 +5,7 @@ import {
   RECEIVE_TWITTER_POSTS,
   RECEIVE_TWITTER_POSTS_ERROR,
   NEED_TO_AUTH_TWITTER,
-  UPDATE_TWITTER_SLIDESHOW
+  START_TWITTER_SLIDESHOW
 } from '../actions'
 
 const posts = (state = {
@@ -52,7 +52,7 @@ const posts = (state = {
         status: action.data.status,
         lastUpdated: action.receivedAt
       }
-    case UPDATE_TWITTER_SLIDESHOW:
+    case START_TWITTER_SLIDESHOW:
       return {
         ...state,
         slideShow: twitterSlideshow(state.slideShow, action)
@@ -68,7 +68,7 @@ const twitterSlideshow = (state = {
   mediaType: ''
 }, action) => {
   switch (action.type) {
-    case UPDATE_TWITTER_SLIDESHOW:
+    case START_TWITTER_SLIDESHOW:
       return {
         ...state,
         currentPost: action.slideShow.currentPost,
@@ -87,7 +87,7 @@ const twitterProcess = (state = { }, action) => {
     case RECEIVE_TWITTER_POSTS_ERROR:
     case RECEIVE_TWITTER_POSTS:
     case NEED_TO_AUTH_TWITTER:
-    case UPDATE_TWITTER_SLIDESHOW:
+    case START_TWITTER_SLIDESHOW:
       return {
         ...state,
         twitterDetails: posts(state.twitterDetails, action)
