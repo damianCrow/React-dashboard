@@ -102,7 +102,7 @@ class Ticker extends Component {
     console.log('ticker slideShowKey', slideShowKey)
     return (
       <HeaderWrapper>
-        <StyledIcon icon={icon} size={35} />
+        <StyledIcon icon={icon} height={35} />
         <MoreHeaderInfo>
           <Levels
             innerRef={(el) => {

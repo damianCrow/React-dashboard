@@ -1,5 +1,7 @@
 export const initialState = {
-  twitter: []
+  posts: [],
+  message: '',
+  status: '',
 }
 
-export const getSonosData = (state = initialState) => state.twitter || []
+export const getTwitterData = (state = initialState) => state.twitter || []

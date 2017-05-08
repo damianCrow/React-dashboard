@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { serviceRequest, startSlideshow, fetchInstagramIfNeeded, startInstagramSlideshow } from 'store/actions'
+import { serviceRequest, startSlideshow } from 'store/actions'
 import { SocketConnector } from 'hoc'
 import { Instagram, InstagramAuth, SplashScreen } from 'components'
 

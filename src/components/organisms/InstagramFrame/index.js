@@ -1,12 +1,13 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
-import ReactTransitionGroup from 'react-addons-transition-group'
+import TransitionGroup from 'react-transition-group/TransitionGroup'
+
 
 import { fonts, compHeader } from 'components/globals'
 
 import { FadingTransitionWrapper, ImageFeature, InstagramVideo, Icon, MetaTags } from 'components'
 
-const TransitionWrapper = styled(ReactTransitionGroup)`
+const TransitionWrapper = styled(TransitionGroup)`
   color: black;
   display: flex;
   flex-direction: column;
@@ -101,11 +102,11 @@ const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey }) 
                 currentImage={posts.images.standard_resolution.url}
               />
             }
-            {mediaType === 'video' &&
+            {/* mediaType === 'video' &&
               <InstagramVideo
                 currentVideo={posts.videos.standard_resolution.url}
               />
-            }
+            */}
           </FadingTransitionWrapper>
         </TransitionWrapper>
       </InstagramMedia>

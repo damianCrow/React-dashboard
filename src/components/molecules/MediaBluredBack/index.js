@@ -56,15 +56,14 @@ class MediaBluredBack extends Component {
   //   TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
   // }
 
-  render () {
+  render() {
     const { type, media } = this.props
     return (
       <MediaWrapper>
-        {type === 'image' ? (
+        {type === 'image' &&
           <Image src={media} />
-        ) : (
-          <Video src={media} autoPlay="true" muted />
-        )}
+        }
+        {/* <Video src={media} autoPlay="true" muted />*/ }
       </MediaWrapper>
     )
   }

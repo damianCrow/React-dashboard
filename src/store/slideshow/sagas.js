@@ -9,10 +9,10 @@ function* nextSlide(action) {
   const service = action.service
   const max = yield select(maxSlideshow(service))
   const current = yield select(currentSlideshow(service))
-  yield delay(5000)
+  yield delay(12000)
 
   // TODO: Make this a seperate async func
-  if (current !== max) {
+  if (current !== (max - 1)) {
     yield put(actions.incrementServiceSlideshow(service))
   } else {
     yield put(actions.restartServiceSlideshow(service))
@@ -42,7 +42,7 @@ function* pauseSlideshow() {
 // TODO: Make these pick up the service actions.
 // Handles connecting, message processing and disconnecting
 export default function* () {
-  yield takeLatest('SLIDESHOW_INCREMENT', nextSlide)
-  yield takeLatest('SLIDESHOW_START', startSlides)
+  yield takeEvery('SLIDESHOW_INCREMENT', nextSlide)
+  yield takeEvery('SLIDESHOW_START', startSlides)
   // yield takeLatest('SLIDESHOW_PAUSE', pauseSlideshow)
 }

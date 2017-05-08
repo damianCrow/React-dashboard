@@ -28,13 +28,10 @@ const TweetWrapper = styled.div`
 `
 
 class Tweet extends Component {
-  static propTypes = {
-    children: PropTypes.any
-  }
-
-  constructor () {
-    super()
-    this.theater = theaterJS({minSpeed: {erase: 10, type: 50}, maxSpeed: {erase: 25, type: 75}})
+  constructor(props) {
+    super(props)
+    this.theater =
+      theaterJS({ minSpeed: { erase: 10, type: 50 }, maxSpeed: { erase: 25, type: 75 } })
 
     this.theater
       .on('type:start, erase:start', () => {
@@ -49,14 +46,14 @@ class Tweet extends Component {
       })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { allTweetDetails } = this.props
-    console.log('allTweetDetails', allTweetDetails)
+    // console.log('allTweetDetails', allTweetDetails)
     // console.log('this._tweetText', this._tweetText)
 
-    this._tweetText.id = 'tweet-' + allTweetDetails.id_str
+    this._tweetText.id = `tweet-${allTweetDetails.id_str}`
 
-    this._tweetText.setAttribute('id', 'tweet-' + allTweetDetails.id_str)
+    this._tweetText.setAttribute('id', `tweet-${allTweetDetails.id_str}`)
 
     this.tweetId = `tweet-${allTweetDetails.id_str}`
 
@@ -64,40 +61,44 @@ class Tweet extends Component {
       .addActor(this.tweetId)
   }
 
-  componentWillEnter (callback) {
+  // componentWillAppear (callback) {
+  //   callback()
+  //   console.log('will appear')
+  // }
+
+  componentWillEnter(callback) {
     // const el = ReactDOM.findDOMNode(this)
     // TweenMax.fromTo(el, 1, {opacity: 0}, {opacity: 1, onComplete: callback})
     this.startTyping(callback)
   }
 
-  componentWillLeave (callback) {
+  componentWillLeave(callback) {
     // const el = ReactDOM.findDOMNode(this)
     this.removeType(callback)
     // TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
   }
 
-  startTyping (callback) {
+  startTyping(callback) {
     const { allTweetDetails } = this.props
-
     this.theater
       .addScene(3500)
       .addScene(`${this.tweetId}:${allTweetDetails.text}`, 100)
-      .addScene(function (done) {
+      .addScene((done) => {
         callback()
         done()
       })
   }
 
-  removeType (callback) {
+  removeType(callback) {
     this.theater
       .addScene(`${this.tweetId}: `, 50)
-      .addScene(function (done) {
+      .addScene((done) => {
         callback()
         done()
       })
   }
 
-  render () {
+  render() {
     const { allTweetDetails } = this.props
     return (
       <TweetAndBack>
@@ -110,7 +111,7 @@ class Tweet extends Component {
 }
 
 Tweet.propTypes = {
-  allTweetDetails: PropTypes.object
+  allTweetDetails: PropTypes.object,
 }
 
 export default Tweet

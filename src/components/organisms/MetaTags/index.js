@@ -29,7 +29,7 @@ const StyledIcon = styled(Icon)`
 const MetaTags = ({ tags, ...props }) => {
   const builtTags = tags.map((tag, index) => {
     return <Meta key={index}>
-      <StyledIcon icon={tag.icon} size={25} />
+      <StyledIcon icon={tag.icon} height={28} />
       <span>{tag.metaInfo}</span>
     </Meta>
   })

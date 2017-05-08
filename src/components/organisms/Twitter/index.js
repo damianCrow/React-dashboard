@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
-import ReactTransitionGroup from 'react-addons-transition-group'
+import TransitionGroup from 'react-transition-group/TransitionGroup'
 
 import moment from 'moment-timezone'
 
@@ -8,7 +8,7 @@ import { fonts, compHeader } from 'components/globals'
 
 import { FadingTransitionWrapper, Icon, Tweet, MediaBluredBack, Ticker, MetaTags } from 'components'
 
-const TransitionWrapper = styled(ReactTransitionGroup)`
+const TransitionWrapper = styled(TransitionGroup)`
   color: black;
   display: flex;
   flex-direction: column;
@@ -107,36 +107,34 @@ const Header = styled(Ticker)`${compHeader}`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Twitter = ({ children, ...props, posts, isFetching, slideShowKey }) => {
-  console.log('Twitter comp slideShowKey: ', slideShowKey)
-
+const Twitter = ({ children, ...props, post, slideShowKey }) => {
   const metaTags = [
-    {icon: 'heart', metaInfo: posts.favorite_count},
-    {icon: 'retweet', metaInfo: posts.retweet_count}
+    { icon: 'heart', metaInfo: post.favorite_count },
+    { icon: 'retweet', metaInfo: post.retweet_count },
   ]
 
   return (
     <TwitterWrapper>
       <TwitterFrame>
         <TwitterBackground>
-          <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
-            <FadingTransitionWrapper key={posts.user.id}>
-              <MediaBluredBack type="image" media={posts.user.profile_banner_url} />
+          <TransitionWrapper>
+            <FadingTransitionWrapper key={post.user.id_str}>
+              <MediaBluredBack type="image" media={post.user.profile_banner_url} />
             </FadingTransitionWrapper>
           </TransitionWrapper>
         </TwitterBackground>
         <Header icon="twitter" slideShowKey={slideShowKey}>
           <HeaderLevel>
-            <span>@{posts.user.screen_name}</span>
-            <TwitterCaption>{moment(posts.created_at).calendar()}</TwitterCaption>
+            <span>@{post.user.username}</span>
+            <TwitterCaption>{moment(post.created_time).calendar()}</TwitterCaption>
           </HeaderLevel>
           <HeaderLevel>
             <MetaTags tags={metaTags} />
           </HeaderLevel>
         </Header>
         <TwitterMedia>
-          <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
-            <Tweet allTweetDetails={posts} key={slideShowKey} />
+          <TransitionWrapper>
+            <Tweet allTweetDetails={post} key={slideShowKey} />
           </TransitionWrapper>
         </TwitterMedia>
       </TwitterFrame>
@@ -146,9 +144,8 @@ const Twitter = ({ children, ...props, posts, isFetching, slideShowKey }) => {
 
 Twitter.propTypes = {
   children: PropTypes.any,
-  isFetching: PropTypes.bool.isRequired,
-  posts: PropTypes.object.isRequired,
-  slideShowKey: PropTypes.number.isRequired
+  post: PropTypes.object.isRequired,
+  slideShowKey: PropTypes.number.isRequired,
 }
 
 export default Twitter

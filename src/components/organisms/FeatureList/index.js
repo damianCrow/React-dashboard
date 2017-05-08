@@ -38,6 +38,7 @@ const FeatureList = ({ ...props }) => {
           </Feature>
           <Feature fullWidth>
             {/* <Twitter />*/}
+            {<Twitter />}
           </Feature>
         </GridColumn>
       </GridRow>

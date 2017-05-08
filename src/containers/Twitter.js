@@ -1,109 +1,88 @@
-import React, { PropTypes, Component } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { fetchTwitterIfNeeded, startTwitterSlideshow } from 'store/actions'
+import { serviceRequest, startSlideshow } from 'store/actions'
+import { SocketConnector } from 'hoc'
 
 import { Twitter, Auth, SplashScreen } from 'components'
 
 class TwitterContainer extends Component {
-  static propTypes = {
-    allPosts: PropTypes.array.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    message: PropTypes.string.isRequired,
-    slideShow: PropTypes.object.isRequired,
-    status: PropTypes.string.isRequired
+
+  componentDidMount() {
+    this.props.socketConnected && this.props.serviceRequest()
   }
 
-  componentDidMount () {
-    const { dispatch } = this.props
-    dispatch(fetchTwitterIfNeeded())
-  }
+  componentWillReceiveProps(nextProps) {
+    // Try and move this logic back to the HOC container
+    const { socketConnected, serviceRequest, posts, startInstaSlideshow, slideshow } = nextProps
 
-  componentDidUpdate () {
-    const { slideShow, status, dispatch, allPosts } = this.props
-    // console.log('InstagramContainer - componentDidUpdate fired')
-    // console.log('slideShow - slideShow: ', slideShow)
-    // console.log('status', status)
-    // console.log('Object.keys(slideShow.currentPost).length', Object.keys(slideShow.currentPost).length)
+    if (socketConnected && !this.props.socketConnected) {
+      serviceRequest()
+    }
 
-    if (status === 'success') {
-      console.log('fireing startTwitterSlideshow')
-      dispatch(startTwitterSlideshow(allPosts))
+    if (posts.length > 0 && slideshow.status === 'ready') {
+      startInstaSlideshow(20)
     }
   }
 
-  listenForChanges () {
+  render() {
+    const { status, message, posts, slideshow } = this.props
+    // console.log('twitter status', status)
 
-  }
+    const isEmpty = posts.length === 0
 
-  handleRefreshClick = e => {
-    e.preventDefault()
-
-    // const { dispatch } = this.props
-    // Clear out old data, to load in the new (refresh).
-    // dispatch(invalidateSonosData())
-    // dispatch(fetchSonosDataIfNeeded())
-  }
-
-  render () {
-    const { slideShow, isFetching, status, allPosts } = this.props
-    console.log('twitter container allposts: ', allPosts)
-    // console.log('instagram status', status)
-
-    const isEmpty = Object.keys(slideShow.currentPost).length === 0
-    console.log('isEmptytwitter', isEmpty)
-
-    if (status === 'failed' || status === '') {
+    if (status === 'failed') {
       return (
         <span>{status}</span>
       )
-    } else if (status === 'auth-failed') {
-      return (
-        <Auth
-          icon="twitter"
-          service="Twitter"
-        />
-      )
+    // } else if (status === 'auth-failed') {
+    //   return (
+    //     <Auth
+    //       icon="twitter"
+    //       service="Twitter"
+    //     />
+    //   )
     } else if (!isEmpty) {
-      console.log('twitter slideShow.currentPost.user', slideShow.currentPost.user)
       return (
         <Twitter
-          posts={slideShow.currentPost}
-          slideShowKey={slideShow.currentInt}
-          isFetching={isFetching}
+          post={posts[slideshow.current]}
+          slideShowKey={slideshow.current}
         />
       )
-    } else {
-      return (
-        <SplashScreen icon="twitter" service="Twitter" />
-      )
     }
+    return (
+      <SplashScreen icon="twitter" service="Twitter" />
+    )
   }
 }
 
-const mapStateToProps = state => {
-  const { twitter } = state
-  const {
-    allPosts,
-    isFetching,
-    message,
-    slideShow,
-    status
-  } = twitter['twitterProcess']['twitterDetails'] || {
-    allPosts: [],
-    isFetching: true,
-    message: '',
-    slideShow: {currentPost: {}, currentInt: 0},
-    status: ''
-  }
+// Listen and capture any changes made as a result of the the actions below.
+const mapStateToProps = (state) => ({
+  posts: state.twitter.data.posts,
+  status: state.twitter.data.status,
+  slideshow: state.twitter.slideshow,
+})
 
-  return {
-    allPosts,
-    isFetching,
-    message,
-    slideShow,
-    status
-  }
+const mapDispatchToProps = (dispatch) => ({
+  serviceRequest: () => dispatch(serviceRequest('TWITTER')),
+  startInstaSlideshow: (max) => dispatch(startSlideshow('twitter', max)),
+})
+
+TwitterContainer.propTypes = {
+  socketConnected: PropTypes.bool,
+  serviceRequest: PropTypes.func,
+  startInstaSlideshow: PropTypes.func,
+  slideshow: PropTypes.object,
+  posts: PropTypes.array,
+  status: PropTypes.string,
 }
 
-export default connect(mapStateToProps)(TwitterContainer)
+TwitterContainer.defaultProps = {
+  socketConnected: false,
+  sonosRequest: false,
+  slideshow: {},
+  posts: [],
+  status: '',
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SocketConnector(TwitterContainer))

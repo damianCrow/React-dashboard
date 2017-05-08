@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
 
 import styled, { css } from 'styled-components'
-import ReactTransitionGroup from 'react-addons-transition-group'
+import TransitionGroup from 'react-transition-group/TransitionGroup'
 
 import { loadNextShowcaseMedia } from 'store/actions'
 
@@ -22,7 +22,7 @@ const styles = ({ ...props }) => css`
 `
 
 // const InstagramWrapperStyled = styled(InstagramTransitionWrapper)`${wrapperStyles}`
-const YouTubeContainer = styled(ReactTransitionGroup)`${styles}`
+const YouTubeContainer = styled(TransitionGroup)`${styles}`
 
 const youTubeOpts = {
   height: '100%',
@@ -33,7 +33,7 @@ const youTubeOpts = {
     modestbranding: 1,
     showinfo: 0,
     rel: 0,
-    disablekb: 1
+    disablekb: 1,
   }
 }
 

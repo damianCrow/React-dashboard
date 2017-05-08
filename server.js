@@ -15,12 +15,12 @@ const port = process.env.PORT || 3000
 const Sockets = require('./SocketServer.js')
 const app = express()
 
-const basic = auth.basic({
-  realm: 'Password Protected Area',
-  file: path.join(__dirname, '.htpasswd')
-});
+// const basic = auth.basic({
+//   realm: 'Password Protected Area',
+//   file: path.join(__dirname, '.htpasswd')
+// });
 
-app.use(auth.connect(basic));
+// app.use(auth.connect(basic));
 
 const compiler = webpack(config);
 const middleware = WebpackDevMiddleware(compiler, {

@@ -1,104 +1,45 @@
 import { combineReducers } from 'redux'
+import { initialState } from './selectors'
+import { slideshowState } from '../slideshow/reducer'
+
 import {
-  INVALIDATE_TWITTER,
-  REQUEST_TWITTER,
-  RECEIVE_TWITTER_POSTS,
-  RECEIVE_TWITTER_POSTS_ERROR,
-  NEED_TO_AUTH_TWITTER,
-  START_TWITTER_SLIDESHOW
-} from '../actions'
+  TWITTER_NEW_POSTS,
+  TWITTER_NEW_POSTS_ERROR,
+  TWITTER_UNAUTHORIZED,
+} from './actions'
 
-const posts = (state = {
-  didInvalidate: false,
-  isFetching: false,
-  allPosts: [],
-  message: '',
-  slideShow: {currentPost: {}, currentInt: 0, mediaType: ''},
-  status: ''
-}, action) => {
-  switch (action.type) {
-    case INVALIDATE_TWITTER:
-      return {
-        ...state,
-        didInvalidate: true
-      }
-    case REQUEST_TWITTER:
-      return {
-        ...state,
-        isFetching: true,
-        didInvalidate: false
-      }
-    case RECEIVE_TWITTER_POSTS_ERROR:
-      return {
-        ...state,
-        isFetching: false,
-        didInvalidate: false,
-        status: action.data.status,
-        message: action.data.err,
-        lastUpdated: action.receivedAt
-      }
-    case RECEIVE_TWITTER_POSTS:
-      return {
-        ...state,
-        isFetching: false,
-        didInvalidate: false,
-        allPosts: action.data.data,
-        status: action.data.status,
-        lastUpdated: action.receivedAt
-      }
-    case NEED_TO_AUTH_TWITTER:
-      return {
-        ...state,
-        status: action.data.status,
-        lastUpdated: action.receivedAt
-      }
-    case START_TWITTER_SLIDESHOW:
-      return {
-        ...state,
-        slideShow: twitterSlideshow(state.slideShow, action)
-      }
-    default:
-      return state
+function twitterReducerWrapper() {
+  return function (state = initialState, action) {
+    switch (action.type) {
+
+      case TWITTER_NEW_POSTS:
+        return {
+          ...state,
+          posts: action.posts,
+          status: 'success',
+        }
+
+      case TWITTER_NEW_POSTS_ERROR:
+        return {
+          ...state,
+          message: action.message,
+        }
+
+      case TWITTER_UNAUTHORIZED:
+        return {
+          ...state,
+          // message: action.message,
+          status: 'auth-failed',
+        }
+
+      default:
+        return state
+    }
   }
 }
 
-const twitterSlideshow = (state = {
-  currentPost: {},
-  currentInt: 0,
-  mediaType: ''
-}, action) => {
-  switch (action.type) {
-    case START_TWITTER_SLIDESHOW:
-      return {
-        ...state,
-        currentPost: action.slideShow.currentPost,
-        currentInt: action.slideShow.currentInt,
-        mediaType: action.slideShow.mediaType
-      }
-    default:
-      return state
-  }
-}
-
-const twitterProcess = (state = { }, action) => {
-  switch (action.type) {
-    case INVALIDATE_TWITTER:
-    case REQUEST_TWITTER:
-    case RECEIVE_TWITTER_POSTS_ERROR:
-    case RECEIVE_TWITTER_POSTS:
-    case NEED_TO_AUTH_TWITTER:
-    case START_TWITTER_SLIDESHOW:
-      return {
-        ...state,
-        twitterDetails: posts(state.twitterDetails, action)
-      }
-    default:
-      return state
-  }
-}
-
-const rootReducer = combineReducers({
-  twitterProcess
+// TODO: Spread (...) instragramReducerWrapper(), not in 'data'
+export default combineReducers({
+  data: twitterReducerWrapper(),
+  slideshow: slideshowState('TWITTER'),
 })
-
-export default rootReducer

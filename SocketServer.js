@@ -116,8 +116,7 @@ class Sockets {
           this.sonos.listenForState()
           break
         case 'TWITTER':
-          // this.twitter.grabPosts()
-          this.twitter.request()
+          this.twitter.grabPosts()
           break
         default:
           break

@@ -1,12 +1,12 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
-import ReactTransitionGroup from 'react-addons-transition-group'
+import TransitionGroup from 'react-transition-group/TransitionGroup'
 
 import { fonts } from 'components/globals'
 
 import { FadingTransitionWrapper, InstagramFrame, MediaBluredBack } from 'components'
 
-const TransitionWrapper = styled(ReactTransitionGroup)`
+const TransitionWrapper = styled(TransitionGroup)`
   color: black;
   display: flex;
   flex-direction: column;

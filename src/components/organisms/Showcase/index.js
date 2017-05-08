@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import styled, { css } from 'styled-components'
-import ReactTransitionGroup from 'react-addons-transition-group'
+import TransitionGroup from 'react-transition-group/TransitionGroup'
 
 import { FadingTransitionWrapper, ImageFeature, YouTubeVideo } from 'components'
 
@@ -18,7 +18,7 @@ const styles = ({ ...props }) => css`
 `
 
 // const InstagramWrapperStyled = styled(InstagramTransitionWrapper)`${wrapperStyles}`
-const TransitionWrapper = styled(ReactTransitionGroup)`${styles}`
+const TransitionWrapper = styled(TransitionGroup)`${styles}`
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;

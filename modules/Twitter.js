@@ -4,7 +4,7 @@ const Twitter = require('Twitter')
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
 const SCOPES = ['likes', 'follower_list', 'basic', 'public_content']
-const CRED_DIR = `./.credentials/twitter/`
+const CRED_DIR = './.credentials/twitter/'
 const STORED_CREDENTIALS = `${CRED_DIR}credentials.json`
 const STORED_TOKEN = `${CRED_DIR}token.json`
 
@@ -20,38 +20,43 @@ const TWITTER_USER_NAME = 'interstateteam'
 // A base class is defined using the new reserved 'class' keyword
 class TwitterApi {
 
-  constructor (app, socket, port) {
+  constructor(app, socket, port) {
     this.app = app
     this.socket = socket
     this.port = port
   }
 
-  checkAuth () {
+  request() {
+    this.checkAuth().then(
+      this.socket.emit('successful.create-request.TWITTER')
+    )
+  }
+
+
+  checkAuth() {
     return new Promise((resolve, reject) => {
       console.log('Twitter checkAuth')
       // console.log('GoogleCalendar this: ', this)
       // Load client secrets from a local file.
-      fs.readFile(STORED_CREDENTIALS,
-        function processClientSecrets (err, content) {
-          if (err) {
-            reject('Error loading client secret file: ' + err)
-          }
-          // Authorize a client with the loaded credentials, then call the
-          // Twitter API.
-          const CREDENTIALS = JSON.parse(content)
-          // console.log('CREDENTIALS', JSON.parse(content))
+      fs.readFile(STORED_CREDENTIALS, (err, content) => {
+        if (err) {
+          reject(`Error loading client secret file: ${err}`)
+        }
+        // Authorize a client with the loaded credentials, then call the
+        // Twitter API.
+        const CREDENTIALS = JSON.parse(content)
+        // console.log('CREDENTIALS', JSON.parse(content))
 
-          // this.authorize(CREDENTIALS)
-          //   .then(function (twitter) {
-          //     resolve(twitter)
-          //   })
-          //   .catch(function (error) {
-          //     console.log(error)
-          //   })
+        // this.authorize(CREDENTIALS)
+        //   .then(function (twitter) {
+        //     resolve(twitter)
+        //   })
+        //   .catch(function (error) {
+        //     console.log(error)
+        //   })
 
-          resolve(this.authorize(CREDENTIALS))
-        }.bind(this)
-      )
+        resolve(this.authorize(CREDENTIALS))
+      })
     })
   }
 
@@ -62,12 +67,12 @@ class TwitterApi {
    * @param {Object} credentials The authorization client credentials.
    * @param {function} callback The callback to call with the authorized client.
    */
-  authorize (credentials) {
+  authorize(credentials) {
     const twitter = new Twitter({
       consumer_key: credentials.consumer_key,
       consumer_secret: credentials.consumer_secret,
       access_token_key: credentials.access_token_key,
-      access_token_secret: credentials.access_token_secret
+      access_token_secret: credentials.access_token_secret,
     })
 
     return twitter
@@ -90,7 +95,7 @@ class TwitterApi {
     // })
   }
 
-  setupForNewToken (twitter) {
+  setupForNewToken(twitter) {
     const REDIRECT_URL = 'http://' + 'localhost' + ':' + this.port + '/handle_twitter_auth'
 
     const authUrl = twitter.get_authorization_url(REDIRECT_URL, {
@@ -132,7 +137,7 @@ class TwitterApi {
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewToken (twitter, authCode, redirectUrl) {
+  getNewToken(twitter, authCode, redirectUrl) {
     console.log('--GET NEW TOKEN--')
     // console.log('getNewToken. oauth2Client: ', oauth2Client)
     return new Promise((resolve, reject) => {
@@ -155,7 +160,7 @@ class TwitterApi {
    *
    * @param {Object} token The token to store to disk.
    */
-  storeToken (token) {
+  storeToken(token) {
     console.log('--STORE TOKEN RUNNING--')
     try {
       fs.mkdirSync(CRED_DIR)
@@ -174,19 +179,13 @@ class TwitterApi {
    *
    * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
    */
-  grabPosts () {
+  grabPosts() {
     this.checkAuth().then(twitter => {
-      twitter.get('statuses/user_timeline', {screen_name: TWITTER_USER_NAME}, (error, tweets, response) => {
+      twitter.get('statuses/user_timeline', { screen_name: TWITTER_USER_NAME }, (error, posts, response) => {
         if (!error) {
-          this.socket.emit('action', {
-            type: 'RECEIVE_TWITTER_POSTS',
-            data: {status: 'success', data: tweets}
-          })
+          this.socket.emit('twitter-new-posts', { posts })
         } else {
-          this.socket.emit('action', {
-            type: 'RECEIVE_TWITTER_POSTS_ERROR',
-            data: {status: 'error', data: error}
-          })
+          this.socket.emit('twitter-new-posts-error', { error })
         }
       })
     }).catch(function (error) {
