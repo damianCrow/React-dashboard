@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react'
 import styled, { keyframes } from 'styled-components'
-import {TweenMax, TimelineMax} from 'gsap'
+import { TweenMax, TimelineMax } from 'gsap'
 
 
 // .climacon_componentWrap-sun
@@ -28,21 +28,21 @@ const SunBody = styled.circle`
 class WeatherIcon extends Component {
   static propTypes = {
     currentImage: PropTypes.string,
-    thumbnail: PropTypes.string
+    thumbnail: PropTypes.string,
   }
 
   constructor () {
-    super();
+    super()
 
     this.state = {
       strokeLength: false,
       dashArray: false,
-      transition: false
+      transition: false,
     }
 
     this._eachRay = []
 
-    this.tl = new TimelineMax();
+    this.tl = new TimelineMax()
   }
 
   componentDidMount () {
@@ -53,12 +53,12 @@ class WeatherIcon extends Component {
     // https://greensock.com/forums/topic/15313-how-to-explode-svg-in-particles-from-center/
     this.setState({
       dashArray: Math.ceil(this._SunBody.getTotalLength()),
-      strokeLength: Math.ceil(this._SunBody.getTotalLength())
+      strokeLength: Math.ceil(this._SunBody.getTotalLength()),
     })
     setTimeout(() =>
       this.setState({
         strokeLength: '0',
-        transition: true
+        transition: true,
       })
     , 1000);
 
@@ -66,7 +66,7 @@ class WeatherIcon extends Component {
       rotation: 360,
       transformOrigin: '50% 50%',
       repeat: -1,
-      ease: Power0.easeNone
+      ease: Power0.easeNone,
     })
 
     this.tl
@@ -74,10 +74,10 @@ class WeatherIcon extends Component {
         scale: 0,
         opacity: 0,
         transformOrigin: '50% 50%',
-        ease: Back.easeOut
+        ease: Back.easeOut,
       },{
         scale: 1,
-        opacity: 1
+        opacity: 1,
       }, 1)
 
 
@@ -85,10 +85,10 @@ class WeatherIcon extends Component {
       .addLabel('rays')
     const isEven = x => !( x & 1 );
     this._eachRay.forEach((ray, i) => {
-      let delay = '';
+      let delay = ''
 
       if(isEven(i)) {
-        delay = '+=3';
+        delay = '+=3'
       }
 
       this.tl
@@ -97,7 +97,7 @@ class WeatherIcon extends Component {
           yoyo: true,
           transformOrigin: '50% 50%',
           repeat: -1,
-          ease: Power0.easeNone
+          ease: Power0.easeNone,
         }, `rays${delay}`)
     });
   }

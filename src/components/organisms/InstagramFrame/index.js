@@ -73,16 +73,18 @@ const Header = styled.header`${compHeader}`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const InstagramFrame = ({ children, ...props, posts, mediaType, isFetching, slideShowKey }) => {
-  console.log('Instagram comp posts: ', posts)
+const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey }) => {
+  console.log('Instagram frame posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
   // console.log('INSTAGRAM COMP posts', posts)
   // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
 
   const metaTags = [
-    {icon: 'heart', metaInfo: posts.likes.count},
-    {icon: 'comment', metaInfo: posts.comments.count}
+    { icon: 'heart', metaInfo: posts.likes.count },
+    { icon: 'comment', metaInfo: posts.comments.count },
   ]
+
+  console.log('mediaType', mediaType)
 
   return (
     <Frame>
@@ -92,17 +94,18 @@ const InstagramFrame = ({ children, ...props, posts, mediaType, isFetching, slid
         <MetaTags tags={metaTags} />
       </Header>
       <InstagramMedia>
-        <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
+        <TransitionWrapper>
           <FadingTransitionWrapper key={slideShowKey}>
-            {mediaType === 'image' ? (
+            {mediaType === 'image' &&
               <ImageFeature
                 currentImage={posts.images.standard_resolution.url}
               />
-            ) : (
+            }
+            {mediaType === 'video' &&
               <InstagramVideo
                 currentVideo={posts.videos.standard_resolution.url}
               />
-            )}
+            }
           </FadingTransitionWrapper>
         </TransitionWrapper>
       </InstagramMedia>
@@ -112,10 +115,9 @@ const InstagramFrame = ({ children, ...props, posts, mediaType, isFetching, slid
 
 InstagramFrame.propTypes = {
   children: PropTypes.any,
-  isFetching: PropTypes.bool.isRequired,
   posts: PropTypes.object.isRequired,
   slideShowKey: PropTypes.number.isRequired,
-  mediaType: PropTypes.string
+  mediaType: PropTypes.string,
 }
 
 export default InstagramFrame

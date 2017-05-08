@@ -1,8 +1,9 @@
 <p align="center">
-  <img width="206" alt="arclogo2" src="https://cloud.githubusercontent.com/assets/3068563/19498653/f9b73170-9570-11e6-9183-61dce798abab.png"><br><br>
-  <a href="http://standardjs.com"><img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square" alt="Standard Style" /></a>
+  <img alt="arclogo" src="https://cloud.githubusercontent.com/assets/3068563/23199029/55e9d55a-f8aa-11e6-91a2-74b82db3813c.png"><br><br>
+  <a href="https://github.com/diegohaz/arc/releases/latest"><img src="https://github-release-version.herokuapp.com/github/diegohaz/arc/release.svg?style=flat-square" alt="Latest release" /></a>
   <a href="https://travis-ci.org/diegohaz/arc"><img src="https://img.shields.io/travis/diegohaz/arc/redux.svg?style=flat-square" alt="Build Status" /></a>
   <a href="https://codecov.io/gh/diegohaz/arc/branch/redux"><img src="https://img.shields.io/codecov/c/github/diegohaz/arc/redux.svg?style=flat-square" alt="Coverage Status" /></a>
+  <a href="https://gitter.im/diegohaz/arc"><img src="https://img.shields.io/badge/gitter-join%20chat-1dce73.svg?style=flat-square" alt="Gitter chat" /></a>
 </p>
 
 ## Redux
@@ -27,9 +28,12 @@ $ npm install # or yarn
 - [Run](#run)
 - [Deploy](#deploy)
 - [Source code](#source-code)
+- [Clean source code](#clean-source-code)
 - [Components](#components)
+  - [Storybook](#storybook)
 - [Containers](#containers)
 - [Store](#store)
+  - [Store naming conventions](#store-naming-conventions)
 
 ### Run
 
@@ -43,13 +47,21 @@ Use `npm run build` to transpile the code into the `dist` folder. Then, you can 
 
 The source code should be placed in `src`; public/static files should be placed in `public` so they can be included in the build process.
 
-If you want to start with a clean and minimal source code without the predefined components and tests, just use the `src-clean` instead by renaming it to `src` (and removing or renaming the older one to something like `src-example`).
-
 Because of [webpack's config](https://github.com/diegohaz/arc/blob/5c752968c52d013f7218b514021eae08f6ddf07c/webpack.config.js#L19-L21), we can import our source modules without relative paths.
 ```js
 import { Button, HomePage } from 'components' // src/components
 import App from 'components/App' // src/components/App
 import routes from 'routes' // src/routes
+```
+
+### Clean source code
+
+If you want to start with a clean and minimal source code without the predefined components and tests, just use the `src-clean` folder instead by renaming it to `src` (and removing or renaming the older one to something like `src-example`).
+
+Also, you might want to remove unnecessary dependencies:
+```sh
+npm u -S react-modal # used by src/components/molecules/Modal
+npm u -S normalizr # used by src/store/entities
 ```
 
 ### Components
@@ -73,6 +85,16 @@ To understand better the Atomic Design methodology, you can refer to the [`src/c
 - An **organism** is a group of atoms, molecules and/or other organisms (e.g. [`Form`](https://github.com/diegohaz/arc/blob/redux/src/components/organisms/PostForm/index.js));
 - A **page** is... a page, where you will put mostly organisms (e.g. [`HomePage`](src/components/pages/HomePage/index.js));
 - A **template** is a layout to be used on pages, see [why templates are good practice](https://github.com/diegohaz/arc/issues/20#issuecomment-265934388).
+
+#### Storybook
+
+I highly recommend you to incorporate [react-storybook](https://github.com/storybooks/react-storybook) on your development process. It really improves productivity and developer experience. Actually, most of the time you can just use the storybook instead of the real webapp while creating components.
+
+This already comes with the boilerplate and you can simply use `npm run storybook` to get it running. But, if you don't want that, just run:
+```sh
+rm -rf .storybook # remove .storybook folder
+npm u -S @kadira/storybook # remove storybook dependency
+```
 
 ### Containers
 
@@ -162,6 +184,14 @@ Here lives all the state management of the app.
 
 To add a new store, just create a new folder with actions, reducer, selectors and/or sagas. Webpack will automatically import them to your project (how? See [`src/store/actions.js`](src/store/actions.js), [`src/store/reducer.js`](src/store/reducer.js), [`src/store/sagas.js`](src/store/sagas.js) and [`src/store/selectors.js`](src/store/selectors.js)).
 
+#### Store naming conventions
+
+The store on this boilerplate follows some naming conventions. You don't need to follow them, but it will work better if you do.
+
+- `actions` should start with the store name (e.g. `MODAL_OPEN` for `modal` store, `POST_LIST_REQUEST` for `post` store) and end with `REQUEST`, `SUCCESS` or `FAILURE` if this is an async operation;
+- `action creators` should have the same name of their respective actions, but in camelCase (e.g. `modalOpen`). Async actions should group `request`, `success` and `failure` in a object (e.g. `postList.request`, `postList.success`, `postList.failure`);
+- `worker sagas` should start with the operation name (e.g. `openModal`, `requestPostList`).
+
 ## Contributing
 
 When issuing, use the following patterns in the title for better understanding:
@@ -175,7 +205,13 @@ PRs are very appreciated. For bugs/features consider creating an issue before se
 
 - I'm not a native english speaker. If you find any typo or some text that could be written in a better way, please send a PR, even if it is only a punctuation;
 - If you forked or created another boilerplate based on this one with another features (using [`css-modules`](https://github.com/css-modules/css-modules) instead of [`styled-components`](https://github.com/styled-components/styled-components), for example), add that to the [Forks section](#forks) with the following pattern:
-  - [arc-css-modules](https://github.com/username/arc-css-modules) - A little description
+  - [arc-css-modules](https://github.com/username/arc-css-modules) - A short description
+  
+## Built with ARc
+
+*Built something cool with ARc? Send a PR adding it to this list:*
+
+- [replace-this](https://github.com/username/replace-this) - A short description
 
 ## Contributors
 
@@ -185,9 +221,19 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
 Prabhat_Sharma prabhatsharma https://github.com/prabhatsharma code
 Sven_Schmidt 0xsven https://github.com/0xsven bug code
 Sebastian ssmolinski9 https://github.com/ssmolinski9 tests
+Steven_Haddix steven-haddix https://github.com/steven-haddix code
+Ruslan_Kyba kybarg https://github.com/kybarg bug code
+Abhishek_Shende osdevisnot https://github.com/osdevisnot code
+Gueorgui_Agapov 7s4r https://github.com/7s4r code
+Santino santino https://github.com/santino code
+Sebastian_MacDonald Optissimum https://github.com/Optissimum code tests
+Ryan_Garant protoEvangelion https://github.com/protoEvangelion code
 Contributors END -->
 <!-- Contributors table START -->
-| [![Prabhat Sharma](https://avatars.githubusercontent.com/prabhatsharma?s=100)<br /><sub>Prabhat Sharma</sub>](https://github.com/prabhatsharma)<br />[💻](https://github.com/diegohaz/arc/commits?author=prabhatsharma) | [![Sven Schmidt](https://avatars.githubusercontent.com/0xsven?s=100)<br /><sub>Sven Schmidt</sub>](https://github.com/0xsven)<br />[🐛](https://github.com/diegohaz/arc/issues?q=author%3A0xsven) [💻](https://github.com/diegohaz/arc/commits?author=0xsven) | [![Sebastian](https://avatars.githubusercontent.com/ssmolinski9?s=100)<br /><sub>Sebastian</sub>](https://github.com/ssmolinski9)<br />[⚠️](https://github.com/diegohaz/arc/commits?author=ssmolinski9) |
+| [<img src="https://avatars.githubusercontent.com/prabhatsharma?s=100" width="100" alt="Prabhat Sharma" /><br /><sub>Prabhat Sharma</sub>](https://github.com/prabhatsharma)<br />[💻](https://github.com/diegohaz/arc/commits?author=prabhatsharma) | [<img src="https://avatars.githubusercontent.com/0xsven?s=100" width="100" alt="Sven Schmidt" /><br /><sub>Sven Schmidt</sub>](https://github.com/0xsven)<br />[🐛](https://github.com/diegohaz/arc/issues?q=author%3A0xsven) [💻](https://github.com/diegohaz/arc/commits?author=0xsven) | [<img src="https://avatars.githubusercontent.com/ssmolinski9?s=100" width="100" alt="Sebastian" /><br /><sub>Sebastian</sub>](https://github.com/ssmolinski9)<br />[⚠️](https://github.com/diegohaz/arc/commits?author=ssmolinski9) | [<img src="https://avatars.githubusercontent.com/steven-haddix?s=100" width="100" alt="Steven Haddix" /><br /><sub>Steven Haddix</sub>](https://github.com/steven-haddix)<br />[💻](https://github.com/diegohaz/arc/commits?author=steven-haddix) | [<img src="https://avatars.githubusercontent.com/kybarg?s=100" width="100" alt="Ruslan Kyba" /><br /><sub>Ruslan Kyba</sub>](https://github.com/kybarg)<br />[🐛](https://github.com/diegohaz/arc/issues?q=author%3Akybarg) [💻](https://github.com/diegohaz/arc/commits?author=kybarg) | [<img src="https://avatars.githubusercontent.com/osdevisnot?s=100" width="100" alt="Abhishek Shende" /><br /><sub>Abhishek Shende</sub>](https://github.com/osdevisnot)<br />[💻](https://github.com/diegohaz/arc/commits?author=osdevisnot) | [<img src="https://avatars.githubusercontent.com/7s4r?s=100" width="100" alt="Gueorgui Agapov" /><br /><sub>Gueorgui Agapov</sub>](https://github.com/7s4r)<br />[💻](https://github.com/diegohaz/arc/commits?author=7s4r) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+
+| [<img src="https://avatars.githubusercontent.com/santino?s=100" width="100" alt="Santino" /><br /><sub>Santino</sub>](https://github.com/santino)<br />[💻](https://github.com/diegohaz/arc/commits?author=santino) | [<img src="https://avatars.githubusercontent.com/Optissimum?s=100" width="100" alt="Sebastian MacDonald" /><br /><sub>Sebastian MacDonald</sub>](https://github.com/Optissimum)<br />[💻](https://github.com/diegohaz/arc/commits?author=Optissimum) [⚠️](https://github.com/diegohaz/arc/commits?author=Optissimum) | [<img src="https://avatars.githubusercontent.com/protoEvangelion?s=100" width="100" alt="Ryan Garant" /><br /><sub>Ryan Garant</sub>](https://github.com/protoEvangelion)<br />[💻](https://github.com/diegohaz/arc/commits?author=protoEvangelion) |
 | :---: | :---: | :---: |
 <!-- Contributors table END -->
 

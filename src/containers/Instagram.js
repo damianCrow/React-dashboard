@@ -1,95 +1,100 @@
-import React, { PropTypes, Component } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { fetchInstagramIfNeeded, startInstagramSlideshow } from 'store/actions'
-
+import { serviceRequest, startSlideshow, fetchInstagramIfNeeded, startInstagramSlideshow } from 'store/actions'
+import { SocketConnector } from 'hoc'
 import { Instagram, InstagramAuth, SplashScreen } from 'components'
 
 class InstagramContainer extends Component {
-  static propTypes = {
-    allPosts: PropTypes.array.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    message: PropTypes.string.isRequired,
-    slideShow: PropTypes.object.isRequired,
-    status: PropTypes.string.isRequired
+  // static propTypes = {
+  //   allPosts: PropTypes.array.isRequired,
+  //   dispatch: PropTypes.func.isRequired,
+  //   isFetching: PropTypes.bool.isRequired,
+  //   message: PropTypes.string.isRequired,
+  //   slideShow: PropTypes.object.isRequired,
+  //   status: PropTypes.string.isRequired,
+  // }
+
+  componentDidMount() {
+    this.props.socketConnected && this.props.serviceRequest()
   }
 
-  componentDidMount () {
-    const { dispatch } = this.props
+  componentWillReceiveProps(nextProps) {
+    // Try and move this logic back to the HOC container
+    const { socketConnected, serviceRequest, posts, startInstaSlideshow, slideshow } = nextProps
 
-    dispatch(fetchInstagramIfNeeded())
-  }
+    if (socketConnected && !this.props.socketConnected) {
+      serviceRequest()
+    }
 
-  componentDidUpdate () {
-    const { slideShow, status, dispatch, allPosts } = this.props
-    // console.log('InstagramContainer - componentDidUpdate fired')
-    // console.log('slideShow - slideShow: ', slideShow)
-    // console.log('status', status)
-    // console.log('Object.keys(slideShow.currentPost).length', Object.keys(slideShow.currentPost).length)
+    console.log('componentWillReceiveProps instagram')
 
-    if (status === 'success' && Object.keys(slideShow.currentPost).length === 0) {
-      console.log('fireing startInstagramSlideshow')
-      dispatch(startInstagramSlideshow(allPosts))
-    } else if (slideShow.mediaType === 'image' && status === 'success') {
-      dispatch(startInstagramSlideshow(allPosts))
+    if (posts.length > 0 && slideshow.status === 'ready') {
+      startInstaSlideshow(20)
     }
   }
 
-  render () {
-    const { slideShow, isFetching, status, message } = this.props
-    // console.log(posts)
-    // console.log('instagram status', status)
+  render() {
+    const { status, message, posts, slideshow } = this.props
+    console.log(posts)
+    console.log('instagram status', status)
 
-    const isEmpty = Object.keys(slideShow.currentPost).length === 0
+    const isEmpty = posts.length === 0
 
-    if (status === 'failed' || status === '') {
+    console.log('slideshow', slideshow)
+    console.log('isEmpty', isEmpty)
+
+    if (status === 'failed') {
       return (
         <span>{status}</span>
       )
-    } else if (status === 'auth-failed') {
-      return (
-        <InstagramAuth message={message} />
-      )
+    // } else if (status === 'auth-failed') {
+    //   return (
+    //     <InstagramAuth message={message} />
+    //   )
     } else if (!isEmpty) {
       return (
         <Instagram
-          mediaType={slideShow.mediaType}
-          posts={slideShow.currentPost}
-          slideShowKey={slideShow.currentInt}
-          isFetching={isFetching}
+          mediaType={posts[slideshow.current].type}
+          posts={posts[slideshow.current]}
+          slideShowKey={slideshow.current}
+          // isFetching={isFetching}
         />
       )
-    } else {
-      return (
-        <SplashScreen icon="instagram" service="Instagram" />
-      )
     }
+    return (
+      <SplashScreen icon="instagram" service="Instagram" />
+    )
   }
 }
 
-const mapStateToProps = state => {
-  const { instagram } = state
-  const {
-    allPosts,
-    isFetching,
-    message,
-    slideShow,
-    status
-  } = instagram['instagramProcess']['instagramDetails'] || {
-    allPosts: [],
-    isFetching: true,
-    message: '',
-    slideShow: {currentPost: {}, currentInt: 0, mediaType: ''},
-    status: ''
-  }
+// Listen and capture any changes made as a result of the the actions below.
+const mapStateToProps = (state) => ({
+  posts: state.instagram.data.posts,
+  status: state.instagram.data.status,
+  slideshow: state.instagram.slideshow,
+})
 
-  return {
-    allPosts,
-    isFetching,
-    message,
-    slideShow,
-    status
-  }
+const mapDispatchToProps = (dispatch) => ({
+  serviceRequest: () => dispatch(serviceRequest('INSTAGRAM')),
+  startInstaSlideshow: (max) => dispatch(startSlideshow('instagram', max)),
+})
+
+InstagramContainer.propTypes = {
+  socketConnected: PropTypes.bool,
+  serviceRequest: PropTypes.func,
+  startInstaSlideshow: PropTypes.func,
+  slideshow: PropTypes.object,
+  posts: PropTypes.array,
+  status: PropTypes.string,
 }
 
-export default connect(mapStateToProps)(InstagramContainer)
+InstagramContainer.defaultProps = {
+  socketConnected: false,
+  sonosRequest: false,
+  slideshow: {},
+  posts: [],
+  status: '',
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SocketConnector(InstagramContainer))

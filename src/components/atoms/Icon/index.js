@@ -1,32 +1,37 @@
 import React, { PropTypes } from 'react'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
+import { palette } from 'styled-theme'
+import { ifProp } from 'styled-tools'
 
-const styles = ({ size, color }) => css`
+export const fontSize = ({ height }) => height ? `${height / 16}rem` : '1.25em'
+
+const Wrapper = styled.span`
   display: inline-block;
-  width: ${size ? size / 16 + 'rem' : '1em'};
-  height: ${size ? size / 16 + 'rem' : '1em'};
-  margin: ${size ? size / 160 + 'rem' : '0.1em'};
+  font-size: ${fontSize};
+  color: ${ifProp('palette', palette({ grayscale: 0 }, 1), 'currentcolor')};
+  width: 1em;
+  height: 1em;
+  margin: 0.1em;
   box-sizing: border-box;
-  color: ${color};
 
   & > svg {
     width: 100%;
     height: 100%;
     fill: currentcolor;
+    stroke: transparent;
   }
 `
 
-const Wrapper = styled.span`${styles}`
-
 const Icon = ({ icon, ...props }) => {
-  const svg = require(`raw!./icons/${icon}.svg`)
+  const svg = require(`raw-loader!./icons/${icon}.svg`)
   return <Wrapper {...props} dangerouslySetInnerHTML={{ __html: svg }} />
 }
 
 Icon.propTypes = {
   icon: PropTypes.string.isRequired,
-  size: PropTypes.number,
-  color: PropTypes.string
+  height: PropTypes.number,
+  palette: PropTypes.string,
+  reverse: PropTypes.bool,
 }
 
 export default Icon

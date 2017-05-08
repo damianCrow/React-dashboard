@@ -1,24 +1,16 @@
 import { createStore, applyMiddleware, compose } from 'redux'
-import thunkMiddleware from 'redux-thunk'
-import createLogger from 'redux-logger'
 import { routerMiddleware } from 'react-router-redux'
 import createSagaMiddleware from 'redux-saga'
-import createSocketIoMiddleware from 'redux-socket.io'
-import io from 'socket.io-client'
+import middlewares from './middlewares'
 import reducer from './reducer'
 import sagas from './sagas'
-
-const loggerMiddleware = createLogger()
-
-let socket = io('http://localhost:3004')
-let socketIoMiddleware = createSocketIoMiddleware(socket, 'SERVER_')
 
 const configureStore = (initialState, history) => {
   const hasWindow = typeof window !== 'undefined'
   const sagaMiddleware = createSagaMiddleware()
 
   const finalCreateStore = compose(
-    applyMiddleware(sagaMiddleware, routerMiddleware(history), thunkMiddleware, loggerMiddleware, socketIoMiddleware),
+    applyMiddleware(...middlewares, sagaMiddleware, routerMiddleware(history)),
     hasWindow && window.devToolsExtension ? window.devToolsExtension() : (f) => f
   )(createStore)
 

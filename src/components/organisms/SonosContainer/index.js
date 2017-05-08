@@ -9,18 +9,13 @@ const SonosContainerStyled = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: black;
   left: 0;
   position: absolute;
   top: 0;
   width: 100%;
   font-family: ${fonts.primary};
 `
-
-// const PlaybackIcon = styled.Icon`
-//   display: absolute;
-// `
-
-// const StyledIcon = styled(Icon)`${iconStyles}`
 
 const SonosContainer = ({ children, ...props, isFetching }) => {
   return (
@@ -31,8 +26,7 @@ const SonosContainer = ({ children, ...props, isFetching }) => {
 }
 
 SonosContainer.propTypes = {
-  children: PropTypes.any,
-  isFetching: PropTypes.bool.isRequired
+  children: PropTypes.node,
 }
 
 export default SonosContainer

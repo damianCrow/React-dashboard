@@ -1,101 +1,56 @@
-import { combineReducers } from 'redux'
+import unionBy from 'lodash/unionBy'
+import { initialState } from './selectors'
 import {
-  INVALIDATE_SONOS,
-  REQUEST_SONOS,
-  RECEIVE_SONOS_GROUPS,
-  RECEIVE_SONOS_STATE,
-  RECEIVE_SONOS_POSTS_ERROR,
-  UPDATE_SONOS_STATES,
-  UPDATE_SONOS_GROUPS,
-  NEED_TO_AUTH_SONOS
-} from '../actions'
+  SONOS_PULL_REQUEST,
+  SONOS_READ_REQUEST,
+  SONOS_READ_SUCCESS,
+  SONOS_CREATE_SUCCESS,
+  SONOS_NEW_STATE,
+  SONOS_NEW_TOPOLOGY,
+} from './actions'
 
-const posts = (state = {
-  didInvalidate: false,
-  isFetching: false,
-  message: '',
-  status: '',
-  groups: [],
-  newSonosState: {},
-  sonosStates: []
-}, action) => {
+export default (state = initialState, action) => {
   switch (action.type) {
-    case INVALIDATE_SONOS:
+
+    case SONOS_CREATE_SUCCESS:
       return {
         ...state,
-        didInvalidate: true
+        connected: true,
       }
-    case REQUEST_SONOS:
+
+    case SONOS_PULL_REQUEST:
       return {
         ...state,
-        isFetching: true,
-        didInvalidate: false
+        requested: true,
       }
-    case RECEIVE_SONOS_POSTS_ERROR:
+
+    case SONOS_READ_REQUEST:
       return {
         ...state,
-        isFetching: false,
-        didInvalidate: false,
-        status: action.data.status,
-        message: action.data.err,
-        lastUpdated: action.receivedAt
+        speakers: [action.speakers],
       }
-    case RECEIVE_SONOS_GROUPS:
+
+    case SONOS_READ_SUCCESS:
       return {
         ...state,
-        groups: action.data.data,
-        status: action.data.status,
-        lastUpdated: action.receivedAt
+        speakers: [action.speakers],
       }
-    case RECEIVE_SONOS_STATE:
+
+      // Check if exists in array and merge
+    case SONOS_NEW_STATE:
       return {
         ...state,
-        newSonosState: action.data.data,
-        status: action.data.status,
-        lastUpdated: action.receivedAt
+        speakers: unionBy([action.speakers], state.speakers, 'uuid'),
       }
-    case UPDATE_SONOS_STATES:
+
+    case SONOS_NEW_TOPOLOGY:
       return {
         ...state,
-        sonosStates: action.data
+        speakers: action.speakers,
       }
-    case UPDATE_SONOS_GROUPS:
-      return {
-        ...state,
-        groups: action.groups
-      }
-    case NEED_TO_AUTH_SONOS:
-      return {
-        ...state,
-        status: action.data.status,
-        lastUpdated: action.receivedAt
-      }
+
+
     default:
       return state
   }
 }
-
-const sonosProcess = (state = { }, action) => {
-  switch (action.type) {
-    case INVALIDATE_SONOS:
-    case REQUEST_SONOS:
-    case RECEIVE_SONOS_POSTS_ERROR:
-    case RECEIVE_SONOS_GROUPS:
-    case RECEIVE_SONOS_STATE:
-    case UPDATE_SONOS_STATES:
-    case UPDATE_SONOS_GROUPS:
-    case NEED_TO_AUTH_SONOS:
-      return {
-        ...state,
-        sonosDetails: posts(state.sonosDetails, action)
-      }
-    default:
-      return state
-  }
-}
-
-const rootReducer = combineReducers({
-  sonosProcess
-})
-
-export default rootReducer

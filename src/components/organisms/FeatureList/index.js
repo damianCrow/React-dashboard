@@ -1,15 +1,17 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Feature } from 'components'
-import { SonosInfo, Twitter, Instagram, GoogleCalendar, Harvest, Showcase, Header } from 'containers'
+import { Feature, Header } from 'components'
+import { SonosInfo, Twitter, Instagram, GoogleCalendar, Harvest, Showcase } from 'containers'
 
 const Grid = styled.div`
   display: block;
+  width: 100%;
 `
 
 const GridRow = styled.div`
   display: flex;
+  width: 100%;
 `
 
 const GridColumn = styled.div`
@@ -20,47 +22,44 @@ const GridColumn = styled.div`
 
 const FeatureList = ({ ...props }) => {
   return (
-    <div {...props}>
-      <Grid>
-        <GridRow>
-          <Header />
-        </GridRow>
-        <GridRow>
-          <Feature>
-            {/* Time / Date */}
-          </Feature>
-          <Feature double>
-            <SonosInfo />
-          </Feature>
-          <GridColumn>
-            <Feature fullWidth>
-              <Instagram />
-            </Feature>
-            <Feature fullWidth>
-              <Twitter />
-            </Feature>
-          </GridColumn>
-        </GridRow>
-        <GridRow>
+    <Grid {...props}>
+      <GridRow>
+        <Feature>
+          {/* Time / Date */}
+        </Feature>
+        <Feature double>
+          {/* <SonosInfo />*/}
+          <SonosInfo />
+        </Feature>
+        <GridColumn>
           <Feature fullWidth>
-            <Showcase />
+            {/* <Instagram />*/}
+            {<Instagram />}
           </Feature>
-        </GridRow>
-        <GridRow>
-          <Feature>
-            <GoogleCalendar />
+          <Feature fullWidth>
+            {/* <Twitter />*/}
           </Feature>
-          <Feature>
-            <Harvest />
-          </Feature>
-        </GridRow>
-        <GridRow>
-          <Feature>
-            {/* Something */}
-          </Feature>
-        </GridRow>
-      </Grid>
-    </div>
+        </GridColumn>
+      </GridRow>
+      <GridRow>
+        <Feature fullWidth>
+          {/* <Showcase />*/}
+        </Feature>
+      </GridRow>
+      <GridRow>
+        <Feature>
+          {/* <GoogleCalendar />*/}
+        </Feature>
+        <Feature>
+          {/* <Harvest />*/}
+        </Feature>
+      </GridRow>
+      <GridRow>
+        <Feature>
+          {/* Something */}
+        </Feature>
+      </GridRow>
+    </Grid>
   )
 }
 

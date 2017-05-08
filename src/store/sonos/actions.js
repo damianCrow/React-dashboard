@@ -1,90 +1,55 @@
-export const REQUEST_SONOS = 'REQUEST_SONOS'
-export const INVALIDATE_SONOS = 'INVALIDATE_SONOS'
-export const UPDATE_SONOS_STATES = 'UPDATE_SONOS_STATES'
-export const UPDATE_SONOS_GROUPS = 'UPDATE_SONOS_GROUPS'
+export const SONOS_CREATE = 'SONOS_CREATE'
+export const SONOS_PULL_REQUEST = 'SONOS_PULL_REQUEST'
+export const SONOS_CREATE_SUCCESS = 'SONOS_CREATE_SUCCESS'
+export const SONOS_CREATE_FAILURE = 'SONOS_CREATE_FAILURE'
+export const SERVER_REQUEST_SUCCESS = 'SERVER_REQUEST_SUCCESS'
 
-// Server actions.
-export const SERVER_PULL_SONOS = 'SERVER_PULL_SONOS'
 
-export const RECEIVE_SONOS_GROUPS = 'RECEIVE_SONOS_GROUPS'
-export const RECEIVE_SONOS_STATE = 'RECEIVE_SONOS_STATE'
+export const sonosCreateRequest = (request) => ({
+  type: SONOS_PULL_REQUEST,
+  request,
+})
 
-export const RECEIVE_SONOS_POSTS_ERROR = 'RECEIVE_SONOS_POSTS_ERROR'
-export const NEED_TO_AUTH_SONOS = 'NEED_TO_AUTH_SONOS'
+export const sonosCreateSuccess = () => ({
+  type: SONOS_CREATE_SUCCESS,
+})
 
-// export const invalidateSonosData = ({
-//   type: INVALIDATE_SONOS
-// })
+export const sonosCreateFailure = error => ({
+  type: SONOS_CREATE_FAILURE,
+  error,
+})
 
-const fetchPosts = reddit => dispatch => {
-  // SEND SOCKET REQUEST TO DISTACH FETCH with callback like dispatch(requestPosts(reddit))
 
-  // Move this so it dispatchs from the server (on pullSonosPosts)
-  dispatch({ type: REQUEST_SONOS })
+export const SONOS_DETAIL_READ = 'SONOS_DETAIL_READ'
+export const SONOS_READ_REQUEST = 'SONOS_READ_REQUEST'
+export const SONOS_READ_SUCCESS = 'SONOS_READ_SUCCESS'
+export const SONOS_READ_FAILURE = 'SONOS_READ_FAILURE'
+export const SONOS_NEW_STATE = 'SONOS_NEW_STATE'
+export const SONOS_NEW_TOPOLOGY = 'SONOS_NEW_TOPOLOGY'
 
-  dispatch({ type: SERVER_PULL_SONOS })
-}
 
-const shouldFetchPosts = (state) => {
-  const posts = state.sonos.sonosProcess.sonosDetails
-  if (!posts) {
-    return true
-  }
-  if (posts.isFetching) {
-    return false
-  }
-  return posts.didInvalidate
-}
+export const sonosReadRequest = () => ({
+  type: SONOS_READ_REQUEST,
+  requested: true,
+})
 
-export const featuredSpeaker = reddit => (dispatch, getState) => {
-  const posts = getState().sonos.sonosProcess.sonosDetails
-  const groups = posts.groups
-  for (let i = 0; i < groups.length; i++) {
-    let speakerIndex
-    setInterval(function () {
-      if (typeof groups[i].featuredSpeaker === 'undefined') {
-        const posts = getState().sonos.sonosProcess.sonosDetails
-        let groups = posts.groups
+export const sonosReadSuccess = (speakers) => ({
+  type: SONOS_READ_SUCCESS,
+  speakers,
+})
 
-        console.log('groups to dispatch', groups)
+export const sonosReadFailure = (needle, error) => ({
+  type: SONOS_READ_FAILURE,
+  needle,
+  error,
+})
 
-        speakerIndex = (speakerIndex > groups[i].members.length ? 0 : speakerIndex + 1)
-        groups[i]['featuredSpeaker'] = groups[i].members[speakerIndex]
-        dispatch({ type: UPDATE_SONOS_GROUPS, data: groups })
-      }
-    }, 3000)
-  }
-}
+export const sonosNewState = (speakers) => ({
+  type: SONOS_NEW_STATE,
+  speakers,
+})
 
-export const sonosStateMatch = reddit => (dispatch, getState) => {
-  const sonosInfo = getState().sonos.sonosProcess.sonosDetails
-
-  // console.log('sonosStateMatch, sonosInfo = ', sonosInfo)
-
-  if (sonosInfo.sonosStates.length === 0) {
-    sonosInfo.sonosStates[0] = sonosInfo.newSonosState
-  } else {
-    for (let i = 0; i < sonosInfo.sonosStates.length; i++) {
-      if (sonosInfo.sonosStates[i].uuid === sonosInfo.newSonosState.uuid) {
-        sonosInfo.sonosStates[i] = sonosInfo.newSonosState
-        break
-      } else if (i === 4) {
-        sonosInfo.sonosStates[0] = sonosInfo.newSonosState
-        break
-      } else if (i === (sonosInfo.sonosStates.length - 1)) {
-        sonosInfo.sonosStates.push(sonosInfo.newSonosState)
-        break
-      }
-    }
-  }
-
-  console.log('sonosStateMatch, data = ', sonosInfo.sonosStates)
-
-  dispatch({ type: UPDATE_SONOS_STATES, data: sonosInfo.sonosStates })
-}
-
-export const fetchSonosDataIfNeeded = reddit => (dispatch, getState) => {
-  if (shouldFetchPosts(getState())) {
-    return dispatch(fetchPosts())
-  }
-}
+export const sonosNewTopology = (speakers) => ({
+  type: SONOS_NEW_TOPOLOGY,
+  speakers,
+})

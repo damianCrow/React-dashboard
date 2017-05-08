@@ -40,7 +40,7 @@ const SplashScreenContainer = styled.div`${styles}`
 const SplashScreen = ({ children, ...props, icon, service }) => {
   return (
     <SplashScreenContainer>
-      <Icon {...props} icon={icon} size={52} />
+      <Icon {...props} icon={icon} height={100} />
       <LoadingMessage>Loading {service}</LoadingMessage>
     </SplashScreenContainer>
   )
@@ -49,7 +49,7 @@ const SplashScreen = ({ children, ...props, icon, service }) => {
 SplashScreen.propTypes = {
   children: PropTypes.any,
   icon: PropTypes.string,
-  service: PropTypes.string
+  service: PropTypes.string,
 }
 
 export default SplashScreen

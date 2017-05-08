@@ -22,12 +22,6 @@ const PlayerContainer = styled.div`
 
 const SonosPlayer = ({playerState, speakers, featuredSpeaker, children, ...props}) => {
 
-  let isEmpty = true
-
-  if (Object.keys(playerState).length !== 0 && playerState.constructor === Object) {
-    isEmpty = false
-  }
-
   // console.log('playerState', playerState)
   console.log('SonosPlayer featuredSpeaker: ', featuredSpeaker)
   // console.log('SonosPlayer isEmpty: ', isEmpty)
@@ -36,16 +30,16 @@ const SonosPlayer = ({playerState, speakers, featuredSpeaker, children, ...props
   return (
     <PlayerContainer>
       <SonosGroupInfo speakers={speakers} featuredSpeaker={featuredSpeaker} />
-      {!isEmpty ? (<SonosTrack trackInfo={playerState.state} />) : null}
+      <SonosTrack trackInfo={playerState} />
     </PlayerContainer>
   )
 }
 
 SonosPlayer.propTypes = {
   children: PropTypes.any,
-  speakers: PropTypes.array.isRequired,
+  speakers: PropTypes.string.isRequired,
   playerState: PropTypes.object,
-  featuredSpeaker: PropTypes.string
+  featuredSpeaker: PropTypes.string,
 }
 
 export default SonosPlayer

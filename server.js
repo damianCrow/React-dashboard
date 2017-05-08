@@ -1,268 +1,56 @@
-// BUILD THIS AGAIN. USE THIS FOR HELP:
-// http://stackoverflow.com/questions/30773756/is-it-okay-to-use-babel-node-in-production
-
-require('babel-register')
-
+/* eslint-disable */
+const path = require('path');
+const webpack = require('webpack')
+// const WebpackDevServer = require('webpack-dev-server')
+const WebpackDevMiddleware = require('webpack-dev-middleware');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+const historyApiFallback = require('connect-history-api-fallback')
+const config = require('./webpack.config')
 const express = require('express')
-const path = require('path')
-const port = process.env.PORT || 3002
-var basicAuth = require('basic-auth')
+const auth = require('http-auth');
 
-// Has to be different for hot-middleware's SockJS
-const socketPort = 3004
 const ip = process.env.IP || '0.0.0.0'
+const port = process.env.PORT || 3000
+
+const Sockets = require('./SocketServer.js')
 const app = express()
-const session = require('express-session')
 
-// Socket.io Test
-// const server = require('http').Server(express)
-const socketIo = require('socket.io')(socketPort)
+const basic = auth.basic({
+  realm: 'Password Protected Area',
+  file: path.join(__dirname, '.htpasswd')
+});
 
-// Node liberaies for components - BREAK THESE INTO THEIR OWN DEDICATED SERVER MODULES
-const SonosDiscovery = require('sonos-discovery')
+app.use(auth.connect(basic));
 
-const GoogleCalendar = require('./server_modules/GoogleCalendar.js')
-const Harvest = require('./server_modules/Harvest.js')
-const Sonos = require('./server_modules/Sonos.js')
-const Showcase = require('./server_modules/Showcase.js')
-const Instagram = require('./server_modules/Instagram.js')
-const TwitterApi = require('./server_modules/Twitter.js')
-
-const isDevelopment = process.env.NODE_ENV !== 'production'
-
-let expressSessions = {
-  instagramAccessToken: undefined
-}
-
-// Dashboard user / pass
-var auth = function (req, res, next) {
-  function unauthorized (res) {
-    res.set('WWW-Authenticate', 'Basic realm=Authorization Required')
-    return res.send(401)
-  };
-
-  var user = basicAuth(req)
-
-  if (!user || !user.name || !user.pass) {
-    return unauthorized(res)
-  };
-
-  if (user.name === 'foo' && user.pass === 'bar') {
-    return next()
-  } else {
-    return unauthorized(res)
+const compiler = webpack(config);
+const middleware = WebpackDevMiddleware(compiler, {
+  contentBase: 'public',
+  historyApiFallback: true,
+  hot: true,
+  lazy: false,
+  noInfo: true,
+  publicPath: config.output.publicPath,
+  quiet: false,
+  stats: {
+    colors: false
   }
-}
-
-app.get('/', auth, function (req, res, next) {
-  return next()
 })
 
-if (isDevelopment) {
-  console.log('RUNNING DEVELOPMENT: ', isDevelopment)
-  const webpack = require('webpack')
-  const webpackConfig = require('./webpack.config')
+app.use(historyApiFallback({
+  verbose: false
+}));
 
-  const compiler = webpack(webpackConfig)
+app.use(middleware);
+app.use(express.static(path.join(process.cwd(), './public')));
 
-  app.use(require('webpack-dev-middleware')(compiler, {
+// Keeps crashing sometimes?
+app.use(webpackHotMiddleware(compiler));
 
-    stats: {
-      noInfo: true,
-      chunks: false,
-      colors: true
-    },
-    noInfo: true,
-    publicPath: '/'
-  }))
+// app.use(express.static(path.join(__dirname, '/public/index.html')));
 
-  app.use(session({
-    secret: '7@6D94@6D#52%9z#5@6DPl',
-    resave: false,
-    saveUninitialized: true
-  }))
+const server = app.listen(port, () => {
+  console.info('🌎   🖥... Listening at http://%s:%s', ip, port);
+});
 
-  app.use('*', function (req, res, next) {
-    express.static('/public')
-
-    var filename = path.join(compiler.outputPath, 'index.html')
-    console.log('** EXPRESS STAR ** --')
-
-    // For Instagram, needs to change to JSON
-    expressSessions = req.session || expressSessions
-
-    compiler.outputFileSystem.readFile(filename, function (err, result) {
-      if (err) {
-        return next(err)
-      }
-
-      next()
-      // res.end()
-    })
-  })
-  // app.get('*', function (request, response) {
-  //   console.log('** STAR **')
-  //   expressSessions = request.session || expressSessions
-  //   console.log('request.session', request.session)
-  //   console.log('expressSessions', expressSessions)
-  //   response.sendFile(path.join(__dirname, '/public/index.html'))
-  // })
-
-  // Doesn't auto reload, clashes with express, idk why :(
-  app.use(require('webpack-hot-middleware')(compiler))
-} else {
-  app.use(express.static(path.join(__dirname, '/public')))
-}
-
-app.use(express.static(path.join(__dirname, '/user-data')))
-
-app.listen(port, ip, function onStart (err) {
-  if (err) {
-    console.log(err)
-  }
-
-  console.info('🖥  Listening 👂  on port %s. Open 👐  up http://' +
-    ip + ':%s/ in your browser 🌎 . 🤜  🤛', port, port)
-
-  startSocketActionDispenser()
-})
-
-var startSocketActionDispenser = function () {
-  // For express / socket server
-  // server.listen(3004)
-
-  var io = socketIo
-
-  io.on('connection', function (socket) {
-    console.log('Socket connected: ' + socket.id)
-    listenForClientRequests(socket)
-
-    // These two need(!!!!!) to be moved to listenForClientRequests()
-    // startSonosDiscovery(socket)
-    // getOldTweets(socket)
-  })
-}
-
-var listenForClientRequests = function (socket) {
-  // Listen for a component to request data
-  socket.on('action', (action) => {
-    console.log('socket server listener, action: ', action)
-    // Check the action type sent in the action
-    if (action.type === 'SERVER_PULL_INSTAGRAM') {
-      console.log('[server] Got hello request: ', action.type)
-      // Send a new action to the client with it's requested data
-      // Instagram()
-      this.instagram = new Instagram.default(app, socket, port)
-      this.instagram.grabPosts()
-    } else if (action.type === 'SERVER_PULL_CALENDAR') {
-      // GoogleCalendar()
-      // this.googleCal = new GoogleCalendar.default(app, socket)
-      // this.googleCal.listEvents()
-    } else if (action.type === 'SERVER_PULL_HARVEST') {
-      // Harvest()
-      this.harvestTime = new Harvest.default(app, socket)
-      this.harvestTime.getUsersAndTimes()
-    } else if (action.type === 'SERVER_PULL_SHOWCASE') {
-      // Showcase()
-      this.showcase = new Showcase.default(app, socket)
-      this.showcase.pullLivePlaylist()
-    } else if (action.type === 'SERVER_PULL_SONOS') {
-      // Showcase()
-      this.sonos = new Sonos.default(app, socket)
-      this.sonos.listenForState()
-    } else if (action.type === 'SERVER_PULL_TWITTER') {
-      // Showcase()
-      this.twitter = new TwitterApi.default(app, socket, port)
-      this.twitter.grabPosts()
-    }
-  })
-}
-
-// This explicty listens for changes from Sonos, and the passes an action
-var startSonosDiscovery = function (socket) {
-  console.log('startSonosDiscovery')
-  var discovery = new SonosDiscovery({
-    port: 8080,
-    cacheDir: './cache'
-  })
-
-  discovery.on('topology-change', function (data) {
-    // socketServer.sockets.emit('topology-change', discovery.players)
-  })
-
-  discovery.on('transport-state', function (data) {
-    // console.log(data)
-    if (data.roomName === 'Back Studio') {
-      socket.emit('action', {type: 'MESSAGE', data: data.state})
-    }
-    // socketServer.sockets.emit('transport-state', data)
-  })
-
-  discovery.on('group-volume', function (data) {
-    // socketServer.sockets.emit('group-volume', data)
-  })
-
-  discovery.on('volume-change', function (data) {
-    // socketServer.sockets.emit('volume', data)
-  })
-
-  discovery.on('group-mute', function (data) {
-    // socketServer.sockets.emit('group-mute', data)
-  })
-
-  discovery.on('mute-change', function (data) {
-    // socketServer.sockets.emit('mute', data)
-  })
-
-  discovery.on('favorites', function (data) {
-    // socketServer.sockets.emit('favorites', data)
-  })
-
-  discovery.on('queue-change', function (player) {
-    // console.log('queue-changed', player.roomName)
-    // delete queues[player.uuid]
-    // loadQueue(player.uuid)
-    //   .then(queue => {
-    //     socketServer.sockets.emit('queue', { uuid: player.uuid, queue })
-    //   })
-  })
-}
-
-var getOldTweets = function (socket) {
-  var client = new Twitter({
-    consumer_key: 'cOnvuDRFBwn88PcqTHFKhwt5T',
-    consumer_secret: 'Bo6HZ5SQFlFM4TH7txpVBg4xwI8IR31ldgGAcepINtXoCGV9Ut',
-    access_token_key: '19474879-p2kXGi5KhyS0V3edMCryCL43hMCB2LSsFZIQdNXHW',
-    access_token_secret: 'M4hbAMjLTLaXCr4pKol8jsOHyN2zRWxyyxjcIqdPg4xhG'
-  })
-
-  var params = {screen_name: 'interstateteam'}
-  client.get('statuses/user_timeline', params, function (error, tweets, response) {
-    if (!error) {
-      socket.emit('action', {type: 'RECEIVE_TWEETS', data: tweets})
-      // console.log(tweets)
-    }
-  })
-  // startTwitterStream(client);
-}
-
-// var startTwitterStream = function (client) {
-
-//   // You can also get the stream in a callback if you prefer.
-//   client.stream('statuses/filter', {follow: '54588739'}, function (stream) {
-//     stream.on('data', function (event) {
-//       console.log(event && event.text)
-//     })
-
-//     stream.on('error', function (error) {
-//       throw error
-//     })
-//   })
-
-//   var params = {screen_name: 'interstateteam'}
-//   client.get('statuses/user_timeline', params, function (error, tweets, response) {
-//     if (!error) {
-//       console.log(tweets)
-//     }
-//   })
-// }
+let socketServer = new Sockets(server)
+socketServer.init()

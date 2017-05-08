@@ -1,5 +1,8 @@
 export const initialState = {
-  sonos: []
+  connected: false,
+  requested: false,
+  speakers: [],
 }
 
-export const getSonosData = (state = initialState) => state.sonos || []
+export const getList = (state = initialState) => state.list || initialState.list
+export const getDetail = (state = initialState) => state.detail || initialState.detail

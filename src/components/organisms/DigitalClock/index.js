@@ -11,7 +11,7 @@ const Wrapper = styled.div`
   padding: 1rem;
   color: white;
   font-family: ${fonts.primary};
-  font-size: 3rem;
+  font-size: 1rem;
 
   & > :not(:first-child) {
     margin-left: 1rem;

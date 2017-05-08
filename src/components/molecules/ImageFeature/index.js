@@ -33,6 +33,7 @@ const ThumbnailBackground = styled.img`
 `
 
 class ImageFeature extends Component {
+
   static propTypes = {
     currentImage: PropTypes.string.isRequired,
     thumbnail: PropTypes.string
@@ -53,6 +54,7 @@ class ImageFeature extends Component {
   // }
 
   render () {
+    console.log('ImageFeature');
     const { currentImage, thumbnail } = this.props
 
     let thumbnailImage = null

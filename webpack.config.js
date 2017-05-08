@@ -1,50 +1,76 @@
-var path = require('path')
-var webpack = require('webpack')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
+const path = require('path')
+const webpack = require('webpack')
+const WebpackMd5Hash = require('webpack-md5-hash')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-var isDevelopment = process.env.NODE_ENV !== 'production'
+// const ip = process.env.IP || '0.0.0.0'
+// const port = process.env.PORT || 9998
+const DEBUG = process.env.NODE_ENV !== 'production'
+const PUBLIC_PATH = `/${process.env.PUBLIC_PATH || ''}/`.replace('//', '/')
 
-var entryPath = path.join(__dirname, 'src')
-var entry = isDevelopment ? [
-  'babel-polyfill',
-  'webpack-hot-middleware/client?reload=true',
-  'react-hot-loader/patch',
-  entryPath
-] : ['babel-polyfill', entryPath]
+const isVendor = ({ userRequest }) => (
+  userRequest &&
+  userRequest.indexOf('node_modules') >= 0 &&
+  userRequest.match(/\.js$/)
+)
 
-module.exports = {
-  resolve: {
-    modulesDirectories: ['src', 'node_modules']
+const config = {
+  devtool: DEBUG ? 'eval' : false,
+  entry: {
+    app: ['babel-polyfill', path.join(__dirname, 'src')],
   },
-  entry: entry,
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'app.[hash].js',
-    publicPath: '/'
+    filename: '[name].[hash].js',
+    publicPath: PUBLIC_PATH,
   },
-  module: {
-    loaders: [
-      { test: /\.js$/, loader: 'babel', exclude: /node_modules/ },
-      { test: /\.png$/, loader: 'url?prefix=images/&limit=8000&mimetype=image/png' },
-      { test: /\.jpg$/, loader: 'url?prefix=images/&limit=8000&mimetype=image/jpeg' },
-      { test: /\.woff$/, loader: 'url?prefix=fonts/&limit=8000&mimetype=application/font-woff' },
-      { test: /\.ttf$/, loader: 'file?prefix=fonts/' },
-      { test: /\.eot$/, loader: 'file?prefix=fonts/' },
-      { test: /\.json$/, loader: 'json' }
-    ]
+  resolve: {
+    modules: ['src', 'node_modules'],
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new HtmlWebpackPlugin({
-
-      template: path.join(__dirname, '/public/index.html'),
-      minify: {
-
-        removeComments: !isDevelopment,
-        collapseWhitespace: !isDevelopment
-      },
-      inject: true
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.PUBLIC_PATH': JSON.stringify(PUBLIC_PATH),
     }),
-    new webpack.NoErrorsPlugin()
-  ]
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: path.join(__dirname, '/public/index.html'),
+    }),
+  ],
+  module: {
+    rules: [
+      { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ },
+      { test: /\.png$/, loader: 'url-loader?prefix=images/&limit=8000&mimetype=image/png' },
+      { test: /\.jpg$/, loader: 'url-loader?prefix=images/&limit=8000&mimetype=image/jpeg' },
+      { test: /\.woff$/, loader: 'url-loader?prefix=fonts/&limit=8000&mimetype=application/font-woff' },
+      { test: /\.ttf$/, loader: 'file-loader?prefix=fonts/' },
+      { test: /\.eot$/, loader: 'file-loader?prefix=fonts/' },
+    ],
+  },
 }
+
+if (DEBUG) {
+  config.entry.app.unshift(
+    'webpack-hot-middleware/client?path=/__webpack_hmr',
+    'webpack/hot/dev-server',
+    'react-hot-loader/patch'
+  )
+
+  config.plugins = config.plugins.concat([
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+  ])
+} else {
+  config.output.filename = '[name].[chunkHash].js'
+
+  config.plugins = config.plugins.concat([
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: isVendor,
+    }),
+    new WebpackMd5Hash(),
+    new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false } }),
+  ])
+}
+
+module.exports = config

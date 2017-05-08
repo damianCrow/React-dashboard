@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { DashboardTemplate, FeatureList } from 'components'
+import { DashboardTemplate, FeatureList, Header, Intro } from 'components'
 
 const MainDashboardPage = () => {
   return (
-    <DashboardTemplate>
+    <DashboardTemplate header={<Header height="2rem" />} intro={<Intro />} >
       <FeatureList />
     </DashboardTemplate>
   )

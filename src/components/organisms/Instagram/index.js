@@ -66,17 +66,18 @@ const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShow
     <InstagramWrapper>
       <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
         <FadingTransitionWrapper key={slideShowKey}>
-          {mediaType === 'image' ? (
+          {mediaType === 'image' &&
             <MediaBluredBack
               media={posts.images.thumbnail.url}
               type="image"
             />
-          ) : (
+          }
+          {/* mediaType === 'video' &&
             <MediaBluredBack
               media={posts.videos.low_bandwidth.url}
               type="video"
             />
-          )}
+          /*/}
         </FadingTransitionWrapper>
       </TransitionWrapper>
       <InstagramFrame {...props} />
@@ -86,10 +87,10 @@ const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShow
 
 Instagram.propTypes = {
   children: PropTypes.any,
-  isFetching: PropTypes.bool.isRequired,
+  // isFetching: PropTypes.bool.isRequired,
   posts: PropTypes.object.isRequired,
   slideShowKey: PropTypes.number.isRequired,
-  mediaType: PropTypes.string
+  mediaType: PropTypes.string,
 }
 
 export default Instagram
