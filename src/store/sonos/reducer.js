@@ -46,7 +46,9 @@ export default (state = initialState, action) => {
     case SONOS_NEW_TOPOLOGY:
       return {
         ...state,
-        speakers: action.speakers,
+        speakers: unionBy(action.topology, state.speakers, 'uuid'),
+        // speakersNames: action.speakerNames,
+        // uuid: action.uuid,
       }
 
 

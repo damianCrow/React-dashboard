@@ -6,7 +6,7 @@ import { ifProp } from 'styled-tools'
 export const fontSize = ({ height }) => height ? `${height / 16}rem` : '1.25em'
 
 const Wrapper = styled.span`
-  display: inline-block;
+  display: inline-flex;
   font-size: ${fontSize};
   color: ${ifProp('palette', palette({ grayscale: 0 }, 1), 'currentcolor')};
   width: 1em;

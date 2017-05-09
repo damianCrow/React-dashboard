@@ -1,11 +1,14 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 import styled, { css } from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
+import { incrementServiceSlideshow } from 'store/actions'
 
 
 import { fonts, compHeader } from 'components/globals'
 
-import { FadingTransitionWrapper, ImageFeature, InstagramVideo, Icon, MetaTags } from 'components'
+import { FadingTransitionWrapper, ImageFeature, InstagramVideo, Icon, MetaTags, Ticker } from 'components'
 
 const TransitionWrapper = styled(TransitionGroup)`
   color: black;
@@ -41,17 +44,18 @@ const InstagramCaption = styled.span`
   margin: 1rem .5rem;
 `
 
-const footerStyles = ({ ...props }) => css`
-  background-color: rgba(0,0,0,.5);
-  display: flex;
-  width: 100%;
-  overflow: hidden;
-  flex: 0 0 3rem;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  flex-direction: row;
-`
+// const footerStyles = ({ ...props }) => css`
+//   background-color: rgba(0,0,0,.5);
+//   display: flex;
+//   width: 100%;
+//   overflow: hidden;
+//   flex: 0 0 3rem;
+//   align-items: center;
+//   justify-content: space-between;
+//   margin-top: auto;
+//   flex-direction: row;
+// `
+
 const Frame = styled.div`
   display: flex;
   flex-direction: column;
@@ -65,8 +69,18 @@ const Frame = styled.div`
   width: 100%;
 `
 
+const HeaderLevel = styled.div`
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex: 0 0 100%;
+  justify-content: space-between;
+`
+
 const StyledIcon = styled(Icon)`${IconStyles}`
-const Header = styled.header`${compHeader}`
+// const Header = styled(Ticker)`${compHeader}`
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
@@ -74,8 +88,8 @@ const Header = styled.header`${compHeader}`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey }) => {
-  console.log('Instagram frame posts: ', posts)
+const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey, resumeAutoSlides }) => {
+  // console.log('Instagram frame posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
   // console.log('INSTAGRAM COMP posts', posts)
   // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
@@ -89,24 +103,34 @@ const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey }) 
 
   return (
     <Frame>
-      <Header>
+      { /* <Header>
         <StyledIcon icon="instagram" size={35} />
         <InstagramCaption>{posts.caption.text}</InstagramCaption>
         <MetaTags tags={metaTags} />
-      </Header>
+      </Header>*/ }
+      <Ticker icon="instagram" slideShowKey={slideShowKey}>
+        <HeaderLevel>
+          {posts.location &&
+          <InstagramCaption>{posts.location.name}</InstagramCaption>}
+        </HeaderLevel>
+        <HeaderLevel>
+          <MetaTags tags={metaTags} />
+        </HeaderLevel>
+      </Ticker>
       <InstagramMedia>
         <TransitionWrapper>
           <FadingTransitionWrapper key={slideShowKey}>
-            {mediaType === 'image' &&
+            {(mediaType === 'image' || mediaType === 'carousel') &&
               <ImageFeature
                 currentImage={posts.images.standard_resolution.url}
               />
             }
-            {/* mediaType === 'video' &&
+            {mediaType === 'video' &&
               <InstagramVideo
+                // resumeAutoSlides={resumeAutoSlides}
                 currentVideo={posts.videos.standard_resolution.url}
               />
-            */}
+            }
           </FadingTransitionWrapper>
         </TransitionWrapper>
       </InstagramMedia>
@@ -114,11 +138,22 @@ const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey }) 
   )
 }
 
+// const mapDispatchToProps = (dispatch) => ({
+//   resumeAutoSlides: dispatch(incrementServiceSlideshow('instagram')),
+// })
+
 InstagramFrame.propTypes = {
   children: PropTypes.any,
   posts: PropTypes.object.isRequired,
-  slideShowKey: PropTypes.number.isRequired,
+  slideShowKey: PropTypes.string.isRequired,
   mediaType: PropTypes.string,
+  resumeAutoSlides: PropTypes.object,
 }
 
+// InstagramFrame.defaultProps = {
+//   currentVideo: '',
+// }
+
 export default InstagramFrame
+// export default connect(null, mapDispatchToProps)(InstagramFrame)
+

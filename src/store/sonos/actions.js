@@ -49,7 +49,7 @@ export const sonosNewState = (speakers) => ({
   speakers,
 })
 
-export const sonosNewTopology = (speakers) => ({
+export const sonosNewTopology = (topology) => ({
   type: SONOS_NEW_TOPOLOGY,
-  speakers,
+  topology,
 })

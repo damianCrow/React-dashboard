@@ -56,28 +56,28 @@ const footerStyles = ({ ...props }) => css`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Instagram = ({ children, ...props, posts, mediaType, isFetching, slideShowKey }) => {
-  console.log('Instagram comp posts: ', posts)
+const Instagram = ({ children, ...props, posts, mediaType, slideShowKey }) => {
+  // console.log('Instagram comp posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
   // console.log('INSTAGRAM COMP posts', posts)
   // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
 
   return (
     <InstagramWrapper>
-      <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
+      <TransitionWrapper>
         <FadingTransitionWrapper key={slideShowKey}>
-          {mediaType === 'image' &&
+          {(mediaType === 'image' || mediaType === 'carousel') &&
             <MediaBluredBack
               media={posts.images.thumbnail.url}
               type="image"
             />
           }
-          {/* mediaType === 'video' &&
+          { mediaType === 'video' &&
             <MediaBluredBack
               media={posts.videos.low_bandwidth.url}
               type="video"
             />
-          /*/}
+          }
         </FadingTransitionWrapper>
       </TransitionWrapper>
       <InstagramFrame {...props} />
@@ -89,7 +89,7 @@ Instagram.propTypes = {
   children: PropTypes.any,
   // isFetching: PropTypes.bool.isRequired,
   posts: PropTypes.object.isRequired,
-  slideShowKey: PropTypes.number.isRequired,
+  slideShowKey: PropTypes.string.isRequired,
   mediaType: PropTypes.string,
 }
 

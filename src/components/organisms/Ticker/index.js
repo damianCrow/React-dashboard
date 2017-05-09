@@ -46,14 +46,12 @@ const StyledIcon = styled(Icon)`
 
 class Ticker extends Component {
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       headerChange: false
     }
-
-    this.tMax = new TimelineMax();
-
+    this.tMax = new TimelineMax()
   }
 
   componentDidMount() {
@@ -71,7 +69,7 @@ class Ticker extends Component {
     return true
   }
 
-  openAndClose () {
+  openAndClose() {
     clearTimeout(this.state.headerChange)
 
     this.setState({
@@ -79,11 +77,11 @@ class Ticker extends Component {
     })
   }
 
-  revealHeader () {
+  revealHeader() {
     clearTimeout(this.state.headerChange)
 
     this.tMax.to(this._MoreHeaderInfo, .75, {
-      y: '-42px'
+      y: '-42px',
     })
 
     this.setState({
@@ -91,13 +89,13 @@ class Ticker extends Component {
     })
   }
 
-  hideHeader () {
+  hideHeader() {
     this.tMax.to(this._MoreHeaderInfo, .75, {
-      y: '0px'
+      y: '0px',
     })
   }
 
-  render () {
+  render() {
     const { children, icon, slideShowKey } = this.props
     console.log('ticker slideShowKey', slideShowKey)
     return (

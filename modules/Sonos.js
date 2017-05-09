@@ -23,8 +23,10 @@ class Sonos {
       cacheDir: './.cache',
     })
 
-    this.discovery.on('initialized', (data) => {
-      console.log('initialized data', data)
+    this.discovery.on('initialized', () => {
+      console.log('SONOS initialized')
+      // console.log('this.discovery.zones[0].members[0].system', this.discovery.zones[0].members[0].system)
+      // console.log('this.discovery.zones[1].coordinator', this.discovery.zones[1].coordinator)
       this.socket.emit('successful.create-request.SONOS')
     })
   }
@@ -32,11 +34,57 @@ class Sonos {
   listenForState() {
     console.log('server module sonos listenForState')
 
+    // const groups = []
+    // sonosGroups.forEach((group) => {
+    //   // console.log('group', group)
+    //   groups.push(
+    //     {
+    //       speakerNames: group.members.map((member) => member.roomName),
+    //       uuid: group.uuid,
+    //       state:
+    //     }
+    //   )
+    // })
+
+
    // let groupStates = []
 
     this.discovery.on('topology-change', sonosGroups => {
-      console.log('this.discovery', this.discovery)
-      this.socket.emit('topology-change', sonosGroups)
+      console.log('topology-change')
+
+      // console.log('sonosGroups', sonosGroups)
+      // console.log('sonosGroups', sonosGroups)
+      // console.log('sonosGroups.members', sonosGroups.members)
+      // console.log('sonosGroups.members()', sonosGroups.members())
+      // console.log('sonosGroups[0].members', sonosGroups[0].members)
+      // console.log('sonosGroups[1].members', sonosGroups[1].members)
+
+      const releventChanges = []
+      sonosGroups.forEach((group) => {
+        // console.log('group', group)
+        releventChanges.push(
+          {
+            speakerNames: group.members.map((member) => member.roomName),
+            uuid: group.uuid,
+          }
+        )
+      })
+
+      // sonosGroups.forEach((group, index) => {
+      //   // console.log('group', group)
+      //   groups[index] = () => { return group.members.forEach(function(member){console.log('member.roomName', member.roomName)}) }
+      // })
+
+      // console.log('groups', groups)
+
+      // const releventChanges = Object.assign(
+      //   { members: sonosGroups.map((group) => {
+      //     return Object.assign({ roomName: group.members.roomName }, group)
+      //   }) }, sonosGroups)
+
+
+      // console.log('topology-change releventChanges', releventChanges)
+      this.socket.emit('topology-change', releventChanges)
 
       // THIS SPITS OUT DETAILS ABOUT ALL GROUPS
 
@@ -100,7 +148,7 @@ class Sonos {
     })
 
     this.discovery.on('queue-change', function (player) {
-      // console.log('queue-changed', player.roomName)
+      console.log('queue-changed', player.players)
       // delete queues[player.uuid]
       // loadQueue(player.uuid)
       //   .then(queue => {

@@ -5,21 +5,18 @@ import ReactDOM from 'react-dom'
 import { TweenMax } from 'gsap'
 
 class FadingTransitionWrapper extends Component {
-  static propTypes = {
-    children: PropTypes.any
-  }
 
-  componentWillEnter (callback) {
+  componentWillEnter(callback) {
     const el = ReactDOM.findDOMNode(this)
-    TweenMax.fromTo(el, 2, {opacity: 0}, {opacity: 1, onComplete: callback})
+    TweenMax.fromTo(el, 2, { opacity: 0 }, { opacity: 1, onComplete: callback })
   }
 
-  componentWillLeave (callback) {
+  componentWillLeave(callback) {
     const el = ReactDOM.findDOMNode(this)
-    TweenMax.fromTo(el, 2, {opacity: 1}, {opacity: 0, onComplete: callback})
+    TweenMax.fromTo(el, 2, { opacity: 1 }, { opacity: 0, onComplete: callback })
   }
 
-  render () {
+  render() {
     const { children } = this.props
 
     const Wrapper = styled.div`
@@ -33,6 +30,10 @@ class FadingTransitionWrapper extends Component {
 
     return (<Wrapper>{ children }</Wrapper>)
   }
+}
+
+FadingTransitionWrapper.propTypes = {
+  children: PropTypes.node,
 }
 
 export default FadingTransitionWrapper

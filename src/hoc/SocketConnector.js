@@ -7,11 +7,6 @@ import { socketConnectRequest } from 'store/actions'
 function SocketConnector(ConnectedComp) {
   class SocketConnectorWrapper extends Component {
 
-    constructor() {
-      super()
-      console.log('SocketConnectorWrapper')
-    }
-
     componentDidMount() {
       const { socketConnected, socketRequest } = this.props
       if (!socketConnected) {

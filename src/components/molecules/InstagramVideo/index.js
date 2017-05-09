@@ -1,8 +1,10 @@
-import React, { PropTypes, Component } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
+
 // import ReactDOM from 'react-dom'
 import styled from 'styled-components'
-import { loadNextInstagramMedia } from 'store/actions'
+import { resumeServiceSlideshow } from 'store/actions'
 
 // import { TweenMax } from 'gsap'
 
@@ -22,16 +24,11 @@ const InstagramVideoSrc = styled.video`
 `
 
 class InstagramVideo extends Component {
-  static propTypes = {
-    currentVideo: PropTypes.string.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    allPosts: PropTypes.array.isRequired
-  }
 
-  constructor () {
-    super()
-    this.onVideoEnd = this.onVideoEnd.bind(this)
-  }
+  // constructor() {
+  //   super()
+  //   // this.onVideoEnd = this.onVideoEnd.bind(this)
+  // }
 
   // componentWillEnter (callback) {
   //   const el = ReactDOM.findDOMNode(this)
@@ -45,33 +42,36 @@ class InstagramVideo extends Component {
   //   TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
   // }
 
-  onVideoEnd () {
-    const { dispatch, allPosts } = this.props
-    console.log('instagramvideo allPosts', allPosts)
-    dispatch(loadNextInstagramMedia(allPosts))
-  }
+  // onVideoEnd() {
+  //   this.props.resumeAutoSlides
+  // }
 
-  render () {
-    const { currentVideo } = this.props
+  render() {
+    const { currentVideo, resumeInstaSlideshow } = this.props
     return (
       <ImageWrapper>
-        <InstagramVideoSrc src={currentVideo} autoPlay="true" muted onEnded={this.onVideoEnd} />
+        <InstagramVideoSrc
+          src={currentVideo}
+          autoPlay="true"
+          muted
+          onEnded={() => resumeInstaSlideshow()}
+        />
       </ImageWrapper>
     )
   }
 }
 
-const mapStateToProps = state => {
-  const { instagram } = state
-  const {
-    allPosts
-  } = instagram['instagramProcess']['instagramDetails'] || {
-    allPosts: []
-  }
-  return {
-    allPosts
-  }
+const mapDispatchToProps = (dispatch) => ({
+  resumeInstaSlideshow: () => dispatch(resumeServiceSlideshow('instagram')),
+})
+
+InstagramVideo.propTypes = {
+  currentVideo: PropTypes.string.isRequired,
+  resumeInstaSlideshow: PropTypes.func,
 }
 
-export default connect(mapStateToProps)(InstagramVideo)
+InstagramVideo.defaultProps = {
+  currentVideo: '',
+}
 
+export default connect(null, mapDispatchToProps)(InstagramVideo)

@@ -1,4 +1,5 @@
 export const SLIDESHOW_START = 'SLIDESHOW_START'
+export const SLIDESHOW_RESUME = 'SLIDESHOW_RESUME'
 export const SLIDESHOW_INCREMENT = 'SLIDESHOW_INCREMENT'
 export const SLIDESHOW_PAUSE = 'SLIDESHOW_PAUSE'
 export const SLIDESHOW_RESTART = 'SLIDESHOW_RESTART'
@@ -25,6 +26,11 @@ export const startServiceSlideshow = (service, max) => ({
   max,
 })
 
+export const resumeServiceSlideshow = (service) => ({
+  type: `${service.toUpperCase()}_${SLIDESHOW_RESUME}`,
+  service,
+})
+
 export const incrementServiceSlideshow = (service) => ({
   type: `${service.toUpperCase()}_${SLIDESHOW_INCREMENT}`,
   service,
@@ -34,6 +40,12 @@ export const restartServiceSlideshow = (service) => ({
   type: `${service.toUpperCase()}_${SLIDESHOW_RESTART}`,
   service,
 })
+
+export const pauseServiceSlideshow = (service) => ({
+  type: `${service.toUpperCase()}_${SLIDESHOW_PAUSE}`,
+  service,
+})
+
 
 // export const newInstagramPostsError = (err) => ({
 //   type: INSTAGRAM_NEW_POSTS_ERROR,

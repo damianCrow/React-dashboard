@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 // import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 
@@ -37,11 +38,6 @@ const Video = styled.video`
 `
 
 class MediaBluredBack extends Component {
-  static propTypes = {
-    type: PropTypes.string.isRequired,
-    media: PropTypes.string.isRequired
-  }
-
   // componentWillEnter (callback) {
   //   const el = ReactDOM.findDOMNode(this)
   //   console.log('InstagramImage, componentWillEnter')
@@ -60,13 +56,24 @@ class MediaBluredBack extends Component {
     const { type, media } = this.props
     return (
       <MediaWrapper>
-        {type === 'image' &&
+        {(type === 'image' || type === 'carousel') &&
           <Image src={media} />
         }
-        {/* <Video src={media} autoPlay="true" muted />*/ }
+        {<Video src={media} autoPlay="true" muted />}
       </MediaWrapper>
     )
   }
 }
+
+MediaBluredBack.propTypes = {
+  type: PropTypes.string.isRequired,
+  media: PropTypes.string.isRequired,
+}
+
+MediaBluredBack.defaultProps = {
+  type: '',
+  media: '',
+}
+
 
 export default MediaBluredBack

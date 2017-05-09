@@ -4,6 +4,7 @@ import {
   SLIDESHOW_PAUSE,
   SLIDESHOW_RESTART,
   SLIDESHOW_START,
+  SLIDESHOW_RESUME,
 } from './actions'
 
 
@@ -15,6 +16,12 @@ export const slideshowState = (service = '') => {
         return {
           ...state,
           max: action.max,
+          status: 'playing',
+        }
+
+      case `${service}_${SLIDESHOW_RESUME}`:
+        return {
+          ...state,
           status: 'playing',
         }
 
@@ -33,7 +40,7 @@ export const slideshowState = (service = '') => {
       case `${service}_${SLIDESHOW_PAUSE}`:
         return {
           ...state,
-          message: action.message,
+          status: 'paused',
         }
 
       default:
