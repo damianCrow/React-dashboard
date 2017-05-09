@@ -6,8 +6,8 @@ const moment = require('moment')
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
 // const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-const CRED_DIR = `./.credentials/harvest/`
-const HARVEST_HOST = `https://api.harvestapp.com`
+const CRED_DIR = './.credentials/harvest/'
+const HARVEST_HOST = 'https://api.harvestapp.com'
 const TOKEN_PATH = `${CRED_DIR}harvest_token.json`
 const CLIENT_DETAILS = `${CRED_DIR}config.json`
 
@@ -17,38 +17,42 @@ const CLIENT_DETAILS = `${CRED_DIR}config.json`
 // A base class is defined using the new reserved 'class' keyword
 class HarvestTimesheets {
 
-  constructor (app, socket) {
+  constructor(app, socket) {
     this.app = app
     this.socket = socket
     this.credentials = {}
   }
 
-  checkAuth () {
+  request() {
+    this.checkAuth().then(
+      this.socket.emit('successful.create-request.HARVEST')
+    )
+  }
+
+  checkAuth() {
     return new Promise((resolve, reject) => {
       console.log('HarvestTimesheets checkAuth')
 
       // Load client secrets from a local file.
-      fs.readFile(CLIENT_DETAILS,
-        function processClientSecrets (err, content) {
-          if (err) {
-            reject('Error loading client secret file: ' + err)
-          }
+      fs.readFile(CLIENT_DETAILS, (err, content) => {
+        if (err) {
+          reject(`Error loading client secret file: '${err}`)
+        }
 
-          // Authorize a client with the loaded credentials, then call the
-          // Google Calendar API.
-          this.credentials = JSON.parse(content)
-          // console.log('CREDENTIALS', JSON.parse(content))
+        // Authorize a client with the loaded credentials, then call the
+        // Google Calendar API.
+        this.credentials = JSON.parse(content)
+        // console.log('CREDENTIALS', JSON.parse(content))
 
-          this.authorize()
-            .then(function (token) {
-              resolve(token)
-            })
-            .catch(function (error) {
-              // It ends here, the user needs to authenticate.
-              console.log(error)
-            })
-        }.bind(this)
-      )
+        this.authorize()
+          .then((token) => {
+            resolve(token)
+          })
+          .catch((error) => {
+            // It ends here, the user needs to authenticate.
+            console.log(error)
+          })
+      })
     })
   }
 
@@ -59,7 +63,7 @@ class HarvestTimesheets {
    * @param {Object} credentials The authorization client credentials.
    * @param {function} callback The callback to call with the authorized client.
    */
-  authorize () {
+  authorize() {
     return new Promise((resolve, reject) => {
       // Check if we have previously stored a token.
       fs.readFile(TOKEN_PATH, (err, token) => {
@@ -78,7 +82,7 @@ class HarvestTimesheets {
     })
   }
 
-  checkAccessToken (resolveAuth, rejectAuth, tokenDetails) {
+  checkAccessToken(resolveAuth, rejectAuth, tokenDetails) {
     let date = new Date()
     console.log('tokenDetails.expires_at', tokenDetails.expires_at)
     console.log('date.getTime', date.getTime())
@@ -101,7 +105,7 @@ class HarvestTimesheets {
     }
   }
 
-  setupAccessForNewToken () {
+  setupAccessForNewToken() {
     // Dispatch a frontend action to push the auth link!!!!!!!!!
     this.socket.emit('action', {type: 'NEED_TO_AUTH_HARVEST',
       data: {status: 'auth-failed'}}
@@ -141,14 +145,14 @@ class HarvestTimesheets {
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewToken (code, codeType) {
+  getNewToken(code, codeType) {
     return new Promise((resolve, reject) => {
       console.log(`--GET NEW ACCESS TOKEN WITH ${codeType} CODE--`)
       console.log('accessCode', code)
 
       let tokenOptions = {
         'client_id': this.credentials.client_id,
-        'client_secret': this.credentials.secret
+        'client_secret': this.credentials.secret,
       }
 
       var harvest = new Harvest({
@@ -156,7 +160,7 @@ class HarvestTimesheets {
         redirect_uri: this.credentials.redirect_uri,
         identifier: this.credentials.client_id,
         secret: this.credentials.secret,
-        debug: true
+        debug: true,
       })
 
       if (codeType === 'refresh') {
@@ -190,13 +194,13 @@ class HarvestTimesheets {
    *
    * @param {Object} token The token to store to disk.
    */
-  storeToken (token) {
+  storeToken(token) {
     console.log('--STORE TOKEN RUNNING--')
     fs.writeFile(TOKEN_PATH, JSON.stringify(token))
     console.log(`Token stored to ${TOKEN_PATH} 💾`)
   }
 
-  getUsersAndTimes () {
+  getUsersAndTimes() {
     this.checkAuth().then((accessToken) => {
       console.log('--AUTH FINE GETTING DATA--')
 
@@ -232,7 +236,7 @@ class HarvestTimesheets {
     })
   }
 
-  getUserList (harvest) {
+  getUserList(harvest) {
     return new Promise((resolve, reject) => {
       const People = harvest.People
       People.list({}, function (err, users) {
@@ -245,7 +249,7 @@ class HarvestTimesheets {
     })
   }
 
-  getUserTime (harvest, userId) {
+  getUserTime(harvest, userId) {
     return new Promise((resolve, reject) => {
       const Reports = harvest.Reports
       Reports.timeEntriesByUser({
@@ -262,7 +266,7 @@ class HarvestTimesheets {
     })
   }
 
-  calculateUserTime (users, dayEntries) {
+  calculateUserTime(users, dayEntries) {
     for (var i = users.length - 1; i >= 0; i--) {
       users[i].user['entries'] = dayEntries[i]
       let userEntries = users[i].user.entries
@@ -279,13 +283,16 @@ class HarvestTimesheets {
       }
     }
 
-    this.socket.emit('action', {
-      type: 'RECEIVE_HARVEST_POSTS',
-      data: users
-    })
+    console.log('HARVEST POSTS', users)
+
+    this.socket.emit('harvest-new-posts', { users })
+
+    // this.socket.emit('action', {
+    //   type: 'RECEIVE_HARVEST_POSTS',
+    //   data: users
+    // })
   }
 
 }
 
 module.exports = HarvestTimesheets
-

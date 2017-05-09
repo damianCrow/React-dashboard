@@ -5,18 +5,15 @@ import { getSocketConnection } from '../socket/selectors'
 
 // Socket listeners from server actions.
 function connectStream(socket) {
-  console.log('connect-request')
   // Tell the server we want to connect the "stream"
   socket.emit('connect-request', 'TWITTER')
   // Return redux-saga's eventChannel which handles socket actions
   return eventChannel(emit => {
     socket.on('twitter-new-posts', (posts) => {
-      console.log('twitter-new-posts received, posts: ', posts)
       emit(actions.newTwitterPosts(posts))
     })
 
     socket.on('twitter-new-posts-error', (message) => {
-      console.log('twitter-new-posts-error received')
       emit(actions.twitterUnauthorized(message))
     })
     return () => {}
@@ -24,7 +21,6 @@ function connectStream(socket) {
 }
 
 export function* connectService(socket) {
-  console.log('connectService')
   // Load the connectStream func into channel to be watched
   const channel = yield call(connectStream, socket)
   while (true) {

@@ -1,37 +1,32 @@
 import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
-import { fetchHarvestPosts } from 'store/actions'
-
+import { serviceRequest } from 'store/actions'
+import { SocketConnector } from 'hoc'
 import { Auth, Timesheets } from 'components'
 
 class HarvestContainer extends Component {
-  static propTypes = {
-    allPosts: PropTypes.array.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    message: PropTypes.string.isRequired,
-    slideShow: PropTypes.object.isRequired,
-    status: PropTypes.string.isRequired
+
+  componentDidMount() {
+    this.props.socketConnected && this.props.serviceRequest()
   }
 
-  componentDidMount () {
-    const { dispatch } = this.props
-    console.log('HarvestContainer mount')
-    // dispatch(fetchSonosDataIfNeeded())
-    dispatch(fetchHarvestPosts())
+  componentWillReceiveProps(nextProps) {
+    // Try and move this logic back to the HOC container
+    const { socketConnected, serviceRequest, posts } = nextProps
+
+    if (socketConnected && !this.props.socketConnected) {
+      serviceRequest()
+    }
   }
 
-  listenForChanges () {
 
-  }
-
-  render () {
-    const { allPosts, isFetching, status, message } = this.props
+  render() {
+    const { posts, status, message } = this.props
     // console.log(posts)
     console.log('Harvest status', status)
     console.log('Harvest message', message)
 
-    const isEmpty = allPosts.length === 0
+    const isEmpty = posts.length === 0
 
     if (status === 'failed') {
       return (
@@ -43,39 +38,41 @@ class HarvestContainer extends Component {
       )
     } else if (!isEmpty) {
       return (
-        <Timesheets posts={allPosts} />
-      )
-    } else {
-      return (
-        <span>Pulled nuffin m8 🤷</span>
+        <Timesheets posts={posts} />
       )
     }
+
+    return (
+      <span>Pulled nuffin m8 🤷</span>
+    )
   }
 }
 
-const mapStateToProps = state => {
-  const { harvest } = state
-  const {
-    allPosts,
-    isFetching,
-    message,
-    slideShow,
-    status
-  } = harvest['harvestProcess']['harvestDetails'] || {
-    allPosts: [],
-    isFetching: true,
-    message: '',
-    slideShow: {currentPost: {}, currentInt: 0, mediaType: ''},
-    status: ''
-  }
+// Listen and capture any changes made as a result of the the actions below.
+const mapStateToProps = (state) => ({
+  posts: state.harvest.data.posts,
+  status: state.harvest.data.status,
+  message: state.harvest.data.message,
+})
 
-  return {
-    allPosts,
-    isFetching,
-    message,
-    slideShow,
-    status
-  }
+const mapDispatchToProps = (dispatch) => ({
+  serviceRequest: () => dispatch(serviceRequest('HARVEST')),
+})
+
+HarvestContainer.propTypes = {
+  socketConnected: PropTypes.bool,
+  serviceRequest: PropTypes.func,
+  posts: PropTypes.array,
+  status: PropTypes.string,
+  message: PropTypes.string,
 }
 
-export default connect(mapStateToProps)(HarvestContainer)
+HarvestContainer.defaultProps = {
+  socketConnected: false,
+  sonosRequest: false,
+  posts: [],
+  status: '',
+  message: '',
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SocketConnector(HarvestContainer))

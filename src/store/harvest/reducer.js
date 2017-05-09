@@ -1,100 +1,37 @@
 import { combineReducers } from 'redux'
+import { initialState } from './selectors'
 import {
-  INVALIDATE_HARVEST,
-  REQUEST_HARVEST,
-  RECEIVE_HARVEST_POSTS,
-  RECEIVE_HARVEST_POSTS_ERROR,
-  NEED_TO_AUTH_HARVEST,
-  UPDATE_HARVEST_SLIDESHOW
-} from '../actions'
+  HARVEST_NEW_POSTS,
+  HARVEST_NEW_POSTS_ERROR,
+  HARVEST_UNAUTHORIZED,
+} from './actions'
 
-const posts = (state = {
-  didInvalidate: false,
-  isFetching: false,
-  allPosts: [],
-  message: '',
-  slideShow: {currentPost: {}, currentInt: 0, mediaType: ''},
-  status: ''
-}, action) => {
+const harvestProcess = (state = initialState, action) => {
   switch (action.type) {
-    case INVALIDATE_HARVEST:
+    case HARVEST_NEW_POSTS:
       return {
         ...state,
-        didInvalidate: true
+        posts: action.posts.users,
+        status: 'success',
       }
-    case REQUEST_HARVEST:
+
+    case HARVEST_NEW_POSTS_ERROR:
       return {
         ...state,
-        isFetching: true,
-        didInvalidate: false
+        message: action.message,
       }
-    case RECEIVE_HARVEST_POSTS_ERROR:
+
+    case HARVEST_UNAUTHORIZED:
       return {
         ...state,
-        isFetching: false,
-        didInvalidate: false,
-        status: action.data.status,
-        message: action.data.err,
-        lastUpdated: action.receivedAt
+        status: 'auth-failed',
       }
-    case RECEIVE_HARVEST_POSTS:
-      return {
-        ...state,
-        isFetching: false,
-        didInvalidate: false,
-        allPosts: action.data,
-        lastUpdated: action.receivedAt
-      }
-    case NEED_TO_AUTH_HARVEST:
-      return {
-        ...state,
-        status: action.data.status,
-        lastUpdated: action.receivedAt
-      }
-    case UPDATE_HARVEST_SLIDESHOW:
-      return {
-        ...state,
-        slideShow: {
-          currentPost: action.slideShow.currentPost,
-          currentInt: action.slideShow.currentInt,
-          mediaType: action.slideShow.mediaType
-        }
-      }
+
     default:
       return state
   }
 }
 
-// const sonosInfoStream = (state = { }, action) => {
-//   switch (action.type) {
-//     case MESSAGE:
-//       return Object.assign({}, {
-//         message: action.data
-//       })
-//     default:
-//       return state
-//   }
-// }
-
-const harvestProcess = (state = { }, action) => {
-  switch (action.type) {
-    case INVALIDATE_HARVEST:
-    case REQUEST_HARVEST:
-    case RECEIVE_HARVEST_POSTS_ERROR:
-    case RECEIVE_HARVEST_POSTS:
-    case NEED_TO_AUTH_HARVEST:
-    case UPDATE_HARVEST_SLIDESHOW:
-      return {
-        ...state,
-        harvestDetails: posts(state.harvestDetails, action)
-      }
-    default:
-      return state
-  }
-}
-
-const rootReducer = combineReducers({
-  harvestProcess
-})
+const rootReducer = combineReducers({ data: harvestProcess })
 
 export default rootReducer

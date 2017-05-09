@@ -34,7 +34,6 @@ class Instagram {
 
   checkAuth() {
     return new Promise((resolve, reject) => {
-      console.log('Instagram checkAuth')
       // console.log('GoogleCalendar this: ', this)
       // Load client secrets from a local file.
       fs.readFile(STORED_CREDENTIALS, (err, content) => {
@@ -72,7 +71,6 @@ class Instagram {
     })
 
     return new Promise((resolve, reject) => {
-      console.log('autherorize credentials', credentials)
       // Check if we have previously stored a token.
       fs.readFile(STORED_TOKEN, (err, token) => {
         if (err) {
@@ -189,10 +187,7 @@ class Instagram {
           this.socket.emit('instagram-new-posts-error', { err })
 
         } else {
-          console.log('pulled instagram data')
-
           this.socket.emit('instagram-new-posts', { posts })
-
           // this.socket.emit('action', {
           //   type: 'RECEIVE_INSTAGRAM_POSTS',
           //   data: {status: 'success', data: posts}

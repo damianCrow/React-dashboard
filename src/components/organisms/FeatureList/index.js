@@ -44,20 +44,18 @@ const FeatureList = ({ ...props }) => {
       </GridRow>
       <GridRow>
         <Feature fullWidth>
+          {/* <Harvest />*/}
+          {<Harvest />}
+        </Feature>
+      </GridRow>
+      <GridRow>
+        <Feature fullWidth>
           {/* <Showcase />*/}
         </Feature>
       </GridRow>
       <GridRow>
         <Feature>
           {/* <GoogleCalendar />*/}
-        </Feature>
-        <Feature>
-          {/* <Harvest />*/}
-        </Feature>
-      </GridRow>
-      <GridRow>
-        <Feature>
-          {/* Something */}
         </Feature>
       </GridRow>
     </Grid>

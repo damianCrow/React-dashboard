@@ -35,7 +35,6 @@ class TwitterApi {
 
   checkAuth() {
     return new Promise((resolve, reject) => {
-      console.log('Twitter checkAuth')
       // console.log('GoogleCalendar this: ', this)
       // Load client secrets from a local file.
       fs.readFile(STORED_CREDENTIALS, (err, content) => {

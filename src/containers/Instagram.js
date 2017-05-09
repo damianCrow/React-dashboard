@@ -6,15 +6,6 @@ import { SocketConnector } from 'hoc'
 import { Instagram, InstagramAuth, SplashScreen } from 'components'
 
 class InstagramContainer extends Component {
-  // static propTypes = {
-  //   allPosts: PropTypes.array.isRequired,
-  //   dispatch: PropTypes.func.isRequired,
-  //   isFetching: PropTypes.bool.isRequired,
-  //   message: PropTypes.string.isRequired,
-  //   slideShow: PropTypes.object.isRequired,
-  //   status: PropTypes.string.isRequired,
-  // }
-
   componentDidMount() {
     this.props.socketConnected && this.props.serviceRequest()
   }

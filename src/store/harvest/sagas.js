@@ -6,20 +6,20 @@ import { getSocketConnection } from '../socket/selectors'
 // Socket listeners from server actions.
 function connectStream(socket) {
   // Tell the server we want to connect the "stream"
-  socket.emit('connect-request', 'INSTAGRAM')
+  socket.emit('connect-request', 'HARVEST')
   // Return redux-saga's eventChannel which handles socket actions
   return eventChannel(emit => {
-    socket.on('instagram-new-posts', (posts) => {
-      emit(actions.newInstagramPosts(posts))
+    socket.on('harvest-new-posts', (posts) => {
+      emit(actions.newHarvestPosts(posts))
     })
 
-    // socket.on('instagram-new-posts-error', (message) => {
-    //   console.log('instagram-new-posts-error received')
-    //   emit(actions.newInstagramPostsError(message))
+    // socket.on('harvest-new-posts-error', (message) => {
+    //   console.log('harvest-new-posts-error received')
+    //   emit(actions.newHarvestPostsError(message))
     // })
 
-    socket.on('instagram-new-posts-error', (message) => {
-      emit(actions.instagramUnauthorized(message))
+    socket.on('harvest-new-posts-error', (message) => {
+      emit(actions.harvestUnauthorized(message))
     })
     return () => {}
   })
@@ -39,7 +39,7 @@ export function* connectService(socket) {
 function* flow() {
   while (true) {
     // Wait to see if the server is happy to provide data
-    yield take('INSTAGRAM_SERVICE_SUCCESS')
+    yield take('HARVEST_SERVICE_SUCCESS')
     // Grab socket details from the store
     const socket = yield select(getSocketConnection)
     // Connect the Sonos stream to start reciving data, with the socket

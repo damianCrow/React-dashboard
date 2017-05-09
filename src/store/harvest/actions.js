@@ -1,37 +1,28 @@
 export const REQUEST_HARVEST = 'REQUEST_HARVEST'
 export const INVALIDATE_HARVEST = 'INVALIDATE_HARVEST'
 
-// export const UPDATE_INSTAGRAM_SLIDESHOW = 'UPDATE_INSTAGRAM_SLIDESHOW'
+export const HARVEST_UNAUTHORIZED = 'HARVEST_UNAUTHORIZED'
 
 // Server actions.
-export const SERVER_PULL_HARVEST = 'SERVER_PULL_HARVEST'
-export const RECEIVE_HARVEST_POSTS = 'RECEIVE_HARVEST_POSTS'
+export const HARVEST_NEW_POSTS = 'HARVEST_NEW_POSTS'
+export const HARVEST_NEW_POSTS_ERROR = 'HARVEST_NEW_POSTS_ERROR'
 export const RECEIVE_HARVEST_POSTS_ERROR = 'RECEIVE_HARVEST_POSTS_ERROR'
 export const NEED_TO_AUTH_HARVEST = 'NEED_TO_AUTH_HARVEST'
 
-export const fetchHarvestPosts = reddit => dispatch => {
-  // SEND SOCKET REQUEST TO DISTACH FETCH with callback like dispatch(requestPosts(reddit))
+// export const invalidateSonosData = ({
+//   type: INVALIDATE_HARVEST
+// })
 
-  // Move this so it dispatchs from the server (on pullInstagramPosts)
-  dispatch({ type: REQUEST_HARVEST })
+export const newHarvestPosts = (posts) => ({
+  type: HARVEST_NEW_POSTS,
+  posts,
+})
 
-  console.log('calling SERVER_PULL_HARVEST')
-  dispatch({ type: SERVER_PULL_HARVEST })
-}
+export const newHarvestPostsError = (err) => ({
+  type: HARVEST_NEW_POSTS_ERROR,
+  message: err,
+})
 
-const shouldFetchPosts = (state) => {
-  const posts = state.instagram.instagramProcess.instagramDetails
-  if (!posts) {
-    return true
-  }
-  if (posts.isFetching) {
-    return false
-  }
-  return posts.didInvalidate
-}
-
-export const fetchHarvestIfNeeded = reddit => (dispatch, getState) => {
-  if (shouldFetchPosts(getState())) {
-    return dispatch(fetchHarvestPosts())
-  }
-}
+export const harvestUnauthorized = () => ({
+  type: HARVEST_UNAUTHORIZED,
+})

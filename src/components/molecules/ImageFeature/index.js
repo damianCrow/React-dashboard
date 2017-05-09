@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 // import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 
@@ -34,11 +35,6 @@ const ThumbnailBackground = styled.img`
 
 class ImageFeature extends Component {
 
-  static propTypes = {
-    currentImage: PropTypes.string.isRequired,
-    thumbnail: PropTypes.string
-  }
-
   // componentWillEnter (callback) {
   //   const el = ReactDOM.findDOMNode(this)
   //   console.log('InstagramImage, componentWillEnter')
@@ -53,8 +49,7 @@ class ImageFeature extends Component {
   //   TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
   // }
 
-  render () {
-    console.log('ImageFeature');
+  render() {
     const { currentImage, thumbnail } = this.props
 
     let thumbnailImage = null
@@ -70,6 +65,11 @@ class ImageFeature extends Component {
       </ImageWrapper>
     )
   }
+}
+
+ImageFeature.propTypes = {
+  currentImage: PropTypes.string.isRequired,
+  thumbnail: PropTypes.string,
 }
 
 export default ImageFeature

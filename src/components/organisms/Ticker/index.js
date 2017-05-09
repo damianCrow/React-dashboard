@@ -49,7 +49,7 @@ class Ticker extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      headerChange: false
+      headerChange: false,
     }
     this.tMax = new TimelineMax()
   }
@@ -58,11 +58,11 @@ class Ticker extends Component {
   // this.circleWrappers = ReactDOM.findDOMNode(this._clockContainer);
 
     this._MoreHeaderInfo =
-        ReactDOM.findDOMNode(this._MoreHeaderInfo);
+        ReactDOM.findDOMNode(this._MoreHeaderInfo)
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if(nextProps.slideShowKey !== this.props.slideShowKey) {
+    if (nextProps.slideShowKey !== this.props.slideShowKey) {
       this.openAndClose()
       return true
     }
@@ -97,7 +97,6 @@ class Ticker extends Component {
 
   render() {
     const { children, icon, slideShowKey } = this.props
-    console.log('ticker slideShowKey', slideShowKey)
     return (
       <HeaderWrapper>
         <StyledIcon icon={icon} height={35} />

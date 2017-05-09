@@ -98,14 +98,12 @@ class Sockets {
       console.log('connect-request, requestedService:', requestedService)
       switch (requestedService) {
         case 'INSTAGRAM':
-          // this.instagram.grabPosts()
           this.instagram.grabPosts()
           break
         case 'CALENDAR':
           break
         case 'HARVEST':
-          // this.harvestTime.getUsersAndTimes()
-          this.harvestTime.request()
+          this.harvestTime.getUsersAndTimes()
           break
         case 'SHOWCASE':
           // this.showcase.pullLivePlaylist()
