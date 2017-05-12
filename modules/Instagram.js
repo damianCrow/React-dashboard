@@ -4,7 +4,7 @@ const instagram = require('instagram-node').instagram()
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
 const SCOPES = ['likes', 'follower_list', 'basic', 'public_content']
-const CRED_DIR = `./.credentials/instagram/`
+const CRED_DIR = './.credentials/instagram/'
 const STORED_CREDENTIALS = `${CRED_DIR}credentials.json`
 const STORED_TOKEN = `${CRED_DIR}token.json`
 
