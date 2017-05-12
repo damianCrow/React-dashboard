@@ -12,7 +12,7 @@
     "build:clean": "rimraf \"dist/!(.git*|Procfile)**\"",
     "build:copy": "copyfiles -u 1 public/* public/**/* dist",
     "prebuild": "npm run build:clean && npm run build:copy",
-    "servebuild": "cross-env NODE_ENV=production process.env.PUBLIC_PATH=dist node server",
+    "servebuild": "node server.production",
     "build": "cross-env NODE_ENV=production process.env.PUBLIC_PATH=dist webpack"
   },
   "jest": {
@@ -52,9 +52,7 @@
     "eslint-plugin-no-unused-vars-rest": "^1.0.4",
     "eslint-plugin-react": "^6.9.0",
     "file-loader": "^0.10.0",
-    "harvest": "git://github.com/log0ymxm/node-harvest.git",
     "html-webpack-plugin": "^2.26.0",
-    "instagram-node": "^0.5.8",
     "jest-cli": "^19.0.0",
     "json-loader": "^0.5.4",
     "opn-cli": "^3.1.0",
@@ -63,8 +61,6 @@
     "redux-mock-store": "^1.2.1",
     "restler": "^3.4.0",
     "rimraf": "^2.6.1",
-    "sonos-discovery": "git://github.com/jishi/node-sonos-discovery.git",
-    "twitter": "^1.7.0",
     "url-loader": "^0.5.7",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.3.0",
@@ -73,9 +69,12 @@
   "dependencies": {
     "babel-polyfill": "^6.20.0",
     "d3": "^4.8.0",
+    "express": "^4.15.2",
     "gsap": "^1.19.1",
+    "harvest": "git://github.com/log0ymxm/node-harvest.git",
     "history": "3.0.0",
     "http-auth": "^3.1.3",
+    "instagram-node": "^0.5.8",
     "lodash": "^4.17.4",
     "moment": "^2.17.1",
     "moment-timezone": "^0.5.11",
@@ -96,10 +95,12 @@
     "redux-saga": "^0.14.1",
     "sine-waves": "git://github.com/isuttell/sine-waves.git",
     "socket.io": "^1.7.3",
+    "sonos-discovery": "git://github.com/jishi/node-sonos-discovery.git",
     "styled-components": "^1.2.1",
     "styled-theme": "^0.3.0",
     "styled-tools": "^0.1.2",
     "theaterjs": "^3.1.0",
+    "twitter": "^1.7.0",
     "validator": "^7.0.0",
     "whatwg-fetch": "^2.0.2"
   }

@@ -1,41 +1,39 @@
 /* eslint-disable */
 const path = require('path');
-const webpack = require('webpack')
+const webpack = require('webpack');
 // const WebpackDevServer = require('webpack-dev-server')
 const WebpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
-const historyApiFallback = require('connect-history-api-fallback')
-const config = require('./webpack.config')
-const express = require('express')
+const historyApiFallback = require('connect-history-api-fallback');
+const config = require('./webpack.config');
+const express = require('express');
 const auth = require('http-auth');
 
-const ip = process.env.IP || '0.0.0.0'
-const port = process.env.PORT || 3000
+const ip = process.env.IP || '0.0.0.0';
+const port = process.env.PORT || 3000;
 
-const PRODUCTION = process.env.NODE_ENV === 'production'
-const PUBLIC_PATH = `/${process.env.PUBLIC_PATH || ''}/`.replace('//', '/')
+const DEBUG = process.env.NODE_ENV !== 'production';
+const PUBLIC_PATH = `/${process.env.PUBLIC_PATH || ''}/`.replace('//', '/');
 
-const Sockets = require('./SocketServer.js')
-const app = express()
+const Sockets = require('./SocketServer.js');
+const app = express();
 
 // const basic = auth.basic({
 //   realm: 'Password Protected Area',
 //   file: path.join(__dirname, '.htpasswd')
 // });
 
-console.log('PRODUCTION', PRODUCTION)
+console.log('DEBUG', DEBUG);
 
 app.use(historyApiFallback({
   verbose: false
 }));
 
-console.log('PUBLIC_PATH', PUBLIC_PATH);
-
 app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
 
 
 // app.use(auth.connect(basic));
-if (!PRODUCTION) {
+if (DEBUG) {
 
   const compiler = webpack(config);
   const middleware = WebpackDevMiddleware(compiler, {
@@ -49,7 +47,7 @@ if (!PRODUCTION) {
     stats: {
       colors: false
     }
-  })
+  });
 
   app.use(middleware);
   // console.log('compiler', compiler)
