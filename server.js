@@ -12,7 +12,7 @@ const auth = require('http-auth');
 const ip = process.env.IP || '0.0.0.0'
 const port = process.env.PORT || 3000
 
-const DEBUG = process.env.NODE_ENV !== 'production'
+const PRODUCTION = process.env.NODE_ENV === 'production'
 const PUBLIC_PATH = `/${process.env.PUBLIC_PATH || ''}/`.replace('//', '/')
 
 const Sockets = require('./SocketServer.js')
@@ -23,7 +23,7 @@ const app = express()
 //   file: path.join(__dirname, '.htpasswd')
 // });
 
-console.log('DEBUG', DEBUG)
+console.log('PRODUCTION', PRODUCTION)
 
 app.use(historyApiFallback({
   verbose: false
@@ -35,7 +35,7 @@ app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
 
 
 // app.use(auth.connect(basic));
-if (DEBUG) {
+if (!PRODUCTION) {
 
   const compiler = webpack(config);
   const middleware = WebpackDevMiddleware(compiler, {
