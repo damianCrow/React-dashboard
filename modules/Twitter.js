@@ -1,5 +1,5 @@
 const fs = require('fs')
-const Twitter = require('Twitter')
+const Twitter = require('twitter')
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
