@@ -19,63 +19,55 @@ class WaveAnimation extends Component {
           timeModifier: 4,
           lineWidth: 1,
           amplitude: -25,
-          wavelength: 25
+          wavelength: 25,
         },
         {
           timeModifier: 2,
           lineWidth: 1,
           amplitude: -10,
-          wavelength: 30
+          wavelength: 30,
         },
         {
           timeModifier: 1,
           lineWidth: 1,
           amplitude: -30,
-          wavelength: 30
+          wavelength: 30,
         },
         {
           timeModifier: 3,
           lineWidth: 1,
           amplitude: 40,
-          wavelength: 40
+          wavelength: 40,
         },
         {
           timeModifier: 0.5,
           lineWidth: 1,
           amplitude: -60,
-          wavelength: 60
+          wavelength: 60,
         },
         {
           timeModifier: 1.3,
           lineWidth: 1,
           amplitude: -40,
-          wavelength: 40
-        }
-      ]
+          wavelength: 40,
+        },
+      ],
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.startWaves()
   }
 
-  startWaves () {
-    this.waveConfig['el'] = this._canvas
+  startWaves() {
+    this.waveConfig.el = this._canvas
     console.log('this.waveConfig', this.waveConfig)
     this.currentWave = new SineWaves(this.waveConfig)
   }
 
   render () {
-    const StyledCanvas = styled.canvas`
-      position: absolute;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      left: 0;
-    `
-
     return (
-      <StyledCanvas innerRef={(el) => { this._canvas = el }} />
+      <canvas style={{ position: 'absolute', top: '0', width: '100%', height: '100%', left: '0' }} ref={(el) => { this._canvas = el }} />
     )
   }
 }

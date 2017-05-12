@@ -15,6 +15,12 @@ const HarvestWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  font-family: Helvetica Neue, Helvetica, Roboto, sans-serif;
 `
 
 const UserList = styled.ul`
@@ -63,6 +69,7 @@ class Timesheets extends Component {
       maxValue: 30,
       levels: 5,
       ExtraWidthX: 200,
+      ExtraWidthY: 100,
     }
 
     // Call function to draw the Radar chart

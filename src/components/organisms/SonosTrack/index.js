@@ -135,7 +135,7 @@ const SonosTrack = ({...props, trackInfo}) => {
 
 SonosTrack.propTypes = {
   children: PropTypes.any,
-  trackInfo: PropTypes.object
+  trackInfo: PropTypes.object,
 }
 
 export default SonosTrack

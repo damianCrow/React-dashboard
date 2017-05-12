@@ -36,16 +36,16 @@ const SonosGroupInfo = ({ children, ...props, speakers, featuredSpeaker }) => {
           {!!i && ', '}
           {speaker}
         </span>) */}
-        {speakers}
+        {speakers.map((member) => member)}
       </SpeakerInfo>
     </Wrapper>
   )
 }
 
 SonosGroupInfo.propTypes = {
-  speakers: PropTypes.string.isRequired,
+  speakers: PropTypes.array.isRequired,
   children: PropTypes.any,
-  featuredSpeaker: PropTypes.string
+  featuredSpeaker: PropTypes.string,
 }
 
 export default SonosGroupInfo

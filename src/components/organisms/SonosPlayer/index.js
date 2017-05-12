@@ -37,9 +37,13 @@ const SonosPlayer = ({playerState, speakers, featuredSpeaker, children, ...props
 
 SonosPlayer.propTypes = {
   children: PropTypes.any,
-  speakers: PropTypes.string.isRequired,
+  speakers: PropTypes.array.isRequired,
   playerState: PropTypes.object,
   featuredSpeaker: PropTypes.string,
+}
+
+SonosPlayer.defaultProps = {
+  speakers: [''],
 }
 
 export default SonosPlayer

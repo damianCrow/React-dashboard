@@ -50,7 +50,7 @@ class Sonos {
    // let groupStates = []
 
     this.discovery.on('topology-change', sonosGroups => {
-      console.log('topology-change')
+      // console.log('topology-change')
 
       // console.log('sonosGroups', sonosGroups)
       // console.log('sonosGroups', sonosGroups)
@@ -84,7 +84,7 @@ class Sonos {
 
 
       // console.log('topology-change releventChanges', releventChanges)
-      this.socket.emit('topology-change', releventChanges)
+      this.socket.emit('topology-change', sonosGroups)
 
       // THIS SPITS OUT DETAILS ABOUT ALL GROUPS
 
@@ -124,6 +124,16 @@ class Sonos {
       // console.log('transport-state')
       // console.log('newSonosState', newSonosState)
       // this.socket.emit(newSonosState)
+
+      const releventChanges = newSonosState
+      releventChanges.speakerNames = []
+
+      newSonosState.system.players.forEach((group) => {
+        // console.log('group', group)
+        releventChanges.speakerNames.push(group.roomName)
+      })
+
+      console.log('newSonosState.system', newSonosState.system.players)
       this.socket.emit('transport-state', newSonosState)
     })
 

@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import orderBy from 'lodash/orderBy'
 import { initialState } from './selectors'
 import {
   HARVEST_NEW_POSTS,
@@ -11,7 +12,7 @@ const harvestProcess = (state = initialState, action) => {
     case HARVEST_NEW_POSTS:
       return {
         ...state,
-        posts: action.posts.users,
+        posts: orderBy(action.posts.users, [(o) => { return o.user.total_hours }], ['desc']),
         status: 'success',
       }
 

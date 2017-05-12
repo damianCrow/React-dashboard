@@ -283,8 +283,6 @@ class HarvestTimesheets {
       }
     }
 
-    console.log('HARVEST POSTS', users)
-
     this.socket.emit('harvest-new-posts', { users })
 
     // this.socket.emit('action', {

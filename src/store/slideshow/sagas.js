@@ -8,7 +8,7 @@ function* nextSlide(action) {
   const service = action.service
   const max = yield select(maxSlideshow(service))
   const current = yield select(currentSlideshow(service))
-  yield delay(12000)
+  yield delay(15000)
 
   // TODO: Make this a seperate async func
   if (current !== (max - 1)) {

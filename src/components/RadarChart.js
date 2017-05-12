@@ -14,12 +14,12 @@ export const RadarChart = {
      opacityArea: 0.5,
      ToRight: 5,
      TranslateX: 80,
-     TranslateY: 30,
+     TranslateY: 40,
      ExtraWidthX: 250,
      ExtraWidthY: 50,
      color: d3.scaleOrdinal().range(["#f68a28", "#f36c00"])
     };
-	
+
     if('undefined' !== typeof options){
       for(var i in options){
       if('undefined' !== typeof options[i]){
@@ -27,9 +27,9 @@ export const RadarChart = {
       }
       }
     }
-    
+
     // cfg.maxValue = 100;
-    
+
     var allAxis = (d[0].map(function(i, j){return i.area}));
     var total = allAxis.length;
     var radius = cfg.factor*Math.min(cfg.w/2, cfg.h/2);
@@ -44,7 +44,7 @@ export const RadarChart = {
         .attr("transform", "translate(" + cfg.TranslateX + "," + cfg.TranslateY + ")");
 
 		var tooltip;
-	
+
     //Circular segments
     for(var j=0; j<cfg.levels; j++){
       var levelFactor = cfg.factor*radius*((j+1)/cfg.levels);
@@ -105,17 +105,17 @@ export const RadarChart = {
       .style("fill", "#fff")
       .attr("text-anchor", "middle")
       .attr("dy", "1.5em")
-      .attr("transform", function(d, i){return "translate(0, -10)"})
+      .attr("transform", function(d, i){return "translate(0, -20)"})
       .attr("x", function(d, i){return cfg.w/2*(1-cfg.factorLegend*Math.sin(i*cfg.radians/total))-60*Math.sin(i*cfg.radians/total);})
       .attr("y", function(d, i){return cfg.h/2*(1-Math.cos(i*cfg.radians/total))-30*Math.cos(i*cfg.radians/total);});
 
     var dataValues = [];
- 
+
     d.forEach(function(y, x){
       g.selectAll(".nodes")
       .data(y, function(j, i){
         dataValues.push([
-        cfg.w/2*(1-(parseFloat(Math.max(j.value, 0))/cfg.maxValue)*cfg.factor*Math.sin(i*cfg.radians/total)), 
+        cfg.w/2*(1-(parseFloat(Math.max(j.value, 0))/cfg.maxValue)*cfg.factor*Math.sin(i*cfg.radians/total)),
         cfg.h/2*(1-(parseFloat(Math.max(j.value, 0))/cfg.maxValue)*cfg.factor*Math.cos(i*cfg.radians/total))
         ]);
       });
@@ -140,7 +140,7 @@ export const RadarChart = {
                       z = "polygon."+d3.select(this).attr("class");
                       g.selectAll("polygon")
                        .transition(200)
-                       .style("fill-opacity", 0.1); 
+                       .style("fill-opacity", 0.1);
                       g.selectAll(z)
                        .transition(200)
                        .style("fill-opacity", .7);
@@ -165,7 +165,7 @@ var tooltip = d3.select("body").append("div").attr("class", "toolTip");
     .attr("alt", function(j){return Math.max(j.value, 0)})
     .attr("cx", function(j, i){
       dataValues.push([
-      cfg.w/2*(1-(parseFloat(Math.max(j.value, 0))/cfg.maxValue)*cfg.factor*Math.sin(i*cfg.radians/total)), 
+      cfg.w/2*(1-(parseFloat(Math.max(j.value, 0))/cfg.maxValue)*cfg.factor*Math.sin(i*cfg.radians/total)),
       cfg.h/2*(1-(parseFloat(Math.max(j.value, 0))/cfg.maxValue)*cfg.factor*Math.cos(i*cfg.radians/total))
     ]);
     return cfg.w/2*(1-(Math.max(j.value, 0)/cfg.maxValue)*cfg.factor*Math.sin(i*cfg.radians/total));

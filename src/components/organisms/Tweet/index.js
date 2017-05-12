@@ -27,11 +27,15 @@ const TweetWrapper = styled.div`
   left: 0;
 `
 
+function stripLinks(tweetText) {
+  return tweetText.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '')
+}
+
 class Tweet extends Component {
   constructor(props) {
     super(props)
     this.theater =
-      theaterJS({ minSpeed: { erase: 10, type: 50 }, maxSpeed: { erase: 25, type: 75 } })
+      theaterJS({ minSpeed: { erase: 10, type: 35 }, maxSpeed: { erase: 25, type: 50 } })
 
     this.theater
       .on('type:start, erase:start', () => {
@@ -82,7 +86,7 @@ class Tweet extends Component {
     const { allTweetDetails } = this.props
     this.theater
       .addScene(3500)
-      .addScene(`${this.tweetId}:${allTweetDetails.text}`, 100)
+      .addScene(`${this.tweetId}:${stripLinks(allTweetDetails.text)}`, 100)
       .addScene((done) => {
         callback()
         done()

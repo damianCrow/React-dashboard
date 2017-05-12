@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import has from 'lodash/has'
 import { connect } from 'react-redux'
 import { serviceRequest, startSlideshow } from 'store/actions'
 import { SocketConnector } from 'hoc'
@@ -7,6 +8,11 @@ import { SocketConnector } from 'hoc'
 import { Twitter, Auth, SplashScreen } from 'components'
 
 class TwitterContainer extends Component {
+
+  constructor() {
+    super()
+    this.state = { post: {} }
+  }
 
   componentDidMount() {
     this.props.socketConnected && this.props.serviceRequest()
@@ -20,8 +26,20 @@ class TwitterContainer extends Component {
       serviceRequest()
     }
 
-    if (posts.length > 0 && slideshow.status === 'ready') {
-      startInstaSlideshow(20)
+    if (posts.length > 0) {
+      if (['retweeted_status'].every(prop => prop in posts[slideshow.current])) {
+        this.setState({
+          post: posts[slideshow.current].retweeted_status,
+        })
+      } else {
+        this.setState({
+          post: posts[slideshow.current],
+        })
+      }
+
+      if (slideshow.status === 'ready') {
+        startInstaSlideshow(20)
+      }
     }
   }
 
@@ -45,7 +63,7 @@ class TwitterContainer extends Component {
     } else if (!isEmpty) {
       return (
         <Twitter
-          post={posts[slideshow.current]}
+          post={this.state.post}
           slideShowKey={slideshow.current}
         />
       )

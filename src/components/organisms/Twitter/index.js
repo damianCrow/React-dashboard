@@ -125,8 +125,8 @@ const Twitter = ({ children, ...props, post, slideShowKey }) => {
         </TwitterBackground>
         <Header icon="twitter" slideShowKey={slideShowKey}>
           <HeaderLevel>
-            <span>@{post.user.username}</span>
-            <TwitterCaption>{moment(post.created_time).calendar()}</TwitterCaption>
+            <span>@{post.user.screen_name}</span>
+            <TwitterCaption>{moment(post.created_at).calendar()}</TwitterCaption>
           </HeaderLevel>
           <HeaderLevel>
             <MetaTags tags={metaTags} />

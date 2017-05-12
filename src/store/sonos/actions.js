@@ -33,9 +33,10 @@ export const sonosReadRequest = () => ({
   requested: true,
 })
 
-export const sonosReadSuccess = (speakers) => ({
+export const sonosReadSuccess = (speakers, speakerNames) => ({
   type: SONOS_READ_SUCCESS,
-  speakers,
+  speakers: speakers.state,
+  speakerNames: speakers.speakerNames,
 })
 
 export const sonosReadFailure = (needle, error) => ({

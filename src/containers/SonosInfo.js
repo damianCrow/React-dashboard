@@ -51,14 +51,16 @@ class SonosInfoContainer extends Component {
         <SonosContainer>
           {speakers.map(speaker => {
             console.log('speaker.state', speaker.state)
-
-            return (
-              <SonosPlayer
-                key={speaker.uuid}
-                speakers={speaker.roomName}
-                playerState={speaker.state}
-              />
-            )
+            if (speaker.state.playbackState !== 'STOPPED') {
+              return (
+                <SonosPlayer
+                  key={speaker.uuid}
+                  speakers={speaker.members}
+                  playerState={speaker.state}
+                />
+              )
+            }
+            return null
           })}
         </SonosContainer>
       )
