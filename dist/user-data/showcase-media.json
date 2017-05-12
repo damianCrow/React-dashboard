@@ -1,0 +1,58 @@
+{
+  "playlists": [
+    {
+      "name": "NextEV",
+      "live": true,
+      "media": [
+        {
+          "type": "image",
+          "file_name": "/showcase-media/nelson.jpg"
+        },
+        {
+          "type": "image",
+          "file_name": "/showcase-media/next-ev-car.jpg"
+        },
+        {
+          "type": "youtube",
+          "youtube_id": "NTtU6LuKm24"
+        }
+      ]
+    },
+    {
+      "name": "Oyster Yachts",
+      "live": false,
+      "media": [
+        {
+          "type": "youtube",
+          "youtube_id": "44ENOWutmko"
+        },
+        {
+          "type": "image",
+          "file_name": "/showcase-media/yacht-345.jpg"
+        },
+        {
+          "type": "image",
+          "file_name": "/showcase-media/yacht-965.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Interstate",
+      "live": false,
+      "media": [
+        {
+          "type": "youtube",
+          "youtube_id": "V2c1WSj6mQk"
+        },
+        {
+          "type": "image",
+          "file_name": "/showcase-media/office-pic.jpg"
+        },
+        {
+          "type": "image",
+          "file_name": "/showcase-media/team-shot.jpg"
+        }
+      ]
+    }
+  ]
+}

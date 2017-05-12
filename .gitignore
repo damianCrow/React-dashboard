@@ -6,7 +6,6 @@ build
 yarn-error.log
 npm-debug.log
 
-dist
 coverage
 
 .htaccess
