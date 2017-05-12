@@ -1,5 +1,5 @@
 const fs = require('fs')
-const Harvest = require('Harvest')
+const Harvest = require('harvest')
 const restler = require('restler')
 const moment = require('moment')
 
