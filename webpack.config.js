@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 // const ip = process.env.IP || '0.0.0.0'
 // const port = process.env.PORT || 9998
 const DEBUG = process.env.NODE_ENV !== 'production'
-const PUBLIC_PATH = `/${process.env.PUBLIC_PATH || ''}/`.replace('//', '/')
+// const PUBLIC_PATH = `/${process.env.PUBLIC_PATH || ''}/`.replace('//', '/')
 
 const isVendor = ({ userRequest }) => (
   userRequest &&
@@ -22,7 +22,7 @@ const config = {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: '[name].[hash].js',
-    publicPath: PUBLIC_PATH,
+    publicPath: '/',
   },
   resolve: {
     modules: ['src', 'node_modules'],
@@ -30,7 +30,7 @@ const config = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-      'process.env.PUBLIC_PATH': JSON.stringify(PUBLIC_PATH),
+      'process.env.PUBLIC_PATH': JSON.stringify('/'),
     }),
     new HtmlWebpackPlugin({
       filename: 'index.html',

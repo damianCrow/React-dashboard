@@ -12,6 +12,9 @@ const auth = require('http-auth');
 const ip = process.env.IP || '0.0.0.0'
 const port = process.env.PORT || 3000
 
+const DEBUG = process.env.NODE_ENV !== 'production'
+const PUBLIC_PATH = `/${process.env.PUBLIC_PATH || ''}/`.replace('//', '/')
+
 const Sockets = require('./SocketServer.js')
 const app = express()
 
@@ -20,31 +23,45 @@ const app = express()
 //   file: path.join(__dirname, '.htpasswd')
 // });
 
-// app.use(auth.connect(basic));
-
-const compiler = webpack(config);
-const middleware = WebpackDevMiddleware(compiler, {
-  contentBase: 'public',
-  historyApiFallback: true,
-  hot: true,
-  lazy: false,
-  noInfo: true,
-  publicPath: config.output.publicPath,
-  quiet: false,
-  stats: {
-    colors: false
-  }
-})
+console.log('DEBUG', DEBUG)
 
 app.use(historyApiFallback({
   verbose: false
 }));
 
-app.use(middleware);
-app.use(express.static(path.join(process.cwd(), './public')));
+console.log('PUBLIC_PATH', PUBLIC_PATH);
 
-// Keeps crashing sometimes?
-app.use(webpackHotMiddleware(compiler));
+app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
+
+
+// app.use(auth.connect(basic));
+if (DEBUG) {
+
+  const compiler = webpack(config);
+  const middleware = WebpackDevMiddleware(compiler, {
+    contentBase: 'public',
+    historyApiFallback: true,
+    hot: true,
+    lazy: false,
+    noInfo: true,
+    publicPath: config.output.publicPath,
+    quiet: false,
+    stats: {
+      colors: false
+    }
+  })
+
+  app.use(middleware);
+  // console.log('compiler', compiler)
+  // Keeps crashing sometimes?
+  app.use(webpackHotMiddleware(compiler));
+
+}
+
+
+// if (DEBUG) {
+
+// }
 
 // app.use(express.static(path.join(__dirname, '/public/index.html')));
 
