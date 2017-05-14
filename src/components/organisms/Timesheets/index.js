@@ -66,7 +66,7 @@ class Timesheets extends Component {
     const config = {
       w: width,
       h: height,
-      maxValue: 30,
+      maxValue: 45,
       levels: 5,
       ExtraWidthX: 200,
       ExtraWidthY: 100,
