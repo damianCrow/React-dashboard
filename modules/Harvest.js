@@ -3,6 +3,9 @@ const Harvest = require('harvest')
 const restler = require('restler')
 const moment = require('moment')
 
+const sumBy = require('lodash/sumBy')
+
+
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
 // const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
@@ -10,9 +13,6 @@ const CRED_DIR = './.credentials/harvest/'
 const HARVEST_HOST = 'https://api.harvestapp.com'
 const TOKEN_PATH = `${CRED_DIR}harvest_token.json`
 const CLIENT_DETAILS = `${CRED_DIR}config.json`
-
-// Example 1: Creating a new class (declaration-form)
-// ===============================================================
 
 // A base class is defined using the new reserved 'class' keyword
 class HarvestTimesheets {
@@ -83,9 +83,9 @@ class HarvestTimesheets {
   }
 
   checkAccessToken(resolveAuth, rejectAuth, tokenDetails) {
-    let date = new Date()
-    console.log('tokenDetails.expires_at', tokenDetails.expires_at)
-    console.log('date.getTime', date.getTime())
+    const date = new Date()
+    // console.log('tokenDetails.expires_at', tokenDetails.expires_at)
+    // console.log('date.getTime', date.getTime())
 
     if (tokenDetails.expires_at > date.getTime()) {
       // Token still fine, send it back
@@ -107,24 +107,23 @@ class HarvestTimesheets {
 
   setupAccessForNewToken() {
     // Dispatch a frontend action to push the auth link!!!!!!!!!
-    this.socket.emit('action', {type: 'NEED_TO_AUTH_HARVEST',
-      data: {status: 'auth-failed'}}
-    )
+    this.socket.emit('action', {
+      type: 'NEED_TO_AUTH_HARVEST',
+      data: { status: 'auth-failed' },
+    })
 
     // Send the user to harvest.getAccessTokenURL()) and grab the access code passed as a get parameter
     // e.g. By running an express.js server at redirect_url
     // const accessCode = req.query.code
 
-    const authUrl = HARVEST_HOST + '/oauth2/authorize?client_id='
-    + this.credentials.client_id + '&redirect_uri=' + this.credentials.redirect_uri +
-    '&state=optional-csrf-token&response_type=code'
+    const authUrl = `${HARVEST_HOST}'/oauth2/authorize?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
 
     this.app.get('/authorize_harvest', (req, res) => {
       // This will redirect back to our setup '/handle_calendar_auth' with the code
       res.redirect(authUrl)
     })
 
-    this.app.get('/harvest_auth', function (req, res) {
+    this.app.get('/harvest_auth', (req, res) => {
       const accessCode = req.query.code
       // This needs to go back to autherise and fire our request with sucess
       this.getNewToken(accessCode, 'access')
@@ -135,7 +134,7 @@ class HarvestTimesheets {
         .catch(error => {
           console.log(error)
         })
-    }.bind(this))
+    })
   }
 
   /**
@@ -150,12 +149,12 @@ class HarvestTimesheets {
       console.log(`--GET NEW ACCESS TOKEN WITH ${codeType} CODE--`)
       console.log('accessCode', code)
 
-      let tokenOptions = {
-        'client_id': this.credentials.client_id,
-        'client_secret': this.credentials.secret,
+      const tokenOptions = {
+        client_id: this.credentials.client_id,
+        client_secret: this.credentials.secret,
       }
 
-      var harvest = new Harvest({
+      const harvest = new Harvest({
         subdomain: this.credentials.subdomain,
         redirect_uri: this.credentials.redirect_uri,
         identifier: this.credentials.client_id,
@@ -164,22 +163,22 @@ class HarvestTimesheets {
       })
 
       if (codeType === 'refresh') {
-        tokenOptions['refresh_token'] = code
-        tokenOptions['grant_type'] = 'refresh_token'
+        tokenOptions.refresh_token = code
+        tokenOptions.grant_type = 'refresh_token'
       } else if (codeType === 'access') {
-        tokenOptions['code'] = code
-        tokenOptions['grant_type'] = 'authorization_code'
-        tokenOptions['redirect_uri'] = this.credentials.redirect_uri
+        tokenOptions.code = code
+        tokenOptions.grant_type = 'authorization_code'
+        tokenOptions.redirect_uri = this.credentials.redirect_uri
       }
 
-      restler.post(harvest.host + '/oauth2/token', {
-        data: tokenOptions
+      restler.post(`${harvest.host}/oauth2/token`, {
+        data: tokenOptions,
       }).on('complete', response => {
         if (!response.access_token) {
           reject('Provided access code was rejected by Harvest, no token was returned')
         } else {
-          let date = new Date()
-          response['expires_at'] = date.getTime() + (response.expires_in * 1000)
+          const date = new Date()
+          response.expires_at = date.getTime() + (response.expires_in * 1000)
           resolve(response)
           console.log('response', response)
         }
@@ -206,23 +205,18 @@ class HarvestTimesheets {
 
       const harvest = new Harvest({
         subdomain: this.credentials.subdomain,
-        access_token: accessToken
+        access_token: accessToken,
       })
 
-      let userAndTimeLink = []
-      let allUsers = []
-
+      console.log('about to fire getUserList')
       this.getUserList(harvest)
         .then(users => {
-          allUsers = users
-          for (var i = 0, len = allUsers.length; i < len; i++) {
-            // console.log('allUsers[i]', allUsers[i])
-            userAndTimeLink[i] = this.getUserTime(harvest, users[i].user.id)
-          }
+          const userEntryRequests = users.map((user) => this.getUserTime(harvest, user.user))
           console.log('BEFORE PROMISE ALL')
-          Promise.all(userAndTimeLink)
-            .then(dayEntries => {
-              this.calculateUserTime(users, dayEntries)
+          Promise.all(userEntryRequests)
+            .then(userWithEntries => {
+              // Clean out dormant users
+              this.calculateUserTime(userWithEntries)
             })
             .catch(reason => {
               console.log(reason)
@@ -231,7 +225,7 @@ class HarvestTimesheets {
         .catch(error => {
           console.log(error)
         })
-    }).catch(function (error) {
+    }).catch((error) => {
       console.log('error', error)
     })
   }
@@ -239,7 +233,7 @@ class HarvestTimesheets {
   getUserList(harvest) {
     return new Promise((resolve, reject) => {
       const People = harvest.People
-      People.list({}, function (err, users) {
+      People.list({}, (err, users) => {
         if (err) {
           reject(JSON.stringify(err))
         } else {
@@ -249,48 +243,123 @@ class HarvestTimesheets {
     })
   }
 
-  getUserTime(harvest, userId) {
+  getUserTime(harvest, user) {
+    // console.log('getUserTime user: ', user)
     return new Promise((resolve, reject) => {
       const Reports = harvest.Reports
       Reports.timeEntriesByUser({
-        user_id: userId,
-        from: moment().startOf('week').format('YYYYMMDD'),
-        to: moment().format('YYYYMMDD')
-      }, (err, users) => {
+        user_id: user.id,
+        from: moment().subtract(14, 'd').format('YYYYMMDD'),
+        to: moment().format('YYYYMMDD'),
+      }, (err, userEntries) => {
         if (err) {
           reject(JSON.stringify(err))
         } else {
-          resolve(users)
+          resolve({ user, entries: userEntries })
         }
       })
     })
+
+    // return new Promise((resolve, reject) => {
+    //   const Reports = harvest.Reports
+    //   Reports.timeEntriesByUser({
+    //     user_id: userId,
+    //     from: moment().startOf('week').format('YYYYMMDD'),
+    //     to: moment().format('YYYYMMDD'),
+    //   }, (err, users) => {
+    //     if (err) {
+    //       reject(JSON.stringify(err))
+    //     } else {
+    //       resolve(users)
+    //     }
+    //   })
+    // })
   }
 
-  calculateUserTime(users, dayEntries) {
-    for (var i = users.length - 1; i >= 0; i--) {
-      users[i].user['entries'] = dayEntries[i]
-      let userEntries = users[i].user.entries
-      let totalHours = 0
+  currentTimings() {
+    const startOfTheWeek = moment().startOf('isoWeek')
+    const startOfLastWeek = moment().startOf('isoWeek').subtract(7, 'days')
 
-      for (let g = 0, len = userEntries.length; g < len; g++) {
-        totalHours = totalHours + userEntries[g].day_entry.hours
+    function weekDates(startDate, endDate) {
+      const dates = []
+      const currDate = startDate.clone()
+      const lastDate = endDate.clone()
+      while (currDate.add(1, 'days').diff(lastDate) < 1) {
+        dates.push(currDate.clone().format('YYYY-MM-DD'))
       }
-
-      if (totalHours === 0) {
-        users.splice(i, 1)
-      } else {
-        users[i].user['total_hours'] = totalHours
-      }
+      dates.push(lastDate.clone().format('YYYY-MM-DD'))
+      return dates
     }
 
-    console.log('HARVEST DATA', users)
+    const workDay = (last) => {
+      switch (moment().day()) {
+        // If it is Monday (1),Saturday(6), or Sunday (0), Get the previous Friday (5)
+        // and ensure we are on the previous week
+        case 0:
+        case 1:
+        case 6:
+          return moment().subtract(6, 'days').day(5)
+        // If it any other weekend, just return the previous day
+        default:
+          return moment().day(((last) ? -1 : 0))
+      }
+    }
+    // TODO: Later check that there are at least two entires for this.
+    const thisWorkWeekDays = weekDates(startOfTheWeek.clone(), startOfTheWeek.clone().add(4, 'days'))
+    const lastWorkWeekDays = weekDates(startOfLastWeek.clone(), startOfLastWeek.clone().add(4, 'days'))
 
-    this.socket.emit('harvest-new-posts', { users })
+    // console.log('lastWorkDay', workDay(true).format('YYYY-MM-DD'))
+    // console.log('thisWorkWeekDays', thisWorkWeekDays)
+    // console.log('lastWorkWeekDays', lastWorkWeekDays)
 
-    // this.socket.emit('action', {
-    //   type: 'RECEIVE_HARVEST_POSTS',
-    //   data: users
-    // })
+    return {
+      lastWorkDay: workDay(true).format('YYYY-MM-DD'),
+      thisWorkWeekDays,
+      lastWorkWeekDays,
+    }
+  }
+
+  calculateUserTime(userWithEntries) {
+    // Remove empty entires
+    const activeUsersWithEntries = userWithEntries.filter((user) => {
+      return user.entries.length > 0
+    })
+
+    const formatedUsers = activeUsersWithEntries.map((user) => {
+      // Filter only entries which match the last working day,
+      // then, of those entries, sum up all the hours.
+      const lastWorkDay = (entries) => sumBy(entries.filter((entry) => {
+        return this.currentTimings().lastWorkDay === entry.day_entry.spent_at
+      }), (entry) => entry.day_entry.hours)
+
+      const thisWorkWeek = (entries) => sumBy(entries.filter((entry) => {
+        return this.currentTimings().thisWorkWeekDays.includes(entry.day_entry.spent_at)
+      }), (entry) => entry.day_entry.hours)
+
+      const lastWorkWeek = (entries) => sumBy(entries.filter((entry) => {
+        return this.currentTimings().thisWorkWeekDays.includes(entry.day_entry.spent_at)
+      }), (entry) => entry.day_entry.hours)
+
+
+      return {
+        firstName: user.user.first_name,
+        lastName: user.user.last_name,
+        id: user.user.id,
+        email: user.user.email,
+        totalHours: {
+          lastWorkDay: lastWorkDay(user.entries),
+          thisWorkWeek: thisWorkWeek(user.entries),
+          lastWorkWeek: lastWorkWeek(user.entries),
+        },
+      }
+    })
+
+    console.log('formatedUsers', formatedUsers)
+
+
+    // console.log('HARVEST DATA', users )
+
+    // this.socket.emit('harvest-new-posts', { users })
   }
 
 }

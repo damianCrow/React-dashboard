@@ -56,19 +56,16 @@ class Sockets {
       switch (requestedService.request) {
         case 'INSTAGRAM':
           this.instagram = new Instagram(this.app, socket, this.port)
-          // this.instagram.grabPosts()
           this.instagram.request()
           break
         case 'CALENDAR':
           break
         case 'HARVEST':
           this.harvestTime = new Harvest(this.app, socket)
-          // this.harvestTime.getUsersAndTimes()
           this.harvestTime.request()
           break
         case 'SHOWCASE':
           this.showcase = new Showcase(this.app, socket)
-          // this.showcase.pullLivePlaylist()
           this.showcase.request()
           break
         case 'SONOS':
@@ -77,7 +74,6 @@ class Sockets {
           break
         case 'TWITTER':
           this.twitter = new TwitterApi(this.app, socket, this.port)
-          // this.twitter.grabPosts()
           this.twitter.request()
           break
         default:

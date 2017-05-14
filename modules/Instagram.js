@@ -46,14 +46,13 @@ class Instagram {
         // console.log('CREDENTIALS', JSON.parse(content))
 
         this.authorize(CREDENTIALS)
-          .then(function (instagram) {
+          .then((instagram) => {
             resolve(instagram)
           })
-          .catch(function (error) {
+          .catch((error) => {
             console.log(error)
           })
-        }
-      )
+      })
     })
   }
 
@@ -88,7 +87,7 @@ class Instagram {
   }
 
   setupForNewToken(instagram) {
-    const REDIRECT_URL = 'http://' + 'localhost' + ':' + this.port + '/handle_instagram_auth'
+    const REDIRECT_URL = `http://localhost:${this.port}/handle_instagram_auth`
 
     const authUrl = instagram.get_authorization_url(REDIRECT_URL, {
       scope: SCOPES,
@@ -179,22 +178,12 @@ class Instagram {
       instagram.user_media_recent(INSTAGRAM_USER_ID, (err, posts, pagination, remaining, limit) => {
         if (err) {
           console.log('err', err)
-
-          // this.socket.emit('action', {
-          //   type: 'RECEIVE_INSTAGRAM_POSTS_ERROR',
-          //   data: {status: 'error', data: err}
-          // })
           this.socket.emit('instagram-new-posts-error', { err })
-
         } else {
           this.socket.emit('instagram-new-posts', { posts })
-          // this.socket.emit('action', {
-          //   type: 'RECEIVE_INSTAGRAM_POSTS',
-          //   data: {status: 'success', data: posts}
-          // })
         }
       })
-    }).catch(function (error) {
+    }).catch((error) => {
       console.log('error', error)
     })
   }
