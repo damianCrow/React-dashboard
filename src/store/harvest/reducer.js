@@ -1,18 +1,17 @@
 import { combineReducers } from 'redux'
-import orderBy from 'lodash/orderBy'
-import { initialState } from './selectors'
+// import orderBy from 'lodash/orderBy'
+import { statusInitialState, dataInitialState } from './selectors'
 import {
   HARVEST_NEW_POSTS,
   HARVEST_NEW_POSTS_ERROR,
   HARVEST_UNAUTHORIZED,
 } from './actions'
 
-const harvestProcess = (state = initialState, action) => {
+const harvestStatus = (state = statusInitialState, action) => {
   switch (action.type) {
     case HARVEST_NEW_POSTS:
       return {
         ...state,
-        posts: orderBy(action.posts.users, [(o) => { return o.user.total_hours }], ['desc']),
         status: 'success',
       }
 
@@ -33,6 +32,19 @@ const harvestProcess = (state = initialState, action) => {
   }
 }
 
-const rootReducer = combineReducers({ data: harvestProcess })
+const harvestProcess = (state = dataInitialState, action) => {
+  switch (action.type) {
+    case HARVEST_NEW_POSTS:
+      return {
+        ...state,
+        users: action.users.users,
+      }
+
+    default:
+      return state
+  }
+}
+
+const rootReducer = combineReducers({ data: harvestProcess, status: harvestStatus })
 
 export default rootReducer

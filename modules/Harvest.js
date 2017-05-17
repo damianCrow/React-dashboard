@@ -215,8 +215,9 @@ class HarvestTimesheets {
           console.log('BEFORE PROMISE ALL')
           Promise.all(userEntryRequests)
             .then(userWithEntries => {
-              // Clean out dormant users
-              this.calculateUserTime(userWithEntries)
+              this.socket.emit('harvest-new-posts', {
+                users: this.calculateUserTime(userWithEntries),
+              })
             })
             .catch(reason => {
               console.log(reason)
@@ -308,10 +309,6 @@ class HarvestTimesheets {
     const thisWorkWeekDays = weekDates(startOfTheWeek.clone(), startOfTheWeek.clone().add(4, 'days'))
     const lastWorkWeekDays = weekDates(startOfLastWeek.clone(), startOfLastWeek.clone().add(4, 'days'))
 
-    // console.log('lastWorkDay', workDay(true).format('YYYY-MM-DD'))
-    // console.log('thisWorkWeekDays', thisWorkWeekDays)
-    // console.log('lastWorkWeekDays', lastWorkWeekDays)
-
     return {
       lastWorkDay: workDay(true).format('YYYY-MM-DD'),
       thisWorkWeekDays,
@@ -325,9 +322,9 @@ class HarvestTimesheets {
       return user.entries.length > 0
     })
 
-    const formatedUsers = activeUsersWithEntries.map((user) => {
+    return activeUsersWithEntries.map((user) => {
       // Filter only entries which match the last working day,
-      // then, of those entries, sum up all the hours.
+      // then, of those entries, sum up alcalculateUserTimel the hours.
       const lastWorkDay = (entries) => sumBy(entries.filter((entry) => {
         return this.currentTimings().lastWorkDay === entry.day_entry.spent_at
       }), (entry) => entry.day_entry.hours)
@@ -353,13 +350,7 @@ class HarvestTimesheets {
         },
       }
     })
-
-    console.log('formatedUsers', formatedUsers)
-
-
     // console.log('HARVEST DATA', users )
-
-    // this.socket.emit('harvest-new-posts', { users })
   }
 
 }

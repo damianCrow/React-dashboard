@@ -133,7 +133,7 @@ class Sonos {
         releventChanges.speakerNames.push(group.roomName)
       })
 
-      console.log('newSonosState.system', newSonosState.system.players)
+      // console.log('newSonosState.system', newSonosState.system.players)
       this.socket.emit('transport-state', newSonosState)
     })
 
@@ -158,7 +158,7 @@ class Sonos {
     })
 
     this.discovery.on('queue-change', function (player) {
-      console.log('queue-changed', player.players)
+      // console.log('queue-changed', player.players)
       // delete queues[player.uuid]
       // loadQueue(player.uuid)
       //   .then(queue => {

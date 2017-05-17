@@ -51,8 +51,8 @@ class HarvestContainer extends Component {
 // Listen and capture any changes made as a result of the the actions below.
 const mapStateToProps = (state) => ({
   posts: state.harvest.data.posts,
-  status: state.harvest.data.status,
-  message: state.harvest.data.message,
+  status: state.harvest.status.status,
+  message: state.harvest.status.message,
 })
 
 const mapDispatchToProps = (dispatch) => ({

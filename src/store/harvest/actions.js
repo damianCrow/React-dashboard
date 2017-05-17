@@ -13,9 +13,9 @@ export const NEED_TO_AUTH_HARVEST = 'NEED_TO_AUTH_HARVEST'
 //   type: INVALIDATE_HARVEST
 // })
 
-export const newHarvestPosts = (posts) => ({
+export const newHarvestPosts = (users) => ({
   type: HARVEST_NEW_POSTS,
-  posts,
+  users,
 })
 
 export const newHarvestPostsError = (err) => ({
