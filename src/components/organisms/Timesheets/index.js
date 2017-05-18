@@ -1,14 +1,16 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-import { ProfileImage } from 'components'
+import { ProfileImage, RadarChart } from 'components'
 import { fonts } from 'components/globals'
 
 // import styled, { css } from 'styled-components'
 // import ReactTransitionGroup from 'react-addons-transition-group'
-import * as d3 from 'd3'
-import { RadarChart } from '../../RadarChart'
+// import * as d3 from 'd3'
+// import { RadarChart } from '../../RadarChart'
 
 
 const HarvestWrapper = styled.div`
@@ -36,9 +38,9 @@ const User = styled.li`
   align-items: center;
 `
 
-const Spider = styled.div`
-  flex: 1 1 50%;
-`
+// const Spider = styled.div`
+//   flex: 1 1 50%;
+// `
 
 // // const InstagramWrapperStyled = styled(InstagramTransitionWrapper)`${wrapperStyles}`
 // const TransitionWrapper = styled(ReactTransitionGroup)`${styles}`
@@ -53,51 +55,53 @@ const Spider = styled.div`
 class Timesheets extends Component {
 
   componentDidMount() {
-    const data = [this.props.posts.map((user) => {
-      return { area: user.user.first_name, value: user.user.total_hours }
-    })]
+    // const data = [this.props.posts.map((user) => {
+    //   return { area: user.user.first_name, value: user.user.total_hours }
+    // })]
 
-    console.log('data', data)
+    // console.log('data', data)
 
-    const width = 300
-    const height = 300
+    // const width = 300
+    // const height = 300
 
-    // Config for the Radar chart
-    const config = {
-      w: width,
-      h: height,
-      maxValue: 45,
-      levels: 5,
-      ExtraWidthX: 200,
-      ExtraWidthY: 100,
-    }
+    // // Config for the Radar chart
+    // const config = {
+    //   w: width,
+    //   h: height,
+    //   maxValue: 45,
+    //   levels: 5,
+    //   ExtraWidthX: 200,
+    //   ExtraWidthY: 100,
+    // }
 
-    // Call function to draw the Radar chart
-    RadarChart.draw('#harvest-spider', data, config)
+    // // Call function to draw the Radar chart
+    // RadarChart.draw('#harvest-spider', data, config)
 
-    this.spider = d3.select('body')
-      .selectAll('svg')
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height)
+    // this.spider = d3.select('body')
+    //   .selectAll('svg')
+    //   .append('svg')
+    //   .attr('width', width)
+    //   .attr('height', height)
   }
   // console.log('Instagram comp posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
   // console.log('MEETINGS COMP posts', posts)
   // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
   render() {
-    const { posts } = this.props
+    const { users } = this.props
     return (
       <HarvestWrapper>
-        <Spider id="harvest-spider" />
+        <RadarChart users={users} />
+        {/* <Spider id="harvest-spider" /> */}
         <UserList>
-          {posts.map((object, i) => {
+          {users.map((user) => {
+            // console.log('user', user)
             return (
-              <User key={i}>
+              <User key={user.id}>
                 <ProfileImage>
-                  {object.user.first_name.charAt(0)}{object.user.last_name.charAt(0)}
+                  {user.firstName.charAt(0)}{user.lastName.charAt(0)}
                 </ProfileImage>
-                {object.user.total_hours} hours
+                {user.totalHours.thisWorkWeek} hours
               </User>
             )
           })}
@@ -109,9 +113,23 @@ class Timesheets extends Component {
 
 }
 
+// Listen and capture any changes made as a result of the the actions below.
+const mapStateToProps = (state) => ({
+  users: state.harvest.data.users,
+  status: state.harvest.status.status,
+  message: state.harvest.status.message,
+})
+
 Timesheets.propTypes = {
-  children: PropTypes.any,
-  posts: PropTypes.array.isRequired,
+  users: PropTypes.arrayOf(PropTypes.object),
+  status: PropTypes.string,
+  message: PropTypes.string,
 }
 
-export default Timesheets
+Timesheets.defaultProps = {
+  users: [],
+  status: '',
+  message: '',
+}
+
+export default connect(mapStateToProps)(Timesheets)

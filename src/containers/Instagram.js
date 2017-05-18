@@ -35,7 +35,6 @@ class InstagramContainer extends Component {
 
   render() {
     const { status, message, posts, slideshow } = this.props
-    console.log(posts)
     // console.log('instagram status', status)
 
     const isEmpty = posts.length === 0

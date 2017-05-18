@@ -334,7 +334,7 @@ class HarvestTimesheets {
       }), (entry) => entry.day_entry.hours)
 
       const lastWorkWeek = (entries) => sumBy(entries.filter((entry) => {
-        return this.currentTimings().thisWorkWeekDays.includes(entry.day_entry.spent_at)
+        return this.currentTimings().lastWorkWeekDays.includes(entry.day_entry.spent_at)
       }), (entry) => entry.day_entry.hours)
 
 

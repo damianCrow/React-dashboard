@@ -71,7 +71,7 @@
     "express": "^4.15.2",
     "gsap": "^1.19.1",
     "harvest": "git://github.com/log0ymxm/node-harvest.git",
-    "history": "4.6.1",
+    "history": "3.0.0",
     "http-auth": "^3.1.3",
     "instagram-node": "^0.5.8",
     "lodash": "^4.17.4",

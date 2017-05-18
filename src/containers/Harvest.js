@@ -26,8 +26,6 @@ class HarvestContainer extends Component {
     console.log('Harvest status', status)
     console.log('Harvest message', message)
 
-    const isEmpty = posts.length === 0
-
     if (status === 'failed') {
       return (
         <span>{status}</span>
@@ -36,7 +34,7 @@ class HarvestContainer extends Component {
       return (
         <Auth message={message} icon="harvest" service="Harvest" authLink="/authorize_harvest" />
       )
-    } else if (!isEmpty) {
+    } else if (status === 'success') {
       return (
         <Timesheets posts={posts} />
       )
@@ -50,7 +48,6 @@ class HarvestContainer extends Component {
 
 // Listen and capture any changes made as a result of the the actions below.
 const mapStateToProps = (state) => ({
-  posts: state.harvest.data.posts,
   status: state.harvest.status.status,
   message: state.harvest.status.message,
 })
@@ -62,7 +59,6 @@ const mapDispatchToProps = (dispatch) => ({
 HarvestContainer.propTypes = {
   socketConnected: PropTypes.bool,
   serviceRequest: PropTypes.func,
-  posts: PropTypes.array,
   status: PropTypes.string,
   message: PropTypes.string,
 }
@@ -70,7 +66,6 @@ HarvestContainer.propTypes = {
 HarvestContainer.defaultProps = {
   socketConnected: false,
   sonosRequest: false,
-  posts: [],
   status: '',
   message: '',
 }
