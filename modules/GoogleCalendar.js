@@ -57,6 +57,7 @@ export default class GoogleCalendar {
     const clientSecret = credentials.installed.client_secret
     const clientId = credentials.installed.client_id
     const redirectUrl = credentials.installed.redirect_uris[0]
+
     const auth = new googleAuth()
     const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl)
 
@@ -88,25 +89,26 @@ export default class GoogleCalendar {
     })
   }
 
-  setupForNewToken (oauth2Client) {
+  setupForNewToken(oauth2Client) {
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: 'offline',
-      scope: SCOPES
+      scope: SCOPES,
     })
 
     console.log('Authorize this app by visiting this url: ', authUrl)
 
     // Dispatch a frontend action to push the auth link!!!!!!!!!
-    this.socket.emit('action', {type: 'NEED_TO_AUTH_CALENDAR',
-      data: {status: 'auth-failed'}}
-    )
+    this.socket.emit('action', {
+      type: 'NEED_TO_AUTH_CALENDAR',
+      data: { status: 'auth-failed' },
+    })
 
-    this.app.get('/authorize_calendar', function (req, res) {
+    this.app.get('/authorize_calendar', (req, res) => {
       // This will redirect back to our setup '/handle_calendar_auth' with the code
       res.redirect(authUrl)
     })
 
-    this.app.get('/handle_calendar_auth', function (req, res) {
+    this.app.get('/handle_calendar_auth', (req, res) => {
       const authCode = req.query.code
       // This needs to go back to autherise and fire our request with sucess
       this.getNewToken(oauth2Client, authCode)
@@ -117,7 +119,7 @@ export default class GoogleCalendar {
         .catch(error => {
           console.log(error)
         })
-    }.bind(this))
+    })
   }
 
   /**
