@@ -1,22 +1,42 @@
-import fs from 'fs'
-import google from 'googleapis'
-import googleAuth from 'google-auth-library'
+const fs = require('fs')
+const google = require('googleapis')
+const googleAuth = require('google-auth-library')
+
+// Modify this for this:
+// https://developers.google.com/admin-sdk/directory/v1/guides/manage-users#retrieve_users_non_admin
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
-const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-const TOKEN_DIR = './.credentials/'
-const TOKEN_PATH = `${TOKEN_DIR}calendar_token.json`
+
+// TODO: Make this open to other Google modules (calendar etc)
+const SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
+const TOKEN_DIR = './.credentials/google/'
+const TOKEN_PATH = `${TOKEN_DIR}token.json`
 
 // Example 1: Creating a new class (declaration-form)
 // ===============================================================
 
-// A base class is defined using the new reserved 'class' keyword
-export default class GoogleCalendar {
+class Google {
 
   constructor(app, socket) {
     this.app = app
     this.socket = socket
+
+    console.log('app', app)
+  }
+
+  handleRequests(request, payloadPackage) {
+    this.checkAuth().then((auth) => {
+      // this.socket.emit('successful.create-request.GOOGLE')
+      // console.log('google handleRequests: request = ', request)
+      switch (request) {
+        case 'GET_USERS':
+          this.getUsersPictures(auth, payloadPackage.users)
+          break
+        default:
+          break
+      }
+    })
   }
 
   checkAuth() {
@@ -24,10 +44,10 @@ export default class GoogleCalendar {
       console.log('GoogleCalendar checkAuth')
       // console.log('GoogleCalendar this: ', this)
       // Load client secrets from a local file.
-      fs.readFile('./.credentials/client_secret.json',
-        function processClientSecrets (err, content) {
+      fs.readFile('./.credentials/google/client_secret.json',
+        (err, content) => {
           if (err) {
-            reject('Error loading client secret file: ' + err)
+            reject(`Error loading client secret file: ${err}`)
           }
           // Authorize a client with the loaded credentials, then call the
           // Google Calendar API.
@@ -35,13 +55,13 @@ export default class GoogleCalendar {
           console.log('CREDENTIALS', JSON.parse(content))
 
           this.authorize(CREDENTIALS)
-            .then(function (oauth2Client) {
+            .then((oauth2Client) => {
               resolve(oauth2Client)
             })
-            .catch(function (error) {
+            .catch((error) => {
               console.log(error)
             })
-        }.bind(this)
+        }
       )
     })
   }
@@ -53,10 +73,10 @@ export default class GoogleCalendar {
    * @param {Object} credentials The authorization client credentials.
    * @param {function} callback The callback to call with the authorized client.
    */
-  authorize (credentials) {
+  authorize(credentials) {
     const clientSecret = credentials.installed.client_secret
     const clientId = credentials.installed.client_id
-    const redirectUrl = credentials.installed.redirect_uris[0]
+    const redirectUrl = 'http://localhost:3000/handle_calendar_auth'
 
     const auth = new googleAuth()
     const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl)
@@ -90,6 +110,7 @@ export default class GoogleCalendar {
   }
 
   setupForNewToken(oauth2Client) {
+    console.log('setupForNewToken')
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: SCOPES,
@@ -103,12 +124,16 @@ export default class GoogleCalendar {
       data: { status: 'auth-failed' },
     })
 
+    console.log('just before express route')
     this.app.get('/authorize_calendar', (req, res) => {
+      console.log('autherise calendar')
       // This will redirect back to our setup '/handle_calendar_auth' with the code
       res.redirect(authUrl)
     })
 
+
     this.app.get('/handle_calendar_auth', (req, res) => {
+      console.log('handle_calendar_auth')
       const authCode = req.query.code
       // This needs to go back to autherise and fire our request with sucess
       this.getNewToken(oauth2Client, authCode)
@@ -130,15 +155,15 @@ export default class GoogleCalendar {
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewToken (oauth2Client, authCode) {
+  getNewToken(oauth2Client, authCode) {
     console.log('--GET NEW TOKEN--')
     // console.log('getNewToken. oauth2Client: ', oauth2Client)
     return new Promise((resolve, reject) => {
       // PULL NEW CODE FROM URL PARAM
-      oauth2Client.getToken(authCode, function (err, token) {
+      oauth2Client.getToken(authCode, (err, token) => {
         if (err) {
           console.log('Error while trying to retrieve access token', err)
-          var reason = new Error({ status: 'error', data: err })
+          const reason = new Error({ status: 'error', data: err })
           reject(reason) // reject
         } else {
           oauth2Client.credentials = token
@@ -154,7 +179,7 @@ export default class GoogleCalendar {
    *
    * @param {Object} token The token to store to disk.
    */
-  storeToken (token) {
+  storeToken(token) {
     console.log('--STORE TOKEN RUNNING--')
     try {
       fs.mkdirSync(TOKEN_DIR)
@@ -174,8 +199,8 @@ export default class GoogleCalendar {
    *
    * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
    */
-  listEvents () {
-    const calendar = google.calendar('v3')
+  getUsers() {
+    const service = google.admin('directory_v1')
 
     // WEBHOOK CHANNEL PULL RESOURCES
     // http://stackoverflow.com/questions/38447589/synchronize-resources-with-google-calendar-for-node-js
@@ -183,27 +208,19 @@ export default class GoogleCalendar {
     // http://stackoverflow.com/questions/35434828/google-api-calendar-watch-doesnt-work-but-channel-is-created
 
     this.checkAuth().then(auth => {
-      calendar.events.list({
+      console.log('service.users', service.users)
+
+      service.users.list({
         auth,
-        calendarId: 'interstateteam.com_qondup0hrj9n1n52e5r1plr1kk@group.calendar.google.com',
-        timeMin: (new Date()).toISOString(),
+        customer: 'my_customer',
         maxResults: 10,
-        singleEvents: true,
-        orderBy: 'startTime',
-        resource: {
-          id: channel_id,
-          token: 'email=' + _token.provider_email,
-          address: 'https://dev-api.mycompany/google-watch/',
-          type: 'web_hook',
-          params: {
-            ttl: '36000'
-          }
-        }
+        orderBy: 'email',
       }, (err, response) => {
         if (err) {
           console.log(`The API returned an error: ${err}`)
           return
         }
+        console.log('response.users[2]', response.users[2])
         const events = response.items
         if (events.length === 0) {
           console.log('No upcoming events found.')
@@ -217,14 +234,66 @@ export default class GoogleCalendar {
 
           this.socket.emit('action', {
             type: 'RECEIVE_CALENDAR_POSTS',
-            data: events
+            data: events,
           })
         }
         // ADD SYNC HERE
       })
-    }).catch(function (error) {
+
+    }).catch((error) => {
       console.log('error', error)
     })
   }
 
+  getUsersPictures(auth, users) {
+    const service = google.admin('directory_v1')
+    console.log('getUsersPictures users = ', users)
+    let i
+    for (i = 0; i < users.length; i += 1) {
+      service.users.photos.get({
+        auth,
+        customer: 'my_customer',
+        maxResults: 10,
+        orderBy: 'email',
+        userKey: users[i],
+      }, (err, response) => {
+        if (err) {
+          console.log(`The API returned an error: ${err}`)
+          return
+        }
+        console.log('response', response)
+        this.socket.emit('google-got-users', response)
+
+        const userProfileBaseImage = new Buffer(response.photoData, 'base64')
+        fs.writeFileSync(`public/google-user-pics/${response.id}.jpg`, userProfileBaseImage)
+
+        // this.socket.emit('action', {
+        //   type: 'RECEIVE_CALENDAR_POSTS',
+        //   data: events,
+        // })
+      })
+
+      // service.users.get({
+      //   auth,
+      //   customer: 'my_customer',
+      //   maxResults: 10,
+      //   orderBy: 'email',
+      //   userKey: users[i],
+      // }, (err, response) => {
+      //   if (err) {
+      //     console.log(`The API returned an error: ${err}`)
+      //     return
+      //   }
+
+      //   console.log('response')
+
+
+      //   this.socket.emit('google-got-users', response)
+      //   console.log('google-got-users emiited')
+      //   // ADD SYNC HERE
+      // })
+    }
+  }
 }
+
+module.exports = Google
