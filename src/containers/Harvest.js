@@ -19,12 +19,8 @@ class HarvestContainer extends Component {
     }
   }
 
-
   render() {
     const { posts, status, message } = this.props
-    // console.log(posts)
-    console.log('Harvest status', status)
-    console.log('Harvest message', message)
 
     if (status === 'failed') {
       return (
