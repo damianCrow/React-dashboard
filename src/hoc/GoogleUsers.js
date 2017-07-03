@@ -12,7 +12,7 @@ function GoogleUsers(ConnectedComp) {
     componentDidMount() {
       const { socketConnected, getGoogleUsers } = this.props
 
-      const dummyUsers = ['simon.b@interstateteam.com']
+      const dummyUsers = ['simon.b@interstateteam.com', 'giulio.r@interstateteam.com']
 
       console.log('GoogleUsers hoc socketConnected', socketConnected)
 

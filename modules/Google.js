@@ -21,8 +21,6 @@ class Google {
   constructor(app, socket) {
     this.app = app
     this.socket = socket
-
-    console.log('app', app)
   }
 
   handleRequests(request, payloadPackage) {
@@ -31,7 +29,7 @@ class Google {
       // console.log('google handleRequests: request = ', request)
       switch (request) {
         case 'GET_USERS':
-          this.getUsersPictures(auth, payloadPackage.users)
+          this.getUsers(auth, payloadPackage.users)
           break
         default:
           break
@@ -188,8 +186,7 @@ class Google {
         throw err
       }
     }
-    console.log('NEW TOKEN: ', token)
-    console.log('NEW TOKEN JSON: ', JSON.stringify(token))
+
     fs.writeFile(TOKEN_PATH, JSON.stringify(token))
     console.log(`Token stored to ${TOKEN_PATH} 💾`)
   }
@@ -199,100 +196,83 @@ class Google {
    *
    * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
    */
-  getUsers() {
+  getUsers(auth, users) {
     const service = google.admin('directory_v1')
 
     // WEBHOOK CHANNEL PULL RESOURCES
     // http://stackoverflow.com/questions/38447589/synchronize-resources-with-google-calendar-for-node-js
     // http://stackoverflow.com/questions/35048160/googleapi-nodejs-calendar-events-watch-gets-error-push-webhookurlnothttps-or-pu
     // http://stackoverflow.com/questions/35434828/google-api-calendar-watch-doesnt-work-but-channel-is-created
+    let i
+    const userRequests = []
+    // const userInfo = []
+    for (i = 0; i < users.length; i += 1) {
+      userRequests[i] = Promise.all([
+        this.getUserNames(service, auth, users[i]),
+        this.getUsersPictures(service, auth, users[i]),
+      ]).then(values => {
+        return Object.assign({}, values[0], values[1])
+      })
+    }
 
-    this.checkAuth().then(auth => {
-      console.log('service.users', service.users)
+    Promise.all(userRequests).then(values => {
+      console.log(values)
+    }).catch(reason => {
+      console.log(reason)
+    })
+    // this.socket.emit('google-got-users', userInfo)
+  }
 
-      service.users.list({
+  getUserNames(service, auth, user) {
+    return new Promise((resolve, reject) => {
+      service.users.get({
         auth,
         customer: 'my_customer',
         maxResults: 10,
         orderBy: 'email',
+        userKey: user,
       }, (err, response) => {
         if (err) {
           console.log(`The API returned an error: ${err}`)
-          return
+          reject(err)
         }
-        console.log('response.users[2]', response.users[2])
-        const events = response.items
-        if (events.length === 0) {
-          console.log('No upcoming events found.')
-        } else {
-          console.log('Upcoming 10 events:')
 
-          for (const event of events) {
-            const start = event.start.dateTime || event.start.date
-            console.log('%s - %s', start, event.summary)
-          }
-
-          this.socket.emit('action', {
-            type: 'RECEIVE_CALENDAR_POSTS',
-            data: events,
-          })
-        }
+        resolve({ name: response.name })
+        // console.log(response)
+        // this.socket.emit('google-got-users', response)
+        // console.log('google-got-users emiited')
         // ADD SYNC HERE
       })
-
-    }).catch((error) => {
-      console.log('error', error)
     })
   }
 
-  getUsersPictures(auth, users) {
-    const service = google.admin('directory_v1')
-    console.log('getUsersPictures users = ', users)
-    let i
-    for (i = 0; i < users.length; i += 1) {
+  getUsersPictures(service, auth, user) {
+    const imageLocation = 'public/google-user-pics/'
+    return new Promise((resolve, reject) => {
       service.users.photos.get({
         auth,
         customer: 'my_customer',
         maxResults: 10,
         orderBy: 'email',
-        userKey: users[i],
+        userKey: user,
       }, (err, response) => {
         if (err) {
           console.log(`The API returned an error: ${err}`)
-          return
+          reject(err)
         }
-        console.log('response', response)
-        this.socket.emit('google-got-users', response)
+        // console.log('response', response)
 
+        // TODO: Check to see if image already exists (or has been updated)
         const userProfileBaseImage = new Buffer(response.photoData, 'base64')
-        fs.writeFileSync(`public/google-user-pics/${response.id}.jpg`, userProfileBaseImage)
+        fs.writeFileSync(`${imageLocation}${response.id}.jpg`, userProfileBaseImage)
+        resolve({ image: `${imageLocation}${response.id}.jpg` })
 
         // this.socket.emit('action', {
         //   type: 'RECEIVE_CALENDAR_POSTS',
         //   data: events,
         // })
       })
-
-      // service.users.get({
-      //   auth,
-      //   customer: 'my_customer',
-      //   maxResults: 10,
-      //   orderBy: 'email',
-      //   userKey: users[i],
-      // }, (err, response) => {
-      //   if (err) {
-      //     console.log(`The API returned an error: ${err}`)
-      //     return
-      //   }
-
-      //   console.log('response')
-
-
-      //   this.socket.emit('google-got-users', response)
-      //   console.log('google-got-users emiited')
-      //   // ADD SYNC HERE
-      // })
-    }
+    })
   }
 }
 
