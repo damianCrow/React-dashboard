@@ -30,6 +30,7 @@ const styles = css`
   padding: 0 1em;
   border-radius: 0.125em;
   box-sizing: border-box;
+  margin: 0 7.5px 0 7.5px;
   pointer-events: ${ifProp('disabled', 'none', 'auto')};
   transition: background-color 250ms ease-out, color 250ms ease-out, border-color 250ms ease-out;
   background-color: ${backgroundColor};
@@ -47,7 +48,7 @@ const Anchor = styled.a`${styles}`
 const StyledButton = styled.button`${styles}`
 
 const Button = ({ type, ...props }) => {
-  if(props.href) {
+  if (props.href) {
     return <Anchor {...props} />
   }
   return <StyledButton {...props} type={type} />

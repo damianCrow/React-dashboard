@@ -2,7 +2,7 @@ import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 
 import App from 'components/App'
-import { MainDashboardPage, AdminPortalHome } from 'components'
+import { MainDashboardPage, AdminPortalHome, AdminPortalAddVideo, AdminPortalAddImage } from 'components'
 
 const routes = (
   <div>
@@ -11,6 +11,12 @@ const routes = (
     </Route>
     <Route path="/admin-portal" component={App}>
       <IndexRoute component={AdminPortalHome} />
+    </Route>
+    <Route path="/admin-portal/add-video" component={App}>
+      <IndexRoute component={AdminPortalAddVideo} />
+    </Route>
+    <Route path="/admin-portal/add-image" component={App}>
+      <IndexRoute component={AdminPortalAddImage} />
     </Route>
   </div>
 )

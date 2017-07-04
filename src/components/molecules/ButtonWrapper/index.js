@@ -1,18 +1,21 @@
-import React, { PropTypes } from 'react'
-import styled, { css } from 'styled-components'
-import { Button } from 'components'
+import React from 'react'
+import styled from 'styled-components'
 
 const BtnWrapper = styled.div`
- position:absolute;
- bottom: 15px;
+ position: relative;
+ margin: 15px 0;
+ width: calc(100% - 55px);
  max-width: 700px;
+ transform: translateX(-50%);
+ left: 50%;
+ display: block;
+ text-align: center;
 `
 
-const ButtonWrapper = () => {
+const ButtonWrapper = ({ children, ...props }) => {
   return (
-    <BtnWrapper>
-      <Button type="info" palette="secondary">Add Video</Button>
-      <Button type="info" palette="primary">Add Image</Button>
+    <BtnWrapper {...props}>
+      {children}
     </BtnWrapper>
   )
 }

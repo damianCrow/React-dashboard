@@ -1,16 +1,19 @@
-import React from 'react'
+import React, { Component, PropTypes } from 'react'
 import styled from 'styled-components'
-import { font, palette } from 'styled-theme'
+import { connect } from 'react-redux'
+import { font } from 'styled-theme'
+import { updatePlaylist } from 'store/actions'
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc'
 
 const List = styled.ul`
   display: block;
-  width: 100%;
   align-items: center;
-  min-height: 100%;
-  padding: 0 20px 50px 20px;
+  padding: 0;
+  margin: 15px 20px;
   font-family: ${font('primary')};
   max-width: 700px;
+  max-height: calc(100vh - 150px);
+  overflow: scroll;
 `
 const ListItem = styled.li`
  height: 35px;
@@ -27,12 +30,14 @@ const ListItemText = styled.span`
  display: block;
 `
 
-const SortableItem = SortableElement(({ value }) =>
-  <ListItem>
-    <ListItemText>{value.title}</ListItemText>
-    <ListItemText>{value.type}</ListItemText>
-  </ListItem>
-)
+const SortableItem = SortableElement(({ value }) => {
+  return (
+    <ListItem>
+      <ListItemText>{value.title}</ListItemText>
+      <ListItemText>{value.type}</ListItemText>
+    </ListItem>
+  )
+})
 
 const SortableList = SortableContainer(({ items }) => {
   return (
@@ -44,46 +49,51 @@ const SortableList = SortableContainer(({ items }) => {
   )
 })
 
-const SortableComponent = () => {
-  const state = {
-    items: [
-      {
-        title: 'Item 1',
-        type: 'Image',
-      },
-      {
-        title: 'Item 2',
-        type: 'Image',
-      },
-      {
-        title: 'Item 3',
-        type: 'Video',
-      },
-      {
-        title: 'Item 4',
-        type: 'Image',
-      },
-      {
-        title: 'Item 5',
-        type: 'Video',
-      },
-      {
-        title: 'Item 6',
-        type: 'Video',
-      },
-    ],
+class SortableComponent extends Component {
+
+  componentDidMount() {
+    localStorage.setItem('playList', JSON.stringify(this.props.playlist))
   }
 
-  const onSortEnd = ({ oldIndex, newIndex }) => {
-    // this.setState(
-    //   arrayMove(state.items, oldIndex, newIndex),
-    // )
+  onSortEnd({ oldIndex, newIndex }) {
+    let savedState
+
+    if(localStorage.getItem('playList') !== JSON.stringify(this.props.playlist)) {
+
+      savedState = false
+    }
+    else {
+      savedState = true
+    }
+    this.props.updateAdminPlaylist(
+      arrayMove(this.props.playlist, oldIndex, newIndex), savedState
+    )
   }
-  return (<SortableList items={state.items} onSortEnd={onSortEnd} />)
+
+  render() {
+    return (
+      <SortableList items={this.props.playlist} onSortEnd={this.onSortEnd.bind(this)} />
+    )
+  }
 }
+
+const mapStateToProps = state => ({
+  saved: state.admin.saved,
+  playlist: state.admin.playlist,
+})
+
+SortableComponent.propTypes = {
+  playlist: PropTypes.array,
+  saved: PropTypes.bool,
+  updateAdminPlaylist: PropTypes.func,
+}
+
+const mapDispatchToProps = (dispatch) => ({
+  updateAdminPlaylist: (updatedPlaylist, savedState) => dispatch(updatePlaylist(updatedPlaylist, savedState)),
+})
 
 SortableComponent.defaultProps = {
   palette: 'primary',
 }
 
-export default SortableComponent
+export default connect(mapStateToProps, mapDispatchToProps)(SortableComponent)

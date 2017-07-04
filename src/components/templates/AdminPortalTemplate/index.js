@@ -13,8 +13,8 @@ const Wrapper = styled.div`
 
 const Content = styled.article`
   box-sizing: border-box;
-  display: flex;
-  justify-content: center;
+  display: block;
+  position: relative;
   max-width: 1000px;
   width: 100%;
   border-radius: 10px;
@@ -23,21 +23,7 @@ const Content = styled.article`
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 `
 
-const Header = styled.header`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 999;
-  margin-left: -1rem;
-`
-
-const Intro = styled.section`
-  position: relative;
-  display: block;
-`
-
-const AdminPortalTemplate = ({children, ...props }) => {
+const AdminPortalTemplate = ({ children, ...props }) => {
   return (
     <Wrapper {...props}>
       <Content>{children}</Content>
@@ -46,9 +32,7 @@ const AdminPortalTemplate = ({children, ...props }) => {
 }
 
 AdminPortalTemplate.propTypes = {
-  // header: PropTypes.any.isRequired,
-  // intro: PropTypes.any,
-  // children: PropTypes.any.isRequired,
+  children: PropTypes.any.isRequired,
 }
 
 export default AdminPortalTemplate
