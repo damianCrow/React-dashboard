@@ -6,7 +6,7 @@ import { getSocketConnection } from '../socket/selectors'
 // Socket listeners from server actions.
 function connectStream(socket) {
   // Tell the server we want to connect the "stream"
-  socket.emit('connect-request', 'TWITTER')
+  socket.emit('pull-request', { service: 'TWITTER', request: '', package: {} })
   // Return redux-saga's eventChannel which handles socket actions
   return eventChannel(emit => {
     socket.on('twitter-new-posts', (posts) => {

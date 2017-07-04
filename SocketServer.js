@@ -8,6 +8,7 @@ const Sonos = require('./modules/Sonos.js')
 const Showcase = require('./modules/Showcase.js')
 const Instagram = require('./modules/Instagram.js')
 const TwitterApi = require('./modules/Twitter.js')
+const Google = require('./modules/Google.js')
 
 
 /**
@@ -40,7 +41,7 @@ class Sockets {
     this.io.on('connection', socket => {
       console.log('connection socket')
       //  TODO: Send a fail or success notfication.
-      this.listenForRequests(socket)
+      this.listenForServiceConnectRequests(socket)
       this.listenForReadRequests(socket)
     })
   }
@@ -49,7 +50,7 @@ class Sockets {
    * init, wait for the sockets to connect before emitting / listening for
    messages.
    */
-  listenForRequests(socket) {
+  listenForServiceConnectRequests(socket) {
     // console.log('this.io.sockets', this.io.sockets)
     socket.on('create-request', requestedService => {
       console.log('create-request, requestedService:', requestedService.request)
@@ -90,9 +91,9 @@ class Sockets {
    */
   listenForReadRequests(socket) {
     // console.log('this.io.sockets', this.io.sockets)
-    socket.on('connect-request', requestedService => {
-      console.log('connect-request, requestedService:', requestedService)
-      switch (requestedService) {
+    socket.on('pull-request', payload => {
+      console.log('pull-request, payload.service:', payload.service)
+      switch (payload.service) {
         case 'INSTAGRAM':
           this.instagram.grabPosts()
           break
@@ -111,6 +112,10 @@ class Sockets {
           break
         case 'TWITTER':
           this.twitter.grabPosts()
+          break
+        case 'GOOGLE':
+          this.google = new Google(this.app, socket)
+          this.google.handleRequests(payload.request, payload.package)
           break
         default:
           break

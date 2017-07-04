@@ -7,7 +7,7 @@ import { getSocketConnection } from '../socket/selectors'
 function connectStream(socket) {
   console.log('connect-request')
   // Tell the server we want to connect the "stream"
-  socket.emit('connect-request', 'SONOS')
+  socket.emit('pull-request', { service: 'SONOS', request: '', package: {} })
   // Return redux-saga's eventChannel which handles socket actions
   return eventChannel(emit => {
     socket.on('transport-state', (state) => {

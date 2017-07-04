@@ -31,7 +31,6 @@ class HarvestTimesheets {
 
   checkAuth() {
     return new Promise((resolve, reject) => {
-      console.log('HarvestTimesheets checkAuth')
 
       // Load client secrets from a local file.
       fs.readFile(CLIENT_DETAILS, (err, content) => {
@@ -146,8 +145,8 @@ class HarvestTimesheets {
    */
   getNewToken(code, codeType) {
     return new Promise((resolve, reject) => {
-      console.log(`--GET NEW ACCESS TOKEN WITH ${codeType} CODE--`)
-      console.log('accessCode', code)
+      // console.log(`--GET NEW ACCESS TOKEN WITH ${codeType} CODE--`)
+      // console.log('accessCode', code)
 
       const tokenOptions = {
         client_id: this.credentials.client_id,

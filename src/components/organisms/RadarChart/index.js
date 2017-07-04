@@ -53,8 +53,6 @@ class RadarChart extends Component {
     const { factor, w, h, levels, radians } = this.props
     const { radius, allAxis, g, total } = this
 
-    console.log('start of circularSegments')
-
     // Circular segments
     for (let j = 0; j < levels; j += 1) {
       const levelFactor = factor * radius * ((j + 1) / levels)
@@ -62,18 +60,17 @@ class RadarChart extends Component {
         .data(allAxis)
         .enter()
         .append('svg:line')
-        .attr('x1', (d, i) => levelFactor * ((1 - factor) * Math.sin((i * radians) / total)))
-        .attr('y1', (d, i) => levelFactor * ((1 - factor) * Math.cos((i * radians) / total)))
-        .attr('x2', (d, i) => levelFactor * ((1 - factor) * Math.sin(((i + 1) * radians) / total)))
-        .attr('y2', (d, i) => levelFactor * ((1 - factor) * Math.cos(((i + 1) * radians) / total)))
+        .attr('x1', (d, i) => levelFactor * (1 - factor * Math.sin(i * radians / total)))
+        .attr('y1', (d, i) => levelFactor * (1 - factor * Math.cos(i * radians / total)))
+        .attr('x2', (d, i) => levelFactor * (1 - factor * Math.sin((i + 1) * radians / total)))
+        .attr('y2', (d, i) => levelFactor * (1 - factor * Math.cos((i + 1) * radians / total)))
         .attr('class', 'line')
         .style('stroke', 'grey')
         .style('stroke-opacity', '0.75')
-        .style('stroke-width', '0.3px')
+        .style('stroke-width', '2px')
         .attr('transform', `translate(${((w / 2) - levelFactor)}, ${((h / 2) - levelFactor)})`)
     }
 
-    console.log('end of circularSegments')
   }
 
   segmentLabels() {
@@ -99,10 +96,11 @@ class RadarChart extends Component {
   }
 
   axis() {
+    const { users } = this.props
     const { allAxis, g } = this
 
     this.axis = g.selectAll('.axis')
-      .data(allAxis)
+      .data(users)
       .enter()
       .append('g')
       .attr('class', 'axis')
@@ -116,6 +114,8 @@ class RadarChart extends Component {
     axis.append('line')
       .attr('x1', w / 2)
       .attr('y1', h / 2)
+      // .attr('x2', function (d, i) { return w/2*(1-factor*Math.sin(i*radians/total));})
+      // .attr('y2', function (d, i) { return h/2*(1-factor*Math.cos(i*radians/total));})
       .attr('x2', (d, i) => w / 2 * (1 - factor * Math.sin(i * radians / total)))
       .attr('y2', (d, i) => h / 2 * (1 - factor * Math.cos(i * radians / total)))
       .attr('class', 'line')
@@ -123,6 +123,7 @@ class RadarChart extends Component {
       .style('stroke-width', '1px')
   }
 
+  // Outside text (names)
   axisText() {
     const { w, h, radians, factorLegend } = this.props
     const { axis, total } = this
@@ -130,7 +131,7 @@ class RadarChart extends Component {
     axis.append('text')
       .attr('class', 'legend')
       .text((d) => {
-        console.log('d', d)
+        // console.log('d', d)
         return d.firstName
       })
       .style('font-family', 'sans-serif')
@@ -150,10 +151,10 @@ class RadarChart extends Component {
     const dataValues = []
     const series = 0
 
-    console.log('total', total)
-    console.log('radians', radians)
-    console.log('factor', factor)
-    console.log('maxValue', maxValue)
+    // console.log('total', total)
+    // console.log('radians', radians)
+    // console.log('factor', factor)
+    // console.log('maxValue', maxValue)
 
     // users.forEach((user) => {
     g.selectAll('.nodes')
@@ -224,7 +225,7 @@ RadarChart.defaultProps = {
   factor: 1,
   factorLegend: 0.85,
   levels: 5,
-  maxValue: 100,
+  maxValue: 30,
   radians: 2 * Math.PI,
   opacityArea: 0.5,
   ToRight: 5,

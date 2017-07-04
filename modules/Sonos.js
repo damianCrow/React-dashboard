@@ -14,7 +14,6 @@ class Sonos {
     this.app = app
     this.socket = socket
     this.maxGroups = 4
-    console.log('server module sonos constructor')
   }
 
   request() {
@@ -24,7 +23,6 @@ class Sonos {
     })
 
     this.discovery.on('initialized', () => {
-      console.log('SONOS initialized')
       // console.log('this.discovery.zones[0].members[0].system', this.discovery.zones[0].members[0].system)
       // console.log('this.discovery.zones[1].coordinator', this.discovery.zones[1].coordinator)
       this.socket.emit('successful.create-request.SONOS')
