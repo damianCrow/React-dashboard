@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components'
 
 // import { Icon, Link, Heading, Badge } from 'components'
 
-const WrapperStyles = ({ double, fullWidth }) => css`
+const WrapperStyles = ({ fullWidth, wide, square, superWide }) => css`
   position: relative;
   flex: 1 1 ${fullWidth ? '100%' : '33.33333%'};
   display: flex;
@@ -15,7 +15,9 @@ const WrapperStyles = ({ double, fullWidth }) => css`
     display: block;
     content: " ";
     width: 100%;
-    padding-top: ${double ? '200%' : '100%'};
+    ${superWide && 'padding-top: 20%;'}
+    ${wide && 'padding-top: 56.25%;'}
+    ${square && 'padding-top: 100%;'}
   }
 `
 
@@ -31,9 +33,10 @@ const Feature = ({ children, ...props }) => {
 
 Feature.propTypes = {
   fullWidth: PropTypes.bool,
-  half: PropTypes.bool,
+  wide: PropTypes.bool,
+  square: PropTypes.bool,
   third: PropTypes.bool,
-  children: PropTypes.any
+  children: PropTypes.any,
 }
 
 export default Feature

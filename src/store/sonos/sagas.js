@@ -5,7 +5,7 @@ import { getSocketConnection } from '../socket/selectors'
 
 // Socket listeners from server actions.
 function connectStream(socket) {
-  console.log('connect-request')
+  // console.log('connect-request')
   // Tell the server we want to connect the "stream"
   socket.emit('pull-request', { service: 'SONOS', request: '', package: {} })
   // Return redux-saga's eventChannel which handles socket actions
@@ -26,7 +26,7 @@ function connectStream(socket) {
 }
 
 export function* connectSonos(socket) {
-  console.log('connectSonos')
+  // console.log('connectSonos')
   // Load the connectStream func into channel to be watched
   const channel = yield call(connectStream, socket)
   while (true) {

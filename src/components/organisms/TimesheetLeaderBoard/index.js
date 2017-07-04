@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-import { ProfileImage, RadarChart, Users } from 'components'
+import { ProfileImage, RadarChart, Users, UserCircle } from 'components'
 import { fonts } from 'components/globals'
 
 // import styled, { css } from 'styled-components'
@@ -39,9 +39,9 @@ const HarvestWrapper = styled.div`
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
 // const Timesheets = ({ children, ...props, posts }) => {
-class Timesheets extends Component {
+class TimesheetLeaderBoard extends Component {
 
-  componentDidMount() {
+  componentWillMount() {
     // const data = [this.props.posts.map((user) => {
     //   return { area: user.user.first_name, value: user.user.total_hours }
     // })]
@@ -76,24 +76,17 @@ class Timesheets extends Component {
   // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
   render() {
     const { users } = this.props
+
+    const userCircles = users.map((user) =>
+      <UserCircle key={user.id} email={user.email} />
+    )
+
     return (
       <HarvestWrapper>
-        <RadarChart users={users} />
-        {/* <Spider id="harvest-spider" /> */}
-        {/* <UserList>
-          {users.map((user) => {
-            // console.log('user', user)
-            return (
-              <User key={user.id}>
-                <ProfileImage>
-                  {user.firstName.charAt(0)}{user.lastName.charAt(0)}
-                </ProfileImage>
-                {user.totalHours.thisWorkWeek} hours
-              </User>
-            )
-          })}
-        </UserList> */}
-        <Users orginalUsers={users} />
+        {/* userCircles */}
+        <UserCircle key={this.props.users[0].id} email={this.props.users[0].email} />
+        <UserCircle key={this.props.users[1].id} email={this.props.users[1].email} />
+        <UserCircle key={this.props.users[2].id} email={this.props.users[2].email} />
       </HarvestWrapper>
 
     )
@@ -108,16 +101,16 @@ const mapStateToProps = (state) => ({
   message: state.harvest.status.message,
 })
 
-Timesheets.propTypes = {
+TimesheetLeaderBoard.propTypes = {
   users: PropTypes.arrayOf(PropTypes.object),
   status: PropTypes.string,
   message: PropTypes.string,
 }
 
-Timesheets.defaultProps = {
+TimesheetLeaderBoard.defaultProps = {
   users: [],
   status: '',
   message: '',
 }
 
-export default connect(mapStateToProps)(Timesheets)
+export default connect(mapStateToProps)(TimesheetLeaderBoard)

@@ -1,3 +1,6 @@
+// FIX WITH THIS:
+// https://github.com/redux-saga/redux-saga/blob/master/docs/advanced/Channels.md#using-the-eventchannel-factory-to-connect-to-external-events
+
 import { eventChannel } from 'redux-saga'
 import { take, select, put, call, fork, cancel } from 'redux-saga/effects'
 import * as actions from './actions'
@@ -10,13 +13,22 @@ function connectStream(socket, packageForServer) {
   // Return redux-saga's eventChannel which handles socket actions
   return eventChannel(emit => {
     socket.on('google-got-users', (users) => {
+      console.log('got users from server')
       emit(actions.gotGoogleUsers(users))
     })
 
-    socket.on('google-getting-users-error', (message) => {
-      emit(actions.googleUnauthorized(message))
-    })
-    return () => {}
+    // socket.on('google-getting-users-error', (message) => {
+    //   emit(actions.googleUnauthorized(message))
+    // })
+
+    // the subscriber must return an unsubscribe function
+    // this will be invoked when the saga calls `channel.close` method
+    const unsubscribe = () => {
+      console.log('unsubscribe')
+      socket.off('google-got-users')
+    }
+
+    return unsubscribe
   })
 }
 

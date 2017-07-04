@@ -12,7 +12,7 @@ const google = (state = initialState, action) => {
     case GOOGLE_GOT_USERS:
       return {
         ...state,
-        users: action.users,
+        users: [...state.users, ...action.users],
         status: 'request',
       }
 

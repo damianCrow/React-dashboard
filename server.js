@@ -25,23 +25,12 @@ const app = express();
 
 console.log('DEBUG', DEBUG);
 
-// app.use('/', historyApiFallback({
-//   verbose: false
-// }));
+app.use(historyApiFallback({
+  verbose: false
+}));
 
-// TODO: This needs to be completely handled via react, with the
-// exceptions of specifed modules.
+app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
 
-app.use('/', express.static(path.join(process.cwd(), PUBLIC_PATH)));
-
-// app.get('/', (req, res) => {
-//   res.sendFile(path.join(process.cwd(), PUBLIC_PATH))
-// })
-
-
-// app.get('/', (req, res, next) => {
-//   res
-// })
 
 // app.use(auth.connect(basic));
 if (DEBUG) {
@@ -60,10 +49,10 @@ if (DEBUG) {
     }
   });
 
-  app.use('/', middleware);
+  app.use(middleware);
   // console.log('compiler', compiler)
   // Keeps crashing sometimes?
-  app.use('/', webpackHotMiddleware(compiler));
+  app.use(webpackHotMiddleware(compiler));
 
 }
 
@@ -78,5 +67,5 @@ const server = app.listen(port, () => {
   console.info('🌎   🖥... Listening at http://%s:%s', ip, port);
 });
 
-let socketServer = new Sockets(server, app, port)
+let socketServer = new Sockets(server)
 socketServer.init()

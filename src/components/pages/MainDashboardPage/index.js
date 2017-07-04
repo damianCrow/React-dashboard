@@ -4,7 +4,7 @@ import { DashboardTemplate, FeatureList, Header, Intro } from 'components'
 
 const MainDashboardPage = () => {
   return (
-    <DashboardTemplate header={<Header height="2rem" />} intro={<Intro />} >
+    <DashboardTemplate header={<Header height="9.375rem" />} >
       <FeatureList />
     </DashboardTemplate>
   )
