@@ -1,5 +1,14 @@
 export const initialState = {
-  posts: [],
+  users: [{
+    name: {
+      givenName: '',
+      familyName: '',
+      fullName: '',
+      initals: '',
+    },
+    image: '',
+    email: '',
+  }],
   message: '',
   status: '',
 }

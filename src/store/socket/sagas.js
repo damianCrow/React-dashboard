@@ -15,15 +15,15 @@ function connect() {
 
 function serverRequest(socket, createAction) {
   const { request } = createAction
-  console.log('socket createRequest fired')
-  console.log('socket, ', socket)
-  console.log('request', request)
-  console.log(`successful.create-request.${request}`)
+  // console.log('socket createRequest fired')
+  // console.log('socket, ', socket)
+  // console.log('request', request)
+  // console.log(`successful.create-request.${request}`)
   socket.emit('create-request', { request })
   return new Promise((resolve, reject) => {
-    console.log('request', request)
+    // console.log('request', request)
     socket.on(`successful.create-request.${request}`, (result) => {
-      console.log(result)
+      // console.log(result)
       resolve(result)
     })
     socket.on(`unsuccessful.create-request.${request}`, (result) => {
@@ -33,8 +33,8 @@ function serverRequest(socket, createAction) {
 }
 
 export function* createServerRequest(socket, createAction) {
-  console.log('createServerRequest socket', socket)
-  console.log('createServerRequest createAction', createAction)
+  // console.log('createServerRequest socket', socket)
+  // console.log('createServerRequest createAction', createAction)
   try {
     yield call(serverRequest, socket, createAction)
     yield put(actions.serviceSuccess(createAction.request))
@@ -58,7 +58,7 @@ function* serviceRequestWatch() {
     // const createAction = yield take(action.serviceRequest) // Blocking: will wait for the action
     const socket = yield select(getSocketConnection)
     yield call(createServerRequest, socket, action)
-    console.log('action', action)
+    // console.log('action', action)
     // console.log('state after', state)
   })
 }

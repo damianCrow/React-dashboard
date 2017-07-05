@@ -29,7 +29,7 @@ class Google {
       // console.log('google handleRequests: request = ', request)
       switch (request) {
         case 'GET_USERS':
-          this.getUsers(auth, payloadPackage.users)
+          this.getUsers(auth, payloadPackage)
           break
         default:
           break
@@ -50,7 +50,7 @@ class Google {
           // Authorize a client with the loaded credentials, then call the
           // Google Calendar API.
           const CREDENTIALS = JSON.parse(content)
-          console.log('CREDENTIALS', JSON.parse(content))
+          // console.log('CREDENTIALS', JSON.parse(content))
 
           this.authorize(CREDENTIALS)
             .then((oauth2Client) => {
@@ -80,7 +80,7 @@ class Google {
     const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl)
 
     return new Promise((resolve, reject) => {
-      console.log('autherorize credentials', credentials)
+      // console.log('autherorize credentials', credentials)
       // Check if we have previously stored a token.
       fs.readFile(TOKEN_PATH, (err, token) => {
         if (err) {
@@ -199,6 +199,7 @@ class Google {
   getUsers(auth, users) {
     const service = google.admin('directory_v1')
 
+    console.log('google getUsers users: ', users)
     // WEBHOOK CHANNEL PULL RESOURCES
     // http://stackoverflow.com/questions/38447589/synchronize-resources-with-google-calendar-for-node-js
     // http://stackoverflow.com/questions/35048160/googleapi-nodejs-calendar-events-watch-gets-error-push-webhookurlnothttps-or-pu
@@ -208,15 +209,25 @@ class Google {
     // const userInfo = []
     for (i = 0; i < users.length; i += 1) {
       userRequests[i] = Promise.all([
-        this.getUserNames(service, auth, users[i]),
-        this.getUsersPictures(service, auth, users[i]),
+        this.getUserNames(service, auth, users[i]).catch((Error) => Error),
+        this.getUsersPictures(service, auth, users[i]).catch((Error) => Error),
       ]).then(values => {
-        return Object.assign({}, values[0], values[1])
+        // console.log('values[0] unfiltered: ', values[0])
+        // const cleanValues = values.map((value) => {
+        //   // console.log(value instanceof Error)
+        //   if (value.status instanceof Error) {
+        //     return ''
+        //   }
+        //   return value
+        // })
+        // // console.log('values[0] filtered: ', values[0])
+        return Object.assign({}, { name: values[0].name }, { image: values[1].image }, { email: values[0].email })
       })
     }
 
     Promise.all(userRequests).then(values => {
-      console.log(values)
+      console.log('overall userRequests promise all complete', values[0].name.fullName)
+      this.socket.emit('google-got-users', values)
     }).catch(reason => {
       console.log(reason)
     })
@@ -233,11 +244,18 @@ class Google {
         userKey: user,
       }, (err, response) => {
         if (err) {
-          console.log(`The API returned an error: ${err}`)
-          reject(err)
+          console.log(`The API returned an error trying to get ${user}'s info: ${err}`)
+          reject({ name: '', email: '', status: new Error(err) })
+        } else {
+          // console.log('response', response)
+          resolve({
+            name: Object.assign({}, response.name,
+              { initals: `${response.name.givenName.charAt(0)}${response.name.familyName.charAt(0)}` }
+            ),
+            email: response.primaryEmail,
+            status: 'good',
+          })
         }
-
-        resolve({ name: response.name })
         // console.log(response)
         // this.socket.emit('google-got-users', response)
         // console.log('google-got-users emiited')
@@ -257,20 +275,15 @@ class Google {
         userKey: user,
       }, (err, response) => {
         if (err) {
-          console.log(`The API returned an error: ${err}`)
-          reject(err)
+          console.log(`The API returned an error trying to get ${user}'s photo: ${err}`)
+          reject({ image: '', status: new Error(err) })
+        } else {
+          // TODO: Check to see if image already exists (or has been updated)
+          const userProfileBaseImage = new Buffer(response.photoData, 'base64')
+          fs.writeFileSync(`${imageLocation}${response.id}.jpg`, userProfileBaseImage)
+          resolve({ image: `${imageLocation}${response.id}.jpg`, status: 'good' })
         }
         // console.log('response', response)
-
-        // TODO: Check to see if image already exists (or has been updated)
-        const userProfileBaseImage = new Buffer(response.photoData, 'base64')
-        fs.writeFileSync(`${imageLocation}${response.id}.jpg`, userProfileBaseImage)
-        resolve({ image: `${imageLocation}${response.id}.jpg` })
-
-        // this.socket.emit('action', {
-        //   type: 'RECEIVE_CALENDAR_POSTS',
-        //   data: events,
-        // })
       })
     })
   }

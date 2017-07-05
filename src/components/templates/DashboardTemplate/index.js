@@ -7,20 +7,18 @@ const Wrapper = styled.div`
   align-items: center;
   min-height: 100vh;
   box-sizing: border-box;
+  padding-top: 9.375rem;
   background: linear-gradient(to right, #00928f 0%, #50b848 100%);
-  padding: 1rem;
 `
 
 const Content = styled.article`
   box-sizing: border-box;
   display: flex;
   justify-content: center;
-  max-width: 1000px;
+  max-width: 1080px;
   width: 100%;
-  border-radius: 10px;
   overflow: hidden;
   will-change: transform;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 `
 
 const Header = styled.header`
@@ -29,7 +27,6 @@ const Header = styled.header`
   left: 0;
   width: 100%;
   z-index: 999;
-  margin-left: -1rem;
 `
 
 const Intro = styled.section`

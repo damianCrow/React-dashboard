@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react'
 import { connect } from 'react-redux'
 import { serviceRequest } from 'store/actions'
 import { SocketConnector } from 'hoc'
-import { Auth, Timesheets } from 'components'
+import { Auth, TimesheetLeaderBoard } from 'components'
 
 class HarvestContainer extends Component {
 
@@ -32,7 +32,7 @@ class HarvestContainer extends Component {
       )
     } else if (status === 'success') {
       return (
-        <Timesheets posts={posts} />
+        <TimesheetLeaderBoard posts={posts} />
       )
     }
 

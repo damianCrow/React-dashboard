@@ -24,38 +24,24 @@ const FeatureList = ({ ...props }) => {
   return (
     <Grid {...props}>
       <GridRow>
-        <Feature>
-          {/* Time / Date */}
-        </Feature>
-        <Feature double>
-          {/* <SonosInfo />*/}
+        <Feature square>
           <SonosInfo />
         </Feature>
-        <GridColumn>
-          <Feature fullWidth>
-            {/* <Instagram />*/}
-            {<Instagram />}
-          </Feature>
-          <Feature fullWidth>
-            {/* <Twitter />*/}
-            {<Twitter />}
-          </Feature>
-        </GridColumn>
+        <Feature square>
+          <Instagram />
+        </Feature>
+        <Feature square>
+          <Twitter />
+        </Feature>
       </GridRow>
       <GridRow>
-        <Feature fullWidth>
+        <Feature wide>
           {/* <Harvest />*/}
-          {<Harvest />}
         </Feature>
       </GridRow>
       <GridRow>
-        <Feature fullWidth>
-          {/* <Showcase />*/}
-        </Feature>
-      </GridRow>
-      <GridRow>
-        <Feature>
-          {/* <GoogleCalendar />*/}
+        <Feature superWide>
+          <Harvest />
         </Feature>
       </GridRow>
     </Grid>

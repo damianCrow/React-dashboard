@@ -11,7 +11,7 @@ const Wrapper = styled.div`
   padding: 1rem;
   color: white;
   font-family: ${fonts.primary};
-  font-size: 1rem;
+  font-size: 3rem;
 
   & > :not(:first-child) {
     margin-left: 1rem;
@@ -20,30 +20,30 @@ const Wrapper = styled.div`
 
 class DigitalClock extends Component {
 
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this.state = {
-      time: new Date()
+      time: new Date(),
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     setInterval(this.update, 1000)
   }
 
   update = () => {
     this.setState({
-      time: new Date()
+      time: new Date(),
     })
   }
 
-  render () {
+  render() {
     return (
       <Wrapper>
-        <span>🇬🇧 {moment(this.state.time).format('LT')}</span>
-        <span>🇭🇰 {moment(this.state.time).tz('Asia/Hong_Kong').format('LT')}</span>
-        <span>🇩🇪 {moment(this.state.time).tz('Europe/Berlin').format('LT')}</span>
+        <span>{moment(this.state.time).format('HH:mm')}</span>
+        {/* <span>🇭🇰 {moment(this.state.time).tz('Asia/Hong_Kong').format('LT')}</span>
+        <span>🇩🇪 {moment(this.state.time).tz('Europe/Berlin').format('LT')}</span> */}
       </Wrapper>
     )
   }

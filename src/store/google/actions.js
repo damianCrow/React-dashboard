@@ -16,10 +16,13 @@ export const NEED_TO_AUTH_GOOGLE = 'NEED_TO_AUTH_GOOGLE'
 //   type: INVALIDATE_GOOGLE
 // })
 
-export const getGoogleUsers = (users) => ({
-  type: GOOGLE_GET_USERS,
-  users,
-})
+export const getGoogleUsers = (users) => {
+  // console.log('getGoogleUsers action fired')
+  return {
+    type: GOOGLE_GET_USERS,
+    users,
+  }
+}
 
 export const gotGoogleUsers = (users) => ({
   type: GOOGLE_GOT_USERS,

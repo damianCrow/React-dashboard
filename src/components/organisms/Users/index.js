@@ -6,7 +6,7 @@ import styled from 'styled-components'
 
 import { serviceRequest } from 'store/actions'
 
-import { GoogleUsers } from 'hoc'
+import { getGoogleUsers } from 'store/actions'
 import { ProfileImage, RadarChart } from 'components'
 import { fonts } from 'components/globals'
 
@@ -58,34 +58,11 @@ const User = styled.li`
 class Users extends Component {
 
   componentDidMount() {
-    // this.props.fetchGoogleUsers()
-    // const data = [this.props.posts.map((user) => {
-    //   return { area: user.user.first_name, value: user.user.total_hours }
-    // })]
+    const userEmails = this.props.orginalUsers.map((user) => user.email)
 
-    // console.log('data', data)
+    this.props.fetchGoogleInfo(userEmails)
 
-    // const width = 300
-    // const height = 300
-
-    // // Config for the Radar chart
-    // const config = {
-    //   w: width,
-    //   h: height,
-    //   maxValue: 45,
-    //   levels: 5,
-    //   ExtraWidthX: 200,
-    //   ExtraWidthY: 100,
-    // }
-
-    // // Call function to draw the Radar chart
-    // RadarChart.draw('#harvest-spider', data, config)
-
-    // this.spider = d3.select('body')
-    //   .selectAll('svg')
-    //   .append('svg')
-    //   .attr('width', width)
-    //   .attr('height', height)
+    console.log('this.props.orginalUsers', this.props.orginalUsers)
   }
   // console.log('Instagram comp posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
@@ -119,17 +96,18 @@ class Users extends Component {
 // Listen and capture any changes made as a result of the the actions below.
 const mapStateToProps = (state) => ({
   orginalUsers: state.harvest.data.users,
-  googleUsers: state.harvest.status.status,
+  googleUsers: state.google.users,
 })
 
-// const mapDispatchToProps = (dispatch) => ({
-//   fetchGoogleUsers: () => dispatch(serviceRequest('GOOGLE')),
-// })
+const mapDispatchToProps = (dispatch) => ({
+  fetchGoogleInfo: (users) => dispatch(getGoogleUsers(users)),
+})
 
 Users.propTypes = {
   users: PropTypes.arrayOf(PropTypes.object),
-  status: PropTypes.string,
-  message: PropTypes.string,
+  orginalUsers: PropTypes.arrayOf(PropTypes.object),
+  googleUsers: PropTypes.arrayOf(PropTypes.object),
+  fetchGoogleInfo: PropTypes.func,
 }
 
 Users.defaultProps = {
@@ -138,4 +116,4 @@ Users.defaultProps = {
   message: '',
 }
 
-export default connect(mapStateToProps)(GoogleUsers(Users))
+export default connect(mapStateToProps, mapDispatchToProps)(Users)
