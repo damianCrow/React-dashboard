@@ -9,6 +9,7 @@ const Showcase = require('./modules/Showcase.js')
 const Instagram = require('./modules/Instagram.js')
 const TwitterApi = require('./modules/Twitter.js')
 const Google = require('./modules/Google.js')
+const AdminPortal = require('./modules/AdminPortal.js')
 
 
 /**
@@ -43,6 +44,7 @@ class Sockets {
       //  TODO: Send a fail or success notfication.
       this.listenForServiceConnectRequests(socket)
       this.listenForReadRequests(socket)
+      this.adminPortal = new AdminPortal(this.app, socket)
     })
   }
 
