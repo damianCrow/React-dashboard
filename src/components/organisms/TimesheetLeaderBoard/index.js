@@ -83,10 +83,7 @@ class TimesheetLeaderBoard extends Component {
 
     return (
       <HarvestWrapper>
-        {/* userCircles */}
-        <UserCircle key={this.props.users[0].id} email={this.props.users[0].email} />
-        <UserCircle key={this.props.users[1].id} email={this.props.users[1].email} />
-        <UserCircle key={this.props.users[2].id} email={this.props.users[2].email} />
+        {userCircles}
       </HarvestWrapper>
 
     )

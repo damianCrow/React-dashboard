@@ -10,9 +10,10 @@ const Circle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 25px;
-  width: 25px;
+  height: 50px;
+  width: 50px;
   border-radius: 50%;
+  border: solid 2px orange;
   ${props => props.image && `background: url('${props.image}') center / cover;`}
 `
 
@@ -20,9 +21,13 @@ const Initals = styled.abbr`
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.5rem;
   height: 25px;
   width: 25px;
   border-raidus: 50%;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 `
 
 class UserCircle extends Component {

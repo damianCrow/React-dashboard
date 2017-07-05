@@ -29,7 +29,7 @@ class Google {
       // console.log('google handleRequests: request = ', request)
       switch (request) {
         case 'GET_USERS':
-          this.getUsers(auth, payloadPackage.users)
+          this.getUsers(auth, payloadPackage)
           break
         default:
           break
@@ -199,6 +199,7 @@ class Google {
   getUsers(auth, users) {
     const service = google.admin('directory_v1')
 
+    console.log('google getUsers users: ', users)
     // WEBHOOK CHANNEL PULL RESOURCES
     // http://stackoverflow.com/questions/38447589/synchronize-resources-with-google-calendar-for-node-js
     // http://stackoverflow.com/questions/35048160/googleapi-nodejs-calendar-events-watch-gets-error-push-webhookurlnothttps-or-pu
