@@ -67,5 +67,5 @@ const server = app.listen(port, () => {
   console.info('🌎   🖥... Listening at http://%s:%s', ip, port);
 });
 
-let socketServer = new Sockets(server)
+let socketServer = new Sockets(server, app, port)
 socketServer.init()
