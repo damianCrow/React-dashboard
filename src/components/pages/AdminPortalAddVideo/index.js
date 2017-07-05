@@ -10,15 +10,21 @@ const AdminPortalAddVideoForm = () => {
   return (
     <AdminPortalTemplate>
       <Heading level={6}>
-        Add A video
+        Add A Video
       </Heading>
-      <Field name="videoTitle"
-             label="Enter Video Title"
-             type="text"
+      <Field
+        id="videoTitle"
+        name="videoTitle"
+        label="Video Title"
+        type="text"
+        placeholder="Enter Video Title Here"
       />
-      <Field name="videoUrl"
-             label="Enter Video URL"
-             type="text"
+      <Field
+        id="videoUrl"
+        name="videoUrl"
+        label="Video URL"
+        type="text"
+        placeholder="Paste Video URL Here"
       />
       <ButtonWrapper>
         <Button type="submit" palette="primary">Add Video</Button>

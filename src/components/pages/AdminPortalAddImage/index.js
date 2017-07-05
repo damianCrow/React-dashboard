@@ -14,14 +14,25 @@ const AdminPortalAddImageForm = () => {
         Upload An Image
       </Heading>
       <Field
+        id="imageTitle"
         name="imageTitle"
-        label="Enter Image Title"
+        label="Image Title"
         type="text"
+        placeholder="Enter Image Title Here"
       />
       <Field
-        name="imageTitle"
+        id="imageUpload"
+        name="imageUpload"
         label="Choose Image"
         type="file"
+      />
+      <Heading level={6} >Or</Heading>
+      <Field
+        id="imageUrl"
+        name="imageUrl"
+        label="Image URL"
+        type="text"
+        placeholder="Paste Image URL Here"
       />
       <ButtonWrapper>
         <Button type="submit" palette="primary">Upload Image</Button>

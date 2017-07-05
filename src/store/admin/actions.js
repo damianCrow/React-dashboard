@@ -1,17 +1,18 @@
 export const UPDATE_PLAYLIST = 'UPDATE_PLAYLIST'
-export const UPDATE_SAVE_STATE = 'UPDATE_SAVE_STATE'
+export const DELETE_PLAYLIST_ITEM = 'DELETE_PLAYLIST_ITEM'
 export const PUBLISH_PLAYLIST = 'PUBLISH_PLAYLIST'
 
 export const updatePlaylist = (playlist, savedState) => ({
   type: UPDATE_PLAYLIST,
   playlist,
-  saved: savedState,
+  payload: savedState,
 })
 
-// export const updateSaveState = (playlist) => ({
-//   type: UPDATE_SAVE_STATE,
-//   playlist,
-// })
+export const deletePlaylistItem = (playlist, item) => ({
+  type: DELETE_PLAYLIST_ITEM,
+  playlist,
+  payload: item.target.id,
+})
 
 export const publishPlaylist = (playlist) => ({
   type: PUBLISH_PLAYLIST,

@@ -1,36 +1,39 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import styled from 'styled-components'
-import { getSaveState } from 'store/selectors'
-// import { updatePlaylist, socialLoginRequest, modalHide } from 'store/actions'
-import { AdminPortalTemplate, Button, ButtonWrapper, SortableComponent, Heading /* , FeatureList, Header, Intro*/ } from 'components'
+import { updatePlaylist } from 'store/actions'
+import { AdminPortalTemplate, Button, ButtonWrapper, SortableComponent, Heading } from 'components'
 
 const AdminLink = styled(Link)`
   text-decoration: none;
 `
 class adminPortalHome extends Component {
+
+  resetPlaylist() {
+    this.props.updateAdminPlaylist(JSON.parse(localStorage.getItem('playList')), true)
+  }
   render() {
     return (
       <AdminPortalTemplate>
         <Heading level={3} >
           Playlist
         </Heading>
-        <SortableComponent />     
+        <SortableComponent />
         {this.props.saved ? (
           <ButtonWrapper>
             <AdminLink to="admin-portal/add-video">
-              <Button type="info" palette="secondary">Add Video</Button>
+              <Button type="info" palette="primary">Add Video</Button>
             </AdminLink>
             <AdminLink to="admin-portal/add-image">
               <Button type="info" palette="primary">Add Image</Button>
             </AdminLink>
           </ButtonWrapper>
           ) : (
-          <ButtonWrapper> 
-            <Button type="info" palette="secondary">Cancel</Button>
-            <Button type="info" palette="primary">Publish</Button>
-          </ButtonWrapper>
+            <ButtonWrapper>
+              <Button type="info" palette="secondary" onClick={this.resetPlaylist.bind(this)}>Cancel</Button>
+              <Button type="info" palette="primary">Publish</Button>
+            </ButtonWrapper>
         )}
 
       </AdminPortalTemplate>
@@ -42,4 +45,14 @@ const mapStateToProps = state => ({
   saved: state.admin.saved,
 })
 
-export default connect(mapStateToProps)(adminPortalHome)
+const mapDispatchToProps = (dispatch) => ({
+  updateAdminPlaylist: (updatedPlaylist, savedState) => dispatch(updatePlaylist(updatedPlaylist, savedState)),
+})
+
+adminPortalHome.propTypes = {
+  playlist: PropTypes.array,
+  saved: PropTypes.bool,
+  updateAdminPlaylist: PropTypes.func,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(adminPortalHome)
