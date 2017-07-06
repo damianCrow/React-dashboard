@@ -16,6 +16,8 @@ const DEBUG = process.env.NODE_ENV !== 'production';
 const PUBLIC_PATH = `/${process.env.PUBLIC_PATH || ''}/`.replace('//', '/');
 
 const Sockets = require('./SocketServer.js');
+const UploadMedia = require('./modules/UploadMedia.js')
+
 const app = express();
 
 // const basic = auth.basic({
@@ -25,12 +27,29 @@ const app = express();
 
 console.log('DEBUG', DEBUG);
 
+// app.get('/admin', (req, res) => {
+//   console.log('admin')
+// });
+
+const mediaUpload = new UploadMedia(app)
+
+app.all('*', (req, res, next) => {
+
+  if ( req.path === '/admin/upload') {
+    mediaUpload.init()
+  } else {
+    return next();
+  }
+
+  console.log('admin-panel')
+
+  next();
+});
+
+
 app.use(historyApiFallback({
   verbose: false
 }));
-
-app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
-
 
 // app.use(auth.connect(basic));
 if (DEBUG) {
@@ -55,11 +74,6 @@ if (DEBUG) {
   app.use(webpackHotMiddleware(compiler));
 
 }
-
-
-// if (DEBUG) {
-
-// }
 
 // app.use(express.static(path.join(__dirname, '/public/index.html')));
 
