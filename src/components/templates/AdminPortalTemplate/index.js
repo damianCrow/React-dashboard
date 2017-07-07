@@ -17,6 +17,7 @@ const Content = styled.article`
   position: relative;
   max-width: 1000px;
   width: 100%;
+  height: calc(100vh - 2rem);
   border-radius: 10px;
   overflow: hidden;
   will-change: transform;

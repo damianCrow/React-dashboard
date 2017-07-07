@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { font } from 'styled-theme'
-import { updatePlaylist, deletePlaylistItem } from 'store/actions'
+import { updatePlaylist, deletePlaylistItem, recievedPlaylistFromServer } from 'store/actions'
 import { Button } from 'components'
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc'
 
@@ -13,7 +13,7 @@ const List = styled.ul`
   margin: 15px 20px;
   font-family: ${font('primary')};
   max-width: 700px;
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 12rem);
   overflow: scroll;
 `
 const ListItem = styled.li`
@@ -72,8 +72,16 @@ const SortableList = SortableContainer(({ items, deleteFunc }) => {
 
 class SortableComponent extends Component {
 
-  componentDidMount() {
-    localStorage.setItem('playList', JSON.stringify(this.props.playlist))
+  constructor(props) {
+    super(props)
+    if (this.props.playlist.length < 1) {
+      fetch('/public/user-data/showcase-media.json').then((response) => {
+        return response.json()
+      }).then((j) => {
+        this.props.recievedPlaylistFromServer(j.playlist)
+        localStorage.setItem('playList', JSON.stringify(j.playlist))
+      })
+    }
   }
 
   onSortEnd({ oldIndex, newIndex }) {
@@ -82,8 +90,7 @@ class SortableComponent extends Component {
 
     if (localStorage.getItem('playList') !== JSON.stringify(reOrderdPlaylist)) {
       savedState = false
-    }
-    else {
+    } else {
       savedState = true
     }
     this.props.updateAdminPlaylist(reOrderdPlaylist, savedState)
@@ -101,20 +108,23 @@ const mapStateToProps = state => ({
   playlist: state.admin.playlist,
 })
 
+SortableComponent.defaultProps = {
+  playlist: [{ id: '001', type: 'Default', title: 'Default Item', url: '', serviceId: '' }],
+  saved: true,
+}
+
 SortableComponent.propTypes = {
   playlist: PropTypes.array,
   saved: PropTypes.bool,
   updateAdminPlaylist: PropTypes.func,
   deletePlaylistItem: PropTypes.func,
+  recievedPlaylistFromServer: PropTypes.func,
 }
 
 const mapDispatchToProps = (dispatch) => ({
   updateAdminPlaylist: (updatedPlaylist, savedState) => dispatch(updatePlaylist(updatedPlaylist, savedState)),
   deletePlaylistItem: (playlist, item) => dispatch(deletePlaylistItem(playlist, item)),
+  recievedPlaylistFromServer: (playlistFromServer) => dispatch(recievedPlaylistFromServer(playlistFromServer)),
 })
-
-SortableComponent.defaultProps = {
-  palette: 'primary',
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(SortableComponent)

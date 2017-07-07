@@ -20,28 +20,22 @@ const UploadMedia = require('./modules/UploadMedia.js')
 
 const app = express();
 
-// const basic = auth.basic({
-//   realm: 'Password Protected Area',
-//   file: path.join(__dirname, '.htpasswd')
-// });
-
 console.log('DEBUG', DEBUG);
-
-// app.get('/admin', (req, res) => {
-//   console.log('admin')
-// });
 
 const mediaUpload = new UploadMedia(app)
 
 app.all('*', (req, res, next) => {
 
-  if ( req.path === '/admin/upload') {
-    mediaUpload.init()
-  } else {
+  if(req.path === '/admin/upload') {
+
+    mediaUpload.handleImageUpload();
+  }
+  else if(req.path === '/admin/playlist-update') {
+    mediaUpload.updateServerPlaylist()
+  }
+  else {
     return next();
   }
-
-  console.log('admin-panel')
 
   next();
 });
@@ -50,6 +44,8 @@ app.all('*', (req, res, next) => {
 app.use(historyApiFallback({
   verbose: false
 }));
+
+app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
 
 // app.use(auth.connect(basic));
 if (DEBUG) {

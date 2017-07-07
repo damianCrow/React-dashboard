@@ -4,7 +4,7 @@ import styled from 'styled-components'
 const BtnWrapper = styled.div`
  position: relative;
  margin: 15px 0;
- width: calc(100% - 55px);
+ width: calc(100% - 2rem);
  max-width: 700px;
  transform: translateX(-50%);
  left: 50%;

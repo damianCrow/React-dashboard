@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import styled from 'styled-components'
-import { updatePlaylist } from 'store/actions'
+import { updatePlaylist, addEntryToPlaylist } from 'store/actions'
 import { AdminPortalTemplate, Button, ButtonWrapper, SortableComponent, Heading } from 'components'
 
 const AdminLink = styled(Link)`
@@ -32,7 +32,7 @@ class adminPortalHome extends Component {
           ) : (
             <ButtonWrapper>
               <Button type="info" palette="secondary" onClick={this.resetPlaylist.bind(this)}>Cancel</Button>
-              <Button type="info" palette="primary">Publish</Button>
+              <Button type="info" palette="primary" onClick={this.props.addEntryToPlaylist.bind(this, this.props.playlist)}>Publish</Button>
             </ButtonWrapper>
         )}
 
@@ -43,16 +43,19 @@ class adminPortalHome extends Component {
 
 const mapStateToProps = state => ({
   saved: state.admin.saved,
+  playlist: state.admin.playlist,
 })
 
 const mapDispatchToProps = (dispatch) => ({
   updateAdminPlaylist: (updatedPlaylist, savedState) => dispatch(updatePlaylist(updatedPlaylist, savedState)),
+  addEntryToPlaylist: (playlist) => dispatch(addEntryToPlaylist(playlist)),
 })
 
 adminPortalHome.propTypes = {
   playlist: PropTypes.array,
   saved: PropTypes.bool,
   updateAdminPlaylist: PropTypes.func,
+  addEntryToPlaylist: PropTypes.func,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(adminPortalHome)
