@@ -1,7 +1,7 @@
 export const UPDATE_PLAYLIST = 'UPDATE_PLAYLIST'
 export const DELETE_PLAYLIST_ITEM = 'DELETE_PLAYLIST_ITEM'
 export const PUBLISH_PLAYLIST = 'PUBLISH_PLAYLIST'
-export const UPLOAD_IMAGE = 'UPLOAD_IMAGE'
+export const IMAGE_UPLOADED = 'IMAGE_UPLOADED'
 export const ADD_ENTRY_TO_PLAYLIST = 'ADD_ENTRY_TO_PLAYLIST'
 export const RECIEVED_PLAYLIST_FROM_SERVER = 'RECIEVED_PLAYLIST_FROM_SERVER'
 
@@ -17,14 +17,13 @@ export const deletePlaylistItem = (playlist, item) => ({
   payload: item.target.id,
 })
 
-export const publishPlaylist = (playlist) => ({
+export const publishPlaylist = () => ({
   type: PUBLISH_PLAYLIST,
-  playlist,
 })
 
-export const uploadImage = (formData) => ({
-  type: UPLOAD_IMAGE,
-  payload: formData,
+export const imageUploaded = (newImageObj) => ({
+  type: IMAGE_UPLOADED,
+  payload: newImageObj,
 })
 
 export const addEntryToPlaylist = (entryObj) => ({

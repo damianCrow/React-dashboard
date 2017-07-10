@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import styled from 'styled-components'
 import shortid from 'shortid'
 import { connect } from 'react-redux'
-import { uploadImage, addEntryToPlaylist } from 'store/actions'
+import { imageUploaded, addEntryToPlaylist } from 'store/actions'
 import { AdminPortalTemplate, Field, ButtonWrapper, Button, Heading } from 'components'
 
 const AdminLink = styled(Link)`
@@ -19,7 +19,19 @@ class AdminPortalAddImageForm extends Component {
       formData.append('imageUpload', this.imageUpload.files[0])
       formData.append('imageTitle', this.imageTitle.value)
       formData.append('imageUrl', this.imageUrl.value)
-      this.props.uploadImage(formData)
+      fetch('/admin/upload', {
+        method: 'post',
+        body: formData,
+      }).then((response) => response.json()).then((data) => {
+        const newEntryObj = {
+          id: shortid.generate(),
+          type: 'Image',
+          title: data.imageTitle,
+          url: data.imagePath,
+          serviceId: '',
+        }
+        this.props.imageUploaded(newEntryObj)
+      })
     } else {
       const newEntryObj = {
         id: shortid.generate(),
@@ -80,12 +92,12 @@ const mapStateToProps = state => ({
 })
 
 AdminPortalAddImageForm.propTypes = {
-  uploadImage: PropTypes.func,
+  imageUploaded: PropTypes.func,
   addEntryToPlaylist: PropTypes.func,
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  uploadImage: (formData) => dispatch(uploadImage(formData)),
+  imageUploaded: (newImageObj) => dispatch(imageUploaded(newImageObj)),
   addEntryToPlaylist: (entryObj) => dispatch(addEntryToPlaylist(entryObj)),
 })
 

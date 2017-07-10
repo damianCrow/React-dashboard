@@ -4,29 +4,22 @@ import {
   UPDATE_PLAYLIST,
   PUBLISH_PLAYLIST,
   DELETE_PLAYLIST_ITEM,
-  UPLOAD_IMAGE,
+  IMAGE_UPLOADED,
   ADD_ENTRY_TO_PLAYLIST,
   RECIEVED_PLAYLIST_FROM_SERVER,
 } from './actions'
 
-// const deleteListItem = (playlist, itemId) => playlist.filter((item) => item.id !== itemId)
-
-const processImageUpload = (formData) => {
-  fetch('/admin/upload', {
-    method: 'post',
-    body: formData,
-  }).then((res) => {
-    console.log(res)
-  })
-}
-
 const publishPlaylist = (playlist) => {
-  console.log('hgweigiweg')
-  fetch('/admin/playlist-update', {
+  return fetch('/admin/playlist-update', {
     method: 'post',
-    body: playlist,
-  }).then((res) => {
-    console.log(res)
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(playlist),
+  }).then((response) => response.json()).then(() => {
+    fetch('/public/user-data/showcase-media.json')
+      .then((response) => response.json())
+      .then((j) => localStorage.setItem('playList', JSON.stringify(j.playlist)))
   })
 }
 
@@ -40,9 +33,10 @@ const adminReducer = (state = initialState, action) => {
       }
 
     case PUBLISH_PLAYLIST:
+      publishPlaylist(state.playlist)
       return {
         ...state,
-        playlist: publishPlaylist(action.playlist),
+        saved: true,
       }
 
     case DELETE_PLAYLIST_ITEM:
@@ -51,18 +45,22 @@ const adminReducer = (state = initialState, action) => {
         playlist: action.playlist.filter((item) => item.id !== action.payload),
         saved: false,
       }
-    case UPLOAD_IMAGE:
+
+    case IMAGE_UPLOADED:
       return {
         ...state,
-        uploadedFiles: processImageUpload(action.payload),
+        uploadedFiles: [...state.uploadedFiles, action.payload],
         saved: false,
+        playlist: [...state.playlist, action.payload],
       }
+
     case ADD_ENTRY_TO_PLAYLIST:
       return {
         ...state,
         playlist: [...state.playlist, action.payload],
         saved: false,
       }
+
     case RECIEVED_PLAYLIST_FROM_SERVER:
       return {
         ...state,
