@@ -7,6 +7,8 @@ import {
   IMAGE_UPLOADED,
   ADD_ENTRY_TO_PLAYLIST,
   RECIEVED_PLAYLIST_FROM_SERVER,
+  UPLOAD_AND_OVERIDE_QUEUE,
+  OVERIDE_QUEUE,
 } from './actions'
 
 const publishPlaylist = (playlist) => {
@@ -52,6 +54,21 @@ const adminReducer = (state = initialState, action) => {
         uploadedFiles: [...state.uploadedFiles, action.payload],
         saved: false,
         playlist: [...state.playlist, action.payload],
+      }
+
+    case UPLOAD_AND_OVERIDE_QUEUE:
+      return {
+        ...state,
+        uploadedFiles: [...state.uploadedFiles, action.payload],
+        saved: true,
+        playlist: [action.payload, ...state.playlist],
+      }
+
+    case OVERIDE_QUEUE:
+      return {
+        ...state,
+        saved: true,
+        playlist: [action.payload, ...state.playlist],
       }
 
     case ADD_ENTRY_TO_PLAYLIST:

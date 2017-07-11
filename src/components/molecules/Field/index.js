@@ -9,7 +9,6 @@ const Error = styled(Block)`
 `
 
 const Wrapper = styled.div`
-  margin-bottom: 1rem;
   input[type="checkbox"],
   input[type="radio"] {
     margin-right: 0.5rem;

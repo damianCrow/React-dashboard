@@ -3,8 +3,8 @@ import { Link } from 'react-router'
 import shortid from 'shortid'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
-import { addEntryToPlaylist } from 'store/actions'
-import { AdminPortalTemplate, Field, Button, ButtonWrapper, Heading } from 'components'
+import { addEntryToPlaylist, overideQueue, publishPlaylist } from 'store/actions'
+import { AdminPortalTemplate, Field, Button, ButtonWrapper, Heading, SwipableArea } from 'components'
 
 const AdminLink = styled(Link)`
   text-decoration: none;
@@ -12,8 +12,10 @@ const AdminLink = styled(Link)`
 class AdminPortalAddVideoForm extends Component {
 
   onSubmit(e) {
-    e.preventDefault()
-    const newEntryObj = {
+    if (e !== 'overide') {
+      e.preventDefault()
+    }
+    const newObj = {
       id: shortid.generate(),
       type: 'Video',
       title: this.videoTitle.value,
@@ -24,7 +26,12 @@ class AdminPortalAddVideoForm extends Component {
       .replace(/#.*/, '')
       .replace(/(.*\?v=|\?version=.*)/, ''),
     }
-    this.props.addEntryToPlaylist(newEntryObj)
+    if (e === 'overide') {
+      this.props.overideQueue(newObj)
+      publishPlaylist()
+    } else {
+      this.props.addEntryToPlaylist(newObj)
+    }
     history.go(-1)
   }
 
@@ -58,6 +65,7 @@ class AdminPortalAddVideoForm extends Component {
             </AdminLink>
           </ButtonWrapper>
         </form>
+        <SwipableArea swipedUp={this.onSubmit.bind(this, 'overide')} />
       </AdminPortalTemplate>
     )
   }
@@ -65,10 +73,14 @@ class AdminPortalAddVideoForm extends Component {
 
 AdminPortalAddVideoForm.propTypes = {
   addEntryToPlaylist: PropTypes.func,
+  publishPlaylist: PropTypes.func,
+  overideQueue: PropTypes.func,
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  addEntryToPlaylist: (newEntryObj) => dispatch(addEntryToPlaylist(newEntryObj)),
+  addEntryToPlaylist: (newObj) => dispatch(addEntryToPlaylist(newObj)),
+  overideQueue: (newObj) => dispatch(overideQueue(newObj)),
+  publishPlaylist: () => dispatch(publishPlaylist()),
 })
 
 export default connect(null, mapDispatchToProps)(AdminPortalAddVideoForm)

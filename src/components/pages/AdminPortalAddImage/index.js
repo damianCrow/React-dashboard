@@ -3,17 +3,21 @@ import { Link } from 'react-router'
 import styled from 'styled-components'
 import shortid from 'shortid'
 import { connect } from 'react-redux'
-import { imageUploaded, addEntryToPlaylist } from 'store/actions'
-import { AdminPortalTemplate, Field, ButtonWrapper, Button, Heading } from 'components'
+import { imageUploaded, addEntryToPlaylist, uploadAndOverideQueue, overideQueue, publishPlaylist } from 'store/actions'
+import { AdminPortalTemplate, Field, ButtonWrapper, Button, Heading, SwipableArea } from 'components'
 
 const AdminLink = styled(Link)`
   text-decoration: none;
 `
-
+const HeadingWrapper = styled.div`
+ margin: -5px 0 -20px 0;
+`
 class AdminPortalAddImageForm extends Component {
 
   onSubmit(e) {
-    e.preventDefault()
+    if (e !== 'overide') {
+      e.preventDefault()
+    }
     if (this.imageUpload.files.length > 0) {
       const formData = new FormData()
       formData.append('imageUpload', this.imageUpload.files[0])
@@ -23,24 +27,34 @@ class AdminPortalAddImageForm extends Component {
         method: 'post',
         body: formData,
       }).then((response) => response.json()).then((data) => {
-        const newEntryObj = {
+        const newObj = {
           id: shortid.generate(),
           type: 'Image',
           title: data.imageTitle,
           url: data.imagePath,
           serviceId: '',
         }
-        this.props.imageUploaded(newEntryObj)
+        if (e === 'overide') {
+          this.props.uploadAndOverideQueue(newObj)
+          publishPlaylist()
+        } else {
+          this.props.imageUploaded(newObj)
+        }
       })
     } else {
-      const newEntryObj = {
+      const newObj = {
         id: shortid.generate(),
         type: 'Image',
         title: this.imageTitle.value,
         url: this.imageUrl.value,
         serviceId: '',
       }
-      this.props.addEntryToPlaylist(newEntryObj)
+      if (e === 'overide') {
+        this.props.overideQueue(newObj)
+        publishPlaylist()
+      } else {
+        this.props.addEntryToPlaylist(newObj)
+      }
     }
     history.go(-1)
   }
@@ -49,7 +63,7 @@ class AdminPortalAddImageForm extends Component {
     return (
       <AdminPortalTemplate>
         <Heading level={6} >
-          Upload An Image
+          Upload Or Add An Image
         </Heading>
         <form method="post" encType="multipart/form-data" onSubmit={this.onSubmit.bind(this)}>
           <Field
@@ -67,7 +81,7 @@ class AdminPortalAddImageForm extends Component {
             type="file"
             accept=".jpg, .png, .gif, .webp"
           />
-          <Heading level={6} >Or</Heading>
+          <HeadingWrapper><Heading level={6} >Or</Heading></HeadingWrapper>
           <Field
             innerRef={(imageUrl) => { this.imageUrl = imageUrl }}
             name="imageUrl"
@@ -82,6 +96,7 @@ class AdminPortalAddImageForm extends Component {
             </AdminLink>
           </ButtonWrapper>
         </form>
+        <SwipableArea swipedUp={this.onSubmit.bind(this, 'overide')} />
       </AdminPortalTemplate>
     )
   }
@@ -94,11 +109,17 @@ const mapStateToProps = state => ({
 AdminPortalAddImageForm.propTypes = {
   imageUploaded: PropTypes.func,
   addEntryToPlaylist: PropTypes.func,
+  overideQueue: PropTypes.func,
+  uploadAndOverideQueue: PropTypes.func,
+  publishPlaylist: PropTypes.func,
 }
 
 const mapDispatchToProps = (dispatch) => ({
   imageUploaded: (newImageObj) => dispatch(imageUploaded(newImageObj)),
   addEntryToPlaylist: (entryObj) => dispatch(addEntryToPlaylist(entryObj)),
+  uploadAndOverideQueue: (newImageObj) => dispatch(uploadAndOverideQueue(newImageObj)),
+  overideQueue: (newObj) => dispatch(overideQueue(newObj)),
+  publishPlaylist: () => dispatch(publishPlaylist()),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminPortalAddImageForm)

@@ -4,6 +4,8 @@ export const PUBLISH_PLAYLIST = 'PUBLISH_PLAYLIST'
 export const IMAGE_UPLOADED = 'IMAGE_UPLOADED'
 export const ADD_ENTRY_TO_PLAYLIST = 'ADD_ENTRY_TO_PLAYLIST'
 export const RECIEVED_PLAYLIST_FROM_SERVER = 'RECIEVED_PLAYLIST_FROM_SERVER'
+export const UPLOAD_AND_OVERIDE_QUEUE = 'UPLOAD_AND_OVERIDE_QUEUE'
+export const OVERIDE_QUEUE = 'OVERIDE_QUEUE'
 
 export const updatePlaylist = (playlist, savedState) => ({
   type: UPDATE_PLAYLIST,
@@ -34,4 +36,14 @@ export const addEntryToPlaylist = (entryObj) => ({
 export const recievedPlaylistFromServer = (playlistFromServer) => ({
   type: RECIEVED_PLAYLIST_FROM_SERVER,
   payload: playlistFromServer,
+})
+
+export const uploadAndOverideQueue = (newItem) => ({
+  type: UPLOAD_AND_OVERIDE_QUEUE,
+  payload: newItem,
+})
+
+export const overideQueue = (newItem) => ({
+  type: OVERIDE_QUEUE,
+  payload: newItem,
 })
