@@ -117,7 +117,6 @@ class Sockets {
           break
         case 'GOOGLE':
           this.google = new Google(this.app, socket)
-          console.log('payload', payload)
           this.google.handleRequests(payload.request, payload.package)
           break
         default:

@@ -12,16 +12,25 @@ import {
 } from './actions'
 
 const publishPlaylist = (playlist) => {
+  localStorage.setItem('playList', JSON.stringify(playlist))
   return fetch('/admin/playlist-update', {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(playlist),
-  }).then((response) => response.json()).then(() => {
-    fetch('/public/user-data/showcase-media.json')
-      .then((response) => response.json())
-      .then((j) => localStorage.setItem('playList', JSON.stringify(j.playlist)))
+  }).then((response) => response.json()).then((res) => {
+    console.log(res)
+  })
+}
+
+const updateServerFilesIndex = (newUploadObj) => {
+  return fetch('/admin/files-index-update', {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(newUploadObj),
   })
 }
 
@@ -49,6 +58,7 @@ const adminReducer = (state = initialState, action) => {
       }
 
     case IMAGE_UPLOADED:
+      updateServerFilesIndex(action.payload)
       return {
         ...state,
         uploadedFiles: [...state.uploadedFiles, action.payload],
@@ -57,6 +67,7 @@ const adminReducer = (state = initialState, action) => {
       }
 
     case UPLOAD_AND_OVERIDE_QUEUE:
+      updateServerFilesIndex(action.payload)
       return {
         ...state,
         uploadedFiles: [...state.uploadedFiles, action.payload],

@@ -1,19 +1,33 @@
-const Showcase = require('./Showcase.js')
+const UploadMedia = require('./UploadMedia.js')
 
-
-// Example 1: Creating a new class (declaration-form)
-// ===============================================================
-
-// A base class is defined using the new reserved 'class' keyword
 class AdminPortal {
 
   constructor(app, socket) {
     this.app = app
     this.socket = socket
-
-    this.Showcase = new Showcase(app, socket)
+    this.handleUpload(app, socket)
   }
 
+  handleUpload(app, socket) {
+    const mediaUpload = new UploadMedia(app, socket)
+
+    this.app.all('*', (req, res, next) => {
+      switch (req.path) {
+        case '/admin/upload':
+          mediaUpload.handleImageUpload()
+          break
+        case '/admin/playlist-update':
+          mediaUpload.updateServerPlaylist()
+          break
+        case '/admin/files-index-update':
+          mediaUpload.updateFilesIndex()
+          break
+        default:
+          return next()
+      }
+      return next()
+    })
+  }
 }
 
 module.exports = AdminPortal

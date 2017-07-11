@@ -16,30 +16,17 @@ const DEBUG = process.env.NODE_ENV !== 'production';
 const PUBLIC_PATH = `/${process.env.PUBLIC_PATH || ''}/`.replace('//', '/');
 
 const Sockets = require('./SocketServer.js');
-const UploadMedia = require('./modules/UploadMedia.js')
 
 const app = express();
 
 console.log('DEBUG', DEBUG);
 
-const mediaUpload = new UploadMedia(app)
-
-app.all('*', (req, res, next) => {
-
-  if(req.path === '/admin/upload') {
-
-    mediaUpload.handleImageUpload();
-  }
-  else if(req.path === '/admin/playlist-update') {
-    mediaUpload.updateServerPlaylist()
-  }
-  else {
-    return next();
-  }
-
-  next();
+const server = app.listen(port, () => {
+  console.info('🌎   🖥... Listening at http://%s:%s', ip, port);
 });
 
+let socketServer = new Sockets(server, app, port)
+socketServer.init()
 
 app.use(historyApiFallback({
   verbose: false
@@ -72,10 +59,3 @@ if (DEBUG) {
 }
 
 // app.use(express.static(path.join(__dirname, '/public/index.html')));
-
-const server = app.listen(port, () => {
-  console.info('🌎   🖥... Listening at http://%s:%s', ip, port);
-});
-
-let socketServer = new Sockets(server, app, port)
-socketServer.init()

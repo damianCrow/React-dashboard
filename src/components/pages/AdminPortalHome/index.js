@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import styled from 'styled-components'
 import { updatePlaylist, publishPlaylist } from 'store/actions'
+
+import { SocketConnector } from 'hoc'
 import { AdminPortalTemplate, Button, ButtonWrapper, SortableComponent, Heading } from 'components'
 
 const AdminLink = styled(Link)`
@@ -58,4 +60,4 @@ adminPortalHome.propTypes = {
   publishPlaylist: PropTypes.func,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(adminPortalHome)
+export default connect(mapStateToProps, mapDispatchToProps)(SocketConnector(adminPortalHome))

@@ -15,8 +15,9 @@ const upload = multer({ storage })
 
 class UploadMedia {
 
-  constructor(app) {
+  constructor(app, socket) {
     this.app = app
+    this.socket = socket
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: true }))
   }
@@ -35,6 +36,27 @@ class UploadMedia {
           const obj = JSON.parse(data)
           obj.playlist = req.body
           fs.writeFile('./public/user-data/showcase-media.json', JSON.stringify(obj), 'utf8', (err) => {
+            if (err) {
+              console.log(err)
+            } else {
+              this.socket.emit('Playlist Update', { obj })
+            }
+          })
+        }
+      })
+      res.end('All Good Baby!')
+    })
+  }
+
+  updateFilesIndex() {
+    return this.app.post('/admin/files-index-update', upload.array(), (req, res) => {
+      fs.readFile('./public/user-data/uploaded-files-index.json', 'utf8', (err, data) => {
+        if (err) {
+          console.log(err)
+        } else {
+          const obj = JSON.parse(data)
+          obj.uploadedFiles.push(req.body)
+          fs.writeFile('./public/user-data/uploaded-files-index.json', JSON.stringify(obj), 'utf8', (err) => {
             if (err) {
               console.log(err)
             }
