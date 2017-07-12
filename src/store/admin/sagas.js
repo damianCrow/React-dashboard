@@ -6,12 +6,10 @@ import { PUBLISH_PLAYLIST, GOT_NEW_PLAYLIST } from './actions'
 // this function creates an event channel from a given socket
 // Setup subscription to incoming `ping` events
 function createSocketChannel(socket, action) {
-  console.log('action', action)
   // `eventChannel` takes a subscriber function
   // the subscriber function takes an `emit` argument to put messages onto the channel
   return eventChannel(emit => {
     const pingHandler = (event) => {
-      console.log('event', event)
       // puts event payload into the channel
       // this allows a Saga to take this payload from the returned channel
       emit(event)

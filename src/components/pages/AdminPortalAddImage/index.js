@@ -12,11 +12,24 @@ const AdminLink = styled(Link)`
 const HeadingWrapper = styled.div`
  margin: -5px 0 -20px 0;
 `
+const EleError = styled.div`
+ margin: 0 27.5px;
+ width: calc(100% - 55px);
+ display: none;
+`
 class AdminPortalAddImageForm extends Component {
 
   onSubmit(e) {
     if (e !== 'overide') {
       e.preventDefault()
+    }
+    if (this.imageUpload.files.length < 1 && this.imageUrl.value === '') {
+      this.imageUrlError.style.display = 'block'
+      return null
+    }
+    if (this.imageTitle.value === '') {
+      this.imageTitleError.style.display = 'block'
+      return null
     }
     if (this.imageUpload.files.length > 0) {
       const formData = new FormData()
@@ -74,6 +87,7 @@ class AdminPortalAddImageForm extends Component {
             placeholder="Enter Image Title Here"
             required
           />
+          <EleError innerRef={(imageTitleError) => { this.imageTitleError = imageTitleError }} className="error" id="imageTitleError"> A image title is required!</EleError>
           <Field
             innerRef={(imageUpload) => { this.imageUpload = imageUpload }}
             name="imageUpload"
@@ -89,6 +103,7 @@ class AdminPortalAddImageForm extends Component {
             type="text"
             placeholder="Paste Image URL Here"
           />
+          <EleError innerRef={(imageUrlError) => { this.imageUrlError = imageUrlError }} className="error"> You must upload an image or provide an image URL!</EleError>
           <ButtonWrapper>
             <Button type="submit" palette="primary">Upload Image</Button>
             <AdminLink to="/admin-portal">
