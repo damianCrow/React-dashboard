@@ -92,7 +92,7 @@ class Sockets {
   listenForReadRequests(socket) {
     // console.log('this.io.sockets', this.io.sockets)
     socket.on('pull-request', payload => {
-      console.log('pull-request, payload.service:', payload.service)
+      // console.log('pull-request, payload.service:', payload.service)
       switch (payload.service) {
         case 'INSTAGRAM':
           this.instagram.grabPosts()
@@ -115,7 +115,7 @@ class Sockets {
           break
         case 'GOOGLE':
           this.google = new Google(this.app, socket)
-          console.log('payload', payload)
+          // console.log('payload', payload)
           this.google.handleRequests(payload.request, payload.package)
           break
         default:

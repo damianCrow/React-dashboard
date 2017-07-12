@@ -39,7 +39,7 @@ class Google {
 
   checkAuth() {
     return new Promise((resolve, reject) => {
-      console.log('GoogleCalendar checkAuth')
+      // console.log('Google checkAuth')
       // console.log('GoogleCalendar this: ', this)
       // Load client secrets from a local file.
       fs.readFile('./.credentials/google/client_secret.json',
@@ -199,7 +199,7 @@ class Google {
   getUsers(auth, users) {
     const service = google.admin('directory_v1')
 
-    console.log('google getUsers users: ', users)
+    // console.log('google getUsers users: ', users)
     // WEBHOOK CHANNEL PULL RESOURCES
     // http://stackoverflow.com/questions/38447589/synchronize-resources-with-google-calendar-for-node-js
     // http://stackoverflow.com/questions/35048160/googleapi-nodejs-calendar-events-watch-gets-error-push-webhookurlnothttps-or-pu
@@ -226,10 +226,10 @@ class Google {
     }
 
     Promise.all(userRequests).then(values => {
-      console.log('overall userRequests promise all complete', values[0].name.fullName)
+      // console.log('overall userRequests promise all complete', values[0].name.fullName)
       this.socket.emit('google-got-users', values)
     }).catch(reason => {
-      console.log(reason)
+      // console.log(reason)
     })
     // this.socket.emit('google-got-users', userInfo)
   }
@@ -244,7 +244,7 @@ class Google {
         userKey: user,
       }, (err, response) => {
         if (err) {
-          console.log(`The API returned an error trying to get ${user}'s info: ${err}`)
+          // console.log(`The API returned an error trying to get ${user}'s info: ${err}`)
           reject({ name: '', email: '', status: new Error(err) })
         } else {
           // console.log('response', response)
@@ -275,7 +275,7 @@ class Google {
         userKey: user,
       }, (err, response) => {
         if (err) {
-          console.log(`The API returned an error trying to get ${user}'s photo: ${err}`)
+          // console.log(`The API returned an error trying to get ${user}'s photo: ${err}`)
           reject({ image: '', status: new Error(err) })
         } else {
           // TODO: Check to see if image already exists (or has been updated)
