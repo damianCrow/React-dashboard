@@ -39,7 +39,7 @@ class UploadMedia {
             if (err) {
               console.log(err)
             } else {
-              this.socket.emit('Playlist Update', { obj })
+              this.socket.emit('GOT_NEW_PLAYLIST', req.body)
             }
           })
         }

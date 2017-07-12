@@ -1,11 +1,18 @@
 export const UPDATE_PLAYLIST = 'UPDATE_PLAYLIST'
 export const DELETE_PLAYLIST_ITEM = 'DELETE_PLAYLIST_ITEM'
 export const PUBLISH_PLAYLIST = 'PUBLISH_PLAYLIST'
+export const GET_NEW_PLAYLIST = 'GET_NEW_PLAYLIST'
+export const GOT_NEW_PLAYLIST = 'GOT_NEW_PLAYLIST'
 export const IMAGE_UPLOADED = 'IMAGE_UPLOADED'
 export const ADD_ENTRY_TO_PLAYLIST = 'ADD_ENTRY_TO_PLAYLIST'
 export const RECIEVED_PLAYLIST_FROM_SERVER = 'RECIEVED_PLAYLIST_FROM_SERVER'
 export const UPLOAD_AND_OVERIDE_QUEUE = 'UPLOAD_AND_OVERIDE_QUEUE'
 export const OVERIDE_QUEUE = 'OVERIDE_QUEUE'
+
+export const getNewPlaylist = () => ({
+  type: GET_NEW_PLAYLIST,
+  fetching: true,
+})
 
 export const updatePlaylist = (playlist, savedState) => ({
   type: UPDATE_PLAYLIST,

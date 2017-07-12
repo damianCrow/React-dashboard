@@ -40,7 +40,6 @@ class Sockets {
    */
   init() {
     this.io.on('connection', socket => {
-      console.log('connection socket')
       //  TODO: Send a fail or success notfication.
       this.listenForServiceConnectRequests(socket)
       this.listenForReadRequests(socket)
@@ -94,8 +93,11 @@ class Sockets {
   listenForReadRequests(socket) {
     // console.log('this.io.sockets', this.io.sockets)
     socket.on('pull-request', payload => {
-      console.log('pull-request, payload.service:', payload.service)
+      // console.log('pull-request, payload.service:', payload.service)
       switch (payload.service) {
+        // case 'ADMIN':
+        //   this.adminPortal.handleUpload(payload.request, payload.package)
+        //   break
         case 'INSTAGRAM':
           this.instagram.grabPosts()
           break

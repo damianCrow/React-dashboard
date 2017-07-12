@@ -1,49 +1,62 @@
-// import { eventChannel } from 'redux-saga'
-// import { take, select, put, call, fork, cancel } from 'redux-saga/effects'
-// import * as actions from './actions'
-// import { getSocketConnection } from '../socket/selectors'
+import { take, put, call, apply, fork, select, takeEvery } from 'redux-saga/effects'
+import { eventChannel, delay } from 'redux-saga'
+import { getSocketConnection } from '../socket/selectors'
+import { PUBLISH_PLAYLIST, GOT_NEW_PLAYLIST } from './actions'
 
-// Socket listeners from server actions.
-function connectStream(socket) {
-  // Tell the server we want to connect the "stream"
-  socket.emit('connect-request', 'ADMIN')
-  // Return redux-saga's eventChannel which handles socket actions
+// this function creates an event channel from a given socket
+// Setup subscription to incoming `ping` events
+function createSocketChannel(socket, action) {
+  console.log('action', action)
+  // `eventChannel` takes a subscriber function
+  // the subscriber function takes an `emit` argument to put messages onto the channel
   return eventChannel(emit => {
-    socket.on('admin-new-posts', (posts) => {
-      emit(actions.newAdminPosts(posts))
-    })
+    const pingHandler = (event) => {
+      console.log('event', event)
+      // puts event payload into the channel
+      // this allows a Saga to take this payload from the returned channel
+      emit(event)
+    }
+    // setup the subscription
+    socket.on(GOT_NEW_PLAYLIST, pingHandler)
 
-    socket.on('admin-new-posts-error', (message) => {
-      emit(actions.adminUnauthorized(message))
-    })
-    return () => {}
+    // the subscriber must return an unsubscribe function
+    // this will be invoked when the saga calls `channel.close` method
+    const unsubscribe = () => {
+      socket.off(GOT_NEW_PLAYLIST, pingHandler)
+    }
+
+    return unsubscribe
   })
+
+  // }, undefined, (action) => {console.log('action', action) return action.map((user) => user.email === action[0].email)})
 }
 
-export function* connectService(socket) {
-  // Load the connectStream func into channel to be watched
-  const channel = yield call(connectStream, socket)
-  while (true) {
-    // Watch the channel for any chances and load them into an action
-    const action = yield take(channel)
-    // Fire whatever actions come from the channel
-    yield put(action)
-  }
+// reply with a `pong` message by invoking `socket.emit('pong')`
+// function* pong(socket) {
+//   yield call(delay, 5000)
+//   yield apply(socket, socket.emit, ['pong']) // call `emit` as a method with `socket` as context
+// }
+
+function* processRequest(action) {
+  const socket = yield select(getSocketConnection)
+  const socketChannel = yield call(createSocketChannel, socket, action)
+  // console.log('action', action)
+  yield apply(socket, socket.emit, ['pull-request', { service: 'ADMIN', request: 'GET_NEW_PLAYLIST', package: {} }]) // call `emit` as a method with `socket` as context
+
+  const payload = yield take(socketChannel)
+  // console.log('payload', payload)
+  // yield put({ type: INCOMING_PONG_PAYLOAD, payload })
+  yield put({ type: GOT_NEW_PLAYLIST, playlist: payload })
 }
 
-function* flow() {
-  while (true) {
-    // Wait to see if the server is happy to provide data
-    yield take('ADMIN_SERVICE_SUCCESS')
-    // Grab socket details from the store
-    const socket = yield select(getSocketConnection)
-    // Connect the Sonos stream to start reciving data, with the socket
-    yield fork(connectService, socket)
-  }
+export function* watchOnPings() {
+  // while (true) {
+    // yield fork(pong, socket)
+  yield takeEvery(PUBLISH_PLAYLIST, processRequest)
+  // }
 }
 
 // Handles connecting, message processing and disconnecting
 export default function* () {
-  // yield fork(flow)
+  yield fork(watchOnPings)
 }
-

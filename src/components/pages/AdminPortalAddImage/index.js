@@ -36,7 +36,7 @@ class AdminPortalAddImageForm extends Component {
         }
         if (e === 'overide') {
           this.props.uploadAndOverideQueue(newObj)
-          publishPlaylist()
+          this.props.publishPlaylist()
         } else {
           this.props.imageUploaded(newObj)
         }
@@ -51,12 +51,12 @@ class AdminPortalAddImageForm extends Component {
       }
       if (e === 'overide') {
         this.props.overideQueue(newObj)
-        publishPlaylist()
+        this.props.publishPlaylist()
       } else {
         this.props.addEntryToPlaylist(newObj)
       }
     }
-    history.go(-1)
+    history.back()
   }
 
   render() {

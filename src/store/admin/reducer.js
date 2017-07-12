@@ -9,6 +9,7 @@ import {
   RECIEVED_PLAYLIST_FROM_SERVER,
   UPLOAD_AND_OVERIDE_QUEUE,
   OVERIDE_QUEUE,
+  GET_NEW_PLAYLIST,
 } from './actions'
 
 const publishPlaylist = (playlist) => {
@@ -19,8 +20,6 @@ const publishPlaylist = (playlist) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(playlist),
-  }).then((response) => response.json()).then((res) => {
-    console.log(res)
   })
 }
 
@@ -36,6 +35,13 @@ const updateServerFilesIndex = (newUploadObj) => {
 
 const adminReducer = (state = initialState, action) => {
   switch (action.type) {
+
+    case GET_NEW_PLAYLIST:
+      return {
+        ...state,
+        fetching: true,
+      }
+
     case UPDATE_PLAYLIST:
       return {
         ...state,

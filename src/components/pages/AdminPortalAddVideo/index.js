@@ -28,7 +28,7 @@ class AdminPortalAddVideoForm extends Component {
     }
     if (e === 'overide') {
       this.props.overideQueue(newObj)
-      publishPlaylist()
+      this.props.publishPlaylist()
     } else {
       this.props.addEntryToPlaylist(newObj)
     }

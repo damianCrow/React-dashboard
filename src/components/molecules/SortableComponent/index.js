@@ -98,7 +98,12 @@ class SortableComponent extends Component {
 
   render() {
     return (
-      <SortableList deleteFunc={this.props.deletePlaylistItem} items={this.props.playlist} onSortEnd={this.onSortEnd.bind(this)} />
+      <SortableList
+        deleteFunc={this.props.deletePlaylistItem}
+        items={this.props.playlist}
+        pressDelay={200}
+        onSortEnd={this.onSortEnd.bind(this)}
+      />
     )
   }
 }
