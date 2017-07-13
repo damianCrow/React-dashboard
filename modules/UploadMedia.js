@@ -34,7 +34,7 @@ class UploadMedia {
           console.log(err)
         } else {
           const obj = JSON.parse(data)
-          obj.playlist = req.body
+          obj.playlist = req.body.playlist
           fs.writeFile('./public/user-data/showcase-media.json', JSON.stringify(obj), 'utf8', (err) => {
             if (err) {
               console.log(err)

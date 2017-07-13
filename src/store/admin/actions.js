@@ -26,8 +26,9 @@ export const deletePlaylistItem = (playlist, item) => ({
   payload: item.target.id,
 })
 
-export const publishPlaylist = () => ({
+export const publishPlaylist = (overideQueue) => ({
   type: PUBLISH_PLAYLIST,
+  overideQueue,
 })
 
 export const imageUploaded = (newImageObj) => ({

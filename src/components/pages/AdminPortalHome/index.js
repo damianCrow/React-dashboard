@@ -34,7 +34,7 @@ class adminPortalHome extends Component {
           ) : (
             <ButtonWrapper>
               <Button type="info" palette="secondary" onClick={this.resetPlaylist.bind(this)}>Cancel</Button>
-              <Button type="info" palette="primary" onClick={this.props.publishPlaylist.bind(this)}>Publish</Button>
+              <Button type="info" palette="primary" onClick={this.props.publishPlaylist.bind(this, false)}>Publish</Button>
             </ButtonWrapper>
         )}
 
@@ -50,7 +50,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => ({
   updateAdminPlaylist: (updatedPlaylist, savedState) => dispatch(updatePlaylist(updatedPlaylist, savedState)),
-  publishPlaylist: () => dispatch(publishPlaylist()),
+  publishPlaylist: (overideQueue) => dispatch(publishPlaylist(overideQueue)),
 })
 
 adminPortalHome.propTypes = {

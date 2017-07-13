@@ -12,14 +12,18 @@ import {
   GET_NEW_PLAYLIST,
 } from './actions'
 
-const publishPlaylist = (playlist) => {
+const publishPlaylist = (overideQueue, playlist) => {
+  const obj = {
+    overideQueue,
+    playlist,
+  }
   localStorage.setItem('playList', JSON.stringify(playlist))
   return fetch('/admin/playlist-update', {
     method: 'post',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(playlist),
+    body: JSON.stringify(obj),
   })
 }
 
@@ -50,7 +54,7 @@ const adminReducer = (state = initialState, action) => {
       }
 
     case PUBLISH_PLAYLIST:
-      publishPlaylist(state.playlist)
+      publishPlaylist(action.overideQueue, state.playlist)
       return {
         ...state,
         saved: true,
