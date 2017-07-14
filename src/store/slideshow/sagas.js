@@ -9,9 +9,10 @@ function* nextSlide(action) {
   const max = yield select(maxSlideshow(service))
   const current = yield select(currentSlideshow(service))
   yield delay(15000)
-
+  console.log('current saga: ', current)
+  console.log('max saga: ', max)
   // TODO: Make this a seperate async func
-  if (current !== (max - 1)) {
+  if (current !== max) {
     yield put(actions.incrementServiceSlideshow(service))
   } else {
     yield put(actions.restartServiceSlideshow(service))
@@ -56,7 +57,6 @@ function* runCarousel(action) {
 
 function* resumeSlides(action) {
   while (yield take(actions.resumeServiceSlideshow(action.service).type)) {
-
     yield fork(runCarousel, action)
     yield put(actions.incrementServiceSlideshow(action.service))
   }
@@ -66,9 +66,11 @@ function* resumeSlides(action) {
 function* beginSlides(action) {
   yield fork(runCarousel, action)
   yield fork(resumeSlides, action)
+
   // For the sake of the dispatcher
   yield put(actions.startServiceSlideshow(action.service, action.max))
 
+  yield delay(15000)
   yield put(actions.incrementServiceSlideshow(action.service))
   // yield fork(incrementSlides, action)
 

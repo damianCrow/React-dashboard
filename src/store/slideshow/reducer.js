@@ -15,7 +15,7 @@ export const slideshowState = (service = '') => {
       case `${service}_${SLIDESHOW_START}`:
         return {
           ...state,
-          max: action.max,
+          max: action.max - 1,
           status: 'playing',
         }
 

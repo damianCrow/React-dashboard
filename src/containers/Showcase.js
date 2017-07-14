@@ -32,7 +32,7 @@ class ShowcaseContainer extends Component {
     // console.log('componentWillReceiveProps showcase')
 
     if (!isEmpty && slideshow.status === 'ready') {
-      startInstaSlideshow(3)
+      startInstaSlideshow(nextProps.playlist.length)
     }
 
     // if (!isEmpty) {
@@ -58,6 +58,7 @@ class ShowcaseContainer extends Component {
         <span>{status}</span>
       )
     } else if (!isEmpty) {
+      console.log('playlist[slideshow.current]', playlist[slideshow.current])
       return (
         <Showcase
           url={playlist[slideshow.current].url}

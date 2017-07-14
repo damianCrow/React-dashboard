@@ -50,7 +50,9 @@ const Showcase = ({ children, ...props, media, mediaType, itemId, url, serviceId
 
   return (
     <TransitionWrapper>
-      <FadingTransitionWrapper>
+      <FadingTransitionWrapper
+        key={itemId}
+      >
         {showcaseItem}
       </FadingTransitionWrapper>
     </TransitionWrapper>

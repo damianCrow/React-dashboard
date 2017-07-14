@@ -80,7 +80,7 @@ class YouTubeVideo extends Component {
         <YouTube
           videoId={serviceId}
           opts={youTubeOpts}
-          onEnd={this.onVideoEnd}
+          onEnd={() => this.onVideoEnd()}
           onReady={(event) => { this.handleVideoReady(event) }}
         />
       </YouTubeContainer>
