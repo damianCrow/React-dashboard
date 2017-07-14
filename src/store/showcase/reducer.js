@@ -11,7 +11,7 @@ function showcaseReducerWrapper() {
         return {
           ...state,
           fetching: false,
-          playlist: action.playlist,
+          playlist: action.payload.playlist,
         }
       case SHOWCASE_NEW_POSTS:
         console.log('reducer action.playlist', action.playlist)

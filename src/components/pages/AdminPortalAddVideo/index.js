@@ -39,10 +39,10 @@ class AdminPortalAddVideoForm extends Component {
 
     if (this.videoUrl.value.search('youtu') > 0) {
       serviceName = 'youtube'
-    }
-
-    if (this.videoUrl.value.search('vimeo') > 0) {
+    } else if (this.videoUrl.value.search('vimeo') > 0) {
       serviceName = 'vimeo'
+    } else {
+      serviceName = ''
     }
 
     const newObj = {

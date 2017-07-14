@@ -44,7 +44,7 @@ function* processRequest(action) {
   const payload = yield take(socketChannel)
   // console.log('payload', payload)
   // yield put({ type: INCOMING_PONG_PAYLOAD, payload })
-  yield put({ type: GOT_NEW_PLAYLIST, playlist: payload })
+  yield put({ type: GOT_NEW_PLAYLIST, payload })
 }
 
 export function* watchOnPings() {
