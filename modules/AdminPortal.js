@@ -30,7 +30,8 @@ class AdminPortal {
           this.mediaUpload.handleImageUpload()
           break
         case '/admin/playlist-update':
-  // HORRIBLE HACK IF STATEMENT! MUST REFACTOR ASAP!! \\
+  // TODO: HORRIBLE HACK IF STATEMENT! MUST REFACTOR ASAP!! \\
+  console.log('firing shizzz')
           if (this.socket.connected) {
             this.mediaUpload.updateServerPlaylist()
           }
@@ -39,7 +40,7 @@ class AdminPortal {
           this.mediaUpload.updateFilesIndex()
           break
         default:
-          return next()
+          return null
       }
       return next()
     })

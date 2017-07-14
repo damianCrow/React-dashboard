@@ -1,7 +1,10 @@
 import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
+
 import styled, { css } from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
+import { pauseServiceSlideshow } from 'store/actions'
 import { FadingTransitionWrapper, ImageFeature, YouTubeVideo } from 'components'
 
 const styles = ({ ...props }) => css`
@@ -26,25 +29,29 @@ const TransitionWrapper = styled(TransitionGroup)`${styles}`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Showcase = ({ children, ...props, media, mediaType, isFetching, slideShowKey }) => {
+const Showcase = ({ children, ...props, media, mediaType, itemId, url, serviceId }) => {
   // console.log('Instagram comp posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
   // console.log('INSTAGRAM COMP posts', posts)
   // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
+  let showcaseItem = null
+  if (mediaType === 'Image') {
+    showcaseItem = (<ImageFeature
+      currentImage={url}
+      thumbnail={url}
+    />)
+  } else if (mediaType === 'Video') {
+    props.pauseInstaSlideshow()
+    showcaseItem = (<YouTubeVideo
+      serviceId={serviceId}
+    />)
+  }
+
 
   return (
-    <TransitionWrapper style={{ opacity: isFetching ? 0.5 : 1 }} >
-      <FadingTransitionWrapper key={slideShowKey}>
-        {mediaType === 'image' ? (
-          <ImageFeature
-            currentImage={media.file_name}
-            thumbnail={media.file_name}
-          />
-        ) : (
-          <YouTubeVideo
-            youtubeId={media.youtube_id}
-          />
-        )}
+    <TransitionWrapper>
+      <FadingTransitionWrapper>
+        {showcaseItem}
       </FadingTransitionWrapper>
     </TransitionWrapper>
   )
@@ -52,10 +59,17 @@ const Showcase = ({ children, ...props, media, mediaType, isFetching, slideShowK
 
 Showcase.propTypes = {
   children: PropTypes.any,
-  isFetching: PropTypes.bool.isRequired,
-  media: PropTypes.object.isRequired,
-  slideShowKey: PropTypes.number.isRequired,
-  mediaType: PropTypes.string
+  url: PropTypes.string,
+  serviceId: PropTypes.string,
+  itemId: PropTypes.string.isRequired,
+  mediaType: PropTypes.string,
+  pauseInstaSlideshow: PropTypes.func.isRequired,
 }
 
-export default Showcase
+
+const mapDispatchToProps = (dispatch) => ({
+  pauseInstaSlideshow: () => dispatch(pauseServiceSlideshow('showcase')),
+})
+
+
+export default connect(null, mapDispatchToProps)(Showcase)

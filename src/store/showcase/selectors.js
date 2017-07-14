@@ -1,6 +1,6 @@
 export const initialState = {
   fetching: false,
-  playlist: [{}],
+  playlist: [],
 }
 
 export const getInstagramData = (state = initialState) => state.instagram || []

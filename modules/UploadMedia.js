@@ -28,23 +28,24 @@ class UploadMedia {
     })
   }
   updateServerPlaylist() {
+    console.log('updateServerPlaylist')
     return this.app.post('/admin/playlist-update', upload.array(), (req, res) => {
-      fs.readFile('./public/user-data/showcase-media.json', 'utf8', (err, data) => {
-        if (err) {
-          console.log(err)
-        } else {
-          const obj = JSON.parse(data)
-          obj.playlist = req.body.playlist
-          fs.writeFile('./public/user-data/showcase-media.json', JSON.stringify(obj), 'utf8', (err) => {
-            if (err) {
-              console.log(err)
-            } else {
-              this.socket.emit('GOT_NEW_PLAYLIST', req.body)
-            }
-          })
-        }
-      })
-      res.end('All Good Baby!')
+    fs.readFile('./public/user-data/showcase-media.json', 'utf8', (err, data) => {
+      if (err) {
+        console.log(err)
+      } else {
+        const obj = JSON.parse(data)
+        obj.playlist = req.body.playlist
+        fs.writeFile('./public/user-data/showcase-media.json', JSON.stringify(obj), 'utf8', (err) => {
+          if (err) {
+            console.log(err)
+          } else {
+            this.socket.emit('GOT_NEW_PLAYLIST', req.body)
+          }
+        })
+      }
+    })
+    res.end('All Good Baby!')
     })
   }
 

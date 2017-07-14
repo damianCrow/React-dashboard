@@ -5,12 +5,12 @@ import { getSocketConnection } from '../socket/selectors'
 // this function creates an event channel from a given socket
 // Setup subscription to incoming `ping` events
 function createSocketChannel(socket, action) {
-  console.log('action', action)
+  // console.log('action', action)
   // `eventChannel` takes a subscriber function
   // the subscriber function takes an `emit` argument to put messages onto the channel
   return eventChannel(emit => {
     const pingHandler = (event) => {
-      console.log('event', event)
+      // console.log('event', event)
       // puts event payload into the channel
       // this allows a Saga to take this payload from the returned channel
       emit(event)
@@ -28,7 +28,7 @@ function createSocketChannel(socket, action) {
 
     return unsubscribe
   }, undefined, (recivedAction) => {
-    console.log(recivedAction.map((user) => user.email === action.users[0])[0])
+    // console.log(recivedAction.map((user) => user.email === action.users[0])[0])
     return recivedAction.map((user) => user.email === action.users[0])[0]
   })
 

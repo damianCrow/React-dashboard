@@ -33,12 +33,12 @@ const Initals = styled.abbr`
 class UserCircle extends Component {
 
   componentDidMount() {
-    console.log('componentDidMount props', this.props)
+    // console.log('componentDidMount props', this.props)
     this.props.fetchGoogleInfo(this.props.email)
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('UserCircle nextProps', nextProps)
+    // console.log('UserCircle nextProps', nextProps)
     // nextProps.fetchGoogleInfo(nextProps.email)
   }
 
