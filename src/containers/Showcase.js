@@ -1,86 +1,106 @@
-import React, { PropTypes, Component } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { fetchShowcasePosts, startShowcaseSlideshow } from 'store/actions'
-
-import { Showcase } from 'components'
+import { storeServerPlaylist, startSlideshow, pauseServiceSlideshow } from 'store/actions'
+import { SocketConnector } from 'hoc'
+import { Showcase, SplashScreen } from 'components'
 
 class ShowcaseContainer extends Component {
-  static propTypes = {
-    livePlaylistItems: PropTypes.array.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    message: PropTypes.string.isRequired,
-    slideShow: PropTypes.object.isRequired,
-    status: PropTypes.string.isRequired
+  componentDidMount() {
+    this.props.socketConnected && this.props.serviceRequest()
   }
 
-  componentDidMount () {
-    const { dispatch } = this.props
+  componentWillReceiveProps(nextProps) {
+    // Try and move this logic back to the HOC container
+    const { socketConnected, serviceRequest, playlist, startInstaSlideshow, slideshow, pauseInstaSlideshow } = nextProps
 
-    dispatch(fetchShowcasePosts())
-  }
+    const isEmpty = playlist.length === 0
 
-  componentDidUpdate () {
-    const { slideShow, status, dispatch, livePlaylistItems } = this.props
-    if (status === 'success' && Object.keys(slideShow.currentPost).length === 0) {
-      console.log('fireing startShowcaseSlideshow')
-      dispatch(startShowcaseSlideshow(livePlaylistItems))
-    } else if (slideShow.mediaType === 'image' && status === 'success') {
-      dispatch(startShowcaseSlideshow(livePlaylistItems))
+    if (socketConnected && !this.props.socketConnected) {
+      fetch('/public/user-data/showcase-media.json', {
+        method: 'get',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then((response) => { return response.json() })
+        .then((data) => {
+          console.log('BOOOOOOOM BABY 💥 data: ', data)
+          this.props.thisShouldActuallyBeASagaButWhatever(data.playlist)
+        })
     }
+
+    // console.log('componentWillReceiveProps showcase')
+
+    if (!isEmpty && slideshow.status === 'ready') {
+      startInstaSlideshow(3)
+    }
+
+    // if (!isEmpty) {
+    //   if (playlist[slideshow.current].type === 'video' && slideshow.status === 'playing') {
+    //     pauseInstaSlideshow()
+    //   }
+    // }
   }
 
-  render () {
-    const { slideShow, isFetching, status, message } = this.props
-    const isEmpty = Object.keys(slideShow.currentPost).length === 0
-    // const mediaPath = '/showcase-media/' + slideShow.currentPost.file_name
+  render() {
+    const { status, message, playlist, slideshow } = this.props
+    // console.log('showcase status', status)
 
-    console.log('showcase: slideShow.currentPost = ', slideShow.currentPost)
+    const isEmpty = playlist.length === 0
+    // console.log('render playlist', playlist)
+    // console.log('render playlist isEmpty', isEmpty)
 
-    if (status === 'failed' || status === '') {
+    // console.log('slideshow', slideshow)
+    // console.log('isEmpty', isEmpty)
+
+    if (status === 'failed') {
       return (
         <span>{status}</span>
       )
     } else if (!isEmpty) {
       return (
         <Showcase
-          mediaType={slideShow.mediaType}
-          media={slideShow.currentPost}
-          slideShowKey={slideShow.currentInt}
-          isFetching={isFetching}
+          url={playlist[slideshow.current].url}
+          serviceId={playlist[slideshow.current].serviceId}
+          mediaType={playlist[slideshow.current].type}
+          itemId={playlist[slideshow.current].id}
         />
       )
-    } else {
-      return (
-        <span>Awaiting images...</span>
-      )
     }
+    return (
+      <SplashScreen icon="arc" service="Showcase" />
+    )
   }
 }
 
-const mapStateToProps = state => {
-  const { showcase } = state
-  const {
-    livePlaylistItems,
-    isFetching,
-    message,
-    slideShow,
-    status
-  } = showcase['showcaseProcess']['showcaseDetails'] || {
-    livePlaylistItems: [],
-    isFetching: true,
-    message: '',
-    slideShow: {currentPost: {}, currentInt: 0, mediaType: ''},
-    status: ''
-  }
+// Listen and capture any changes made as a result of the the actions below.
+const mapStateToProps = (state) => ({
+  playlist: state.showcase.data.playlist,
+  status: state.showcase.data.status,
+  slideshow: state.showcase.slideshow,
+})
 
-  return {
-    livePlaylistItems,
-    isFetching,
-    message,
-    slideShow,
-    status
-  }
+const mapDispatchToProps = (dispatch) => ({
+  thisShouldActuallyBeASagaButWhatever: (playlist) => dispatch(storeServerPlaylist(playlist)),
+  startInstaSlideshow: (max) => dispatch(startSlideshow('showcase', max)),
+})
+
+ShowcaseContainer.propTypes = {
+  socketConnected: PropTypes.bool,
+  thisShouldActuallyBeASagaButWhatever: PropTypes.func,
+  serviceRequest: PropTypes.func,
+  startInstaSlideshow: PropTypes.func,
+  slideshow: PropTypes.object,
+  playlist: PropTypes.array,
+  status: PropTypes.string,
 }
 
-export default connect(mapStateToProps)(ShowcaseContainer)
+ShowcaseContainer.defaultProps = {
+  socketConnected: false,
+  sonosRequest: false,
+  slideshow: {},
+  playlist: [],
+  status: '',
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SocketConnector(ShowcaseContainer))

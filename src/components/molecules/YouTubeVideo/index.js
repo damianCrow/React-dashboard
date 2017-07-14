@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import styled, { css } from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
-import { loadNextShowcaseMedia } from 'store/actions'
+import { resumeServiceSlideshow, pauseServiceSlideshow } from 'store/actions'
+
 
 import YouTube from 'react-youtube'
 
@@ -34,19 +35,30 @@ const youTubeOpts = {
     showinfo: 0,
     rel: 0,
     disablekb: 1,
-  }
+  },
 }
 
 class YouTubeVideo extends Component {
   static propTypes = {
-    youtubeId: PropTypes.string.isRequired,
-    livePlaylistItems: PropTypes.array.isRequired,
-    dispatch: PropTypes.func.isRequired
+    serviceId: PropTypes.string,
+    resumeInstaSlideshow: PropTypes.func.isRequired,
+    pauseInstaSlideshow: PropTypes.func.isRequired,
+    // slideShowKey: PropTypes.number.isRequired,
   }
 
-  constructor () {
+  constructor() {
     super()
     this.onVideoEnd = this.onVideoEnd.bind(this)
+    console.log('youtube video constructor')
+  }
+
+  componentDidMount() {
+    // this.props.pauseInstaSlideshow()
+  }
+
+  onVideoEnd() {
+    console.log('YouTubeVideo onVideoEnd fired')
+    this.props.resumeInstaSlideshow()
   }
 
   /**
@@ -54,41 +66,32 @@ class YouTubeVideo extends Component {
    *
    * @returns {void}
    */
-  handleVideoReady (event) {
-    event.target.mute();
+  handleVideoReady(event) {
+    console.log('youtube video ready event', event)
+    console.log(this.props)
+    event.target.mute()
+    // this.props.pauseInstaSlideshow()
   }
 
-  onVideoEnd () {
-    console.log('YouTubeVideo onVideoEnd fired')
-    const { dispatch, livePlaylistItems } = this.props
-    dispatch(loadNextShowcaseMedia(livePlaylistItems))
-  }
-
-  render () {
-    const { youtubeId } = this.props
+  render() {
+    const { serviceId } = this.props
     return (
       <YouTubeContainer>
         <YouTube
-          videoId={youtubeId}
+          videoId={serviceId}
           opts={youTubeOpts}
           onEnd={this.onVideoEnd}
-          onReady={this.handleVideoReady.bind(this)}
+          onReady={(event) => { this.handleVideoReady(event) }}
         />
       </YouTubeContainer>
     )
   }
 }
 
-const mapStateToProps = state => {
-  const { showcase } = state
-  const {
-    livePlaylistItems
-  } = showcase['showcaseProcess']['showcaseDetails'] || {
-    livePlaylistItems: []
-  }
-  return {
-    livePlaylistItems
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  resumeInstaSlideshow: () => dispatch(resumeServiceSlideshow('showcase')),
+  pauseInstaSlideshow: () => dispatch(pauseServiceSlideshow('showcase')),
+})
 
-export default connect(mapStateToProps)(YouTubeVideo)
+
+export default connect(null, mapDispatchToProps)(YouTubeVideo)

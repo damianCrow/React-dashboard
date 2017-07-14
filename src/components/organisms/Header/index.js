@@ -26,6 +26,9 @@ const ColourdIcon = styled(Icon)`
   padding: 2.5rem;
   margin: 0;
   width: 150px;
+  > span {
+    margin: 0;
+  }
 `
 
 const Header = (props) => {

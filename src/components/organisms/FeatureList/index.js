@@ -36,7 +36,7 @@ const FeatureList = ({ ...props }) => {
       </GridRow>
       <GridRow>
         <Feature wide>
-          {/* <Harvest />*/}
+          <Showcase />
         </Feature>
       </GridRow>
       <GridRow>

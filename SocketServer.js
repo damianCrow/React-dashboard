@@ -9,6 +9,7 @@ const Showcase = require('./modules/Showcase.js')
 const Instagram = require('./modules/Instagram.js')
 const TwitterApi = require('./modules/Twitter.js')
 const Google = require('./modules/Google.js')
+const AdminPortal = require('./modules/AdminPortal.js')
 
 
 /**
@@ -39,10 +40,10 @@ class Sockets {
    */
   init() {
     this.io.on('connection', socket => {
-      console.log('connection socket')
       //  TODO: Send a fail or success notfication.
       this.listenForServiceConnectRequests(socket)
       this.listenForReadRequests(socket)
+      this.adminPortal = new AdminPortal(this.app, socket)
     })
   }
 
@@ -94,6 +95,9 @@ class Sockets {
     socket.on('pull-request', payload => {
       // console.log('pull-request, payload.service:', payload.service)
       switch (payload.service) {
+        // case 'ADMIN':
+        //   this.adminPortal.handleUpload(payload.request, payload.package)
+        //   break
         case 'INSTAGRAM':
           this.instagram.grabPosts()
           break
@@ -115,7 +119,6 @@ class Sockets {
           break
         case 'GOOGLE':
           this.google = new Google(this.app, socket)
-          // console.log('payload', payload)
           this.google.handleRequests(payload.request, payload.package)
           break
         default:
