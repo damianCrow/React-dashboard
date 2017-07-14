@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
 import { pauseServiceSlideshow } from 'store/actions'
-import { FadingTransitionWrapper, ImageFeature, YouTubeVideo } from 'components'
+import { FadingTransitionWrapper, ImageFeature, YouTubeVideo, VimeoVideo } from 'components'
 
 const styles = ({ ...props }) => css`
   color: black;
@@ -29,7 +29,7 @@ const TransitionWrapper = styled(TransitionGroup)`${styles}`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Showcase = ({ children, ...props, media, mediaType, itemId, url, serviceId }) => {
+const Showcase = ({ children, ...props, /*media,*/ mediaType, itemId, url, serviceId, serviceName }) => {
   // console.log('Instagram comp posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
   // console.log('INSTAGRAM COMP posts', posts)
@@ -40,9 +40,15 @@ const Showcase = ({ children, ...props, media, mediaType, itemId, url, serviceId
       currentImage={url}
       thumbnail={url}
     />)
-  } else if (mediaType === 'Video') {
+  } else if (mediaType === 'Video' && serviceName === 'youtube') {
     props.pauseInstaSlideshow()
     showcaseItem = (<YouTubeVideo
+      serviceId={serviceId}
+    />)
+  } else if (mediaType === 'Video' && serviceName === 'vimeo') {
+    props.pauseInstaSlideshow()
+    showcaseItem = (<VimeoVideo
+      url={url}
       serviceId={serviceId}
     />)
   }
@@ -66,6 +72,7 @@ Showcase.propTypes = {
   itemId: PropTypes.string.isRequired,
   mediaType: PropTypes.string,
   pauseInstaSlideshow: PropTypes.func.isRequired,
+  serviceName: PropTypes.string,
 }
 
 

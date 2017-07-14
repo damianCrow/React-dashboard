@@ -1,48 +1,68 @@
-const UploadMedia = require('./UploadMedia.js')
+const multer = require('multer')
+const fs = require('fs')
+const bodyParser = require('body-parser')
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './public/user-data')
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`)
+  },
+})
+
+const upload = multer({ storage })
 
 class AdminPortal {
 
   constructor(app, socket) {
     this.app = app
     this.socket = socket
-    this.mediaUpload = new UploadMedia(app, socket)
-    this.handleUpload()
+    app.use(bodyParser.json())
+    app.use(bodyParser.urlencoded({ extended: true }))
+    this.handleRequests()
   }
 
-  // handleRequests(request, payloadPackage) {
-  //   // this.socket.emit('successful.create-request.GOOGLE')
-  //   // console.log('google handleRequests: request = ', request)
-  //   switch (request) {
-  //     case 'GET_NEW_PLAYLIST':
+  handleRequests() {
+    this.app.post('/admin/upload', upload.single('imageUpload'), (req, res) => {
+      res.end(JSON.stringify({ imageTitle: req.body.imageTitle, imagePath: `/${req.file.path}` }))
+    })
 
-  //       // this.getUsers(auth, payloadPackage)
-  //       // this.socket.emit('google-got-users', values)
-  //       break
-  //     default:
-  //       break
-  //   }
-  // }
+    this.app.post('/admin/playlist-update', upload.array(), (req, res) => {
+      console.log('firing shizzz ', this.socket.connected)
+      fs.readFile('./public/user-data/showcase-media.json', 'utf8', (err, data) => {
+        if (err) {
+          console.log(err)
+        } else {
+          const obj = JSON.parse(data)
+          obj.playlist = req.body.playlist
+          fs.writeFile('./public/user-data/showcase-media.json', JSON.stringify(obj), 'utf8', (err) => {
+            if (err) {
+              console.log(err)
+            } else {
+              this.socket.emit('GOT_NEW_PLAYLIST', req.body)
+            }
+          })
+        }
+      })
+      res.end('All Good Baby!')
+    })
 
-  handleUpload() {
-    this.app.all('*', (req, res, next) => {
-      switch (req.path) {
-        case '/admin/upload':
-          this.mediaUpload.handleImageUpload()
-          break
-        case '/admin/playlist-update':
-  // TODO: HORRIBLE HACK IF STATEMENT! MUST REFACTOR ASAP!! \\
-  console.log('firing shizzz')
-          if (this.socket.connected) {
-            this.mediaUpload.updateServerPlaylist()
-          }
-          break
-        case '/admin/files-index-update':
-          this.mediaUpload.updateFilesIndex()
-          break
-        default:
-          return null
-      }
-      return next()
+    this.app.post('/admin/files-index-update', upload.array(), (req, res) => {
+      fs.readFile('./public/user-data/uploaded-files-index.json', 'utf8', (err, data) => {
+        if (err) {
+          console.log(err)
+        } else {
+          const obj = JSON.parse(data)
+          obj.uploadedFiles.push(req.body)
+          fs.writeFile('./public/user-data/uploaded-files-index.json', JSON.stringify(obj), 'utf8', (err) => {
+            if (err) {
+              console.log(err)
+            }
+          })
+        }
+      })
+      res.end('All Good Baby!')
     })
   }
 }

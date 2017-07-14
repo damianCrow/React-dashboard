@@ -43,7 +43,7 @@ class ShowcaseContainer extends Component {
   }
 
   render() {
-    const { status, message, playlist, slideshow } = this.props
+    const { status, /*message,*/ playlist, slideshow } = this.props
     // console.log('showcase status', status)
 
     const isEmpty = playlist.length === 0
@@ -63,6 +63,7 @@ class ShowcaseContainer extends Component {
         <Showcase
           url={playlist[slideshow.current].url}
           serviceId={playlist[slideshow.current].serviceId}
+          serviceName={playlist[slideshow.current].serviceName}
           mediaType={playlist[slideshow.current].type}
           itemId={playlist[slideshow.current].id}
         />

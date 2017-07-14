@@ -54,6 +54,7 @@ class AdminPortalAddImageForm extends Component {
           title: data.imageTitle,
           url: data.imagePath,
           serviceId: '',
+          serviceName: '',
         }
         if (e === 'overide') {
           this.props.uploadAndOverideQueue(newObj)
@@ -69,6 +70,7 @@ class AdminPortalAddImageForm extends Component {
         title: this.imageTitle.value,
         url: this.imageUrl.value,
         serviceId: '',
+        serviceName: '',
       }
       if (e === 'overide') {
         this.props.overideQueue(newObj)

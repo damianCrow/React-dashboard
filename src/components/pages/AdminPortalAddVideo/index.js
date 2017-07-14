@@ -22,6 +22,8 @@ const EleError = styled.div`
 class AdminPortalAddVideoForm extends Component {
 
   onSubmit(e) {
+    let serviceName
+
     if (e !== 'overide') {
       e.preventDefault()
     }
@@ -34,11 +36,21 @@ class AdminPortalAddVideoForm extends Component {
       this.videoUrlError.style.display = 'block'
       return null
     }
+
+    if (this.videoUrl.value.search('youtu') > 0) {
+      serviceName = 'youtube'
+    } else if (this.videoUrl.value.search('vimeo') > 0) {
+      serviceName = 'vimeo'
+    } else {
+      serviceName = ''
+    }
+
     const newObj = {
       id: shortid.generate(),
       type: 'Video',
       title: this.videoTitle.value,
       url: this.videoUrl.value,
+      serviceName,
       serviceId: this.videoUrl.value
       .replace(/\\/g, '/')
       .replace(/.*\//, '')
