@@ -49,7 +49,7 @@ class HarvestTimesheets {
           })
           .catch((error) => {
             // It ends here, the user needs to authenticate.
-            console.log(error)
+            console.log(`User needs to authenticate Harvest, error report: ${error} `)
           })
       })
     })
@@ -91,6 +91,7 @@ class HarvestTimesheets {
       resolveAuth(tokenDetails.access_token)
     } else {
       // Token expired
+      console.log('token expired, get new token using refresh token')
       // Get a new token using the refresh token
       this.getNewToken(tokenDetails.refresh_token, 'refresh')
         .then(tokenDetails => {
@@ -105,6 +106,7 @@ class HarvestTimesheets {
   }
 
   setupAccessForNewToken() {
+    console.log('setupAccessForNewToken')
     // Dispatch a frontend action to push the auth link!!!!!!!!!
     this.socket.emit('action', {
       type: 'NEED_TO_AUTH_HARVEST',
@@ -147,6 +149,9 @@ class HarvestTimesheets {
     return new Promise((resolve, reject) => {
       // console.log(`--GET NEW ACCESS TOKEN WITH ${codeType} CODE--`)
       // console.log('accessCode', code)
+      console.log('getNewToken')
+      console.log('code', code)
+      console.log('codeType', codeType)
 
       const tokenOptions = {
         client_id: this.credentials.client_id,
@@ -170,10 +175,13 @@ class HarvestTimesheets {
         tokenOptions.redirect_uri = this.credentials.redirect_uri
       }
 
+      // TODO: Does this do anything?
       restler.post(`${harvest.host}/oauth2/token`, {
         data: tokenOptions,
       }).on('complete', response => {
+        console.log('restler response', response)
         if (!response.access_token) {
+          console.log('restler rejected')
           reject('Provided access code was rejected by Harvest, no token was returned')
         } else {
           const date = new Date()
@@ -181,7 +189,6 @@ class HarvestTimesheets {
           resolve(response)
           console.log('response', response)
         }
-
         // cb(self.access_token);
       })
     })
