@@ -64,22 +64,6 @@ const Instagram = ({ children, ...props, posts, mediaType, slideShowKey }) => {
 
   return (
     <InstagramWrapper>
-      <TransitionWrapper>
-        <FadingTransitionWrapper key={slideShowKey}>
-          {(mediaType === 'image' || mediaType === 'carousel') &&
-            <MediaBluredBack
-              media={posts.images.thumbnail.url}
-              type="image"
-            />
-          }
-          { mediaType === 'video' &&
-            <MediaBluredBack
-              media={posts.videos.low_bandwidth.url}
-              type="video"
-            />
-          }
-        </FadingTransitionWrapper>
-      </TransitionWrapper>
       <InstagramFrame {...props} />
     </InstagramWrapper>
   )

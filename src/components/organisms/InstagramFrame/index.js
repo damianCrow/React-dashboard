@@ -101,6 +101,22 @@ const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey, re
 
   console.log('mediaType', mediaType)
 
+  let currentPost
+  if (mediaType === 'image' || mediaType === 'carousel') {
+    currentPost = (
+      <ImageFeature
+        currentImage={posts.images.standard_resolution.url}
+      />
+    )
+  } else if (mediaType === 'video') {
+    currentPost = (
+      <InstagramVideo
+        // resumeAutoSlides={resumeAutoSlides}
+        currentVideo={posts.videos.standard_resolution.url}
+      />
+    )
+  }
+
   return (
     <Frame>
       { /* <Header>
@@ -120,17 +136,7 @@ const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey, re
       <InstagramMedia>
         <TransitionWrapper>
           <FadingTransitionWrapper key={slideShowKey}>
-            {(mediaType === 'image' || mediaType === 'carousel') &&
-              <ImageFeature
-                currentImage={posts.images.standard_resolution.url}
-              />
-            }
-            {mediaType === 'video' &&
-              <InstagramVideo
-                // resumeAutoSlides={resumeAutoSlides}
-                currentVideo={posts.videos.standard_resolution.url}
-              />
-            }
+            {currentPost}
           </FadingTransitionWrapper>
         </TransitionWrapper>
       </InstagramMedia>

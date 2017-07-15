@@ -1,11 +1,11 @@
 import React, { PropTypes, Component } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import Transition from 'react-transition-group/Transition'
 // import ReactDOM from 'react-dom'
 
 import { TweenMax } from 'gsap'
 
-const Wrapper = styled(Transition)`
+const Wrapper = css`
   display: flex;
   height: 100%;
   width: 100%;
@@ -80,9 +80,9 @@ const Wrapper = styled(Transition)`
 // https://github.com/reactjs/react-transition-group/blob/master/migration.md
 const FadingTransitionWrapper = ({ children: child, ...props }) => (
   // NOTICE THE SPREAD! THIS IS REQUIRED!
-  <Transition {...props}>
-    {(transitionState) => React.cloneElement(child, {
-      style: getStyleBasedOnTransitionState(transitionState)
+  <Transition {...props} timeout={2500}>
+    {() => React.cloneElement(child, {
+      style: Wrapper,
     })}
   </Transition>
 )
