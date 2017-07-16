@@ -3,12 +3,14 @@ import { take, takeLatest, takeEvery, put, fork, select, cancel, call } from 're
 import * as actions from './actions'
 import { maxSlideshow, currentSlideshow } from './selectors'
 
-function* nextSlide(action) {
+function* nextSlide(action, delayTime = 15000) {
+  console.log('nextSlide')
+
   // yield put(actions.startServiceSlideshow(action.service, action.max))
   const service = action.service
   const max = yield select(maxSlideshow(service))
   const current = yield select(currentSlideshow(service))
-  yield delay(15000)
+  yield delay(delayTime)
   console.log('current saga: ', current)
   console.log('max saga: ', max)
   // TODO: Make this a seperate async func
@@ -16,7 +18,7 @@ function* nextSlide(action) {
     yield put(actions.incrementServiceSlideshow(service))
   } else {
     yield put(actions.restartServiceSlideshow(service))
-    yield put(actions.incrementServiceSlideshow(service))
+    yield fork(nextSlide, action)
   }
 }
 
@@ -58,7 +60,10 @@ function* runCarousel(action) {
 function* resumeSlides(action) {
   while (yield take(actions.resumeServiceSlideshow(action.service).type)) {
     yield fork(runCarousel, action)
-    yield put(actions.incrementServiceSlideshow(action.service))
+    yield fork(nextSlide, action, 0)
+
+    // This means the reducer will always increase even at the end.
+    // yield put(actions.incrementServiceSlideshow(action.service))
   }
   // yield takeLatest(actions.startServiceSlideshow(action.service).type, nextSlide)
 }

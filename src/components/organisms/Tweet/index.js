@@ -52,6 +52,7 @@ class Tweet extends Component {
 
   componentDidMount() {
     const { allTweetDetails } = this.props
+    console.log('tweet props', this.props)
     // console.log('allTweetDetails', allTweetDetails)
     // console.log('this._tweetText', this._tweetText)
 
@@ -63,6 +64,9 @@ class Tweet extends Component {
 
     this.theater
       .addActor(this.tweetId)
+
+    this.startTyping()
+
   }
 
   // componentWillAppear (callback) {
@@ -73,12 +77,11 @@ class Tweet extends Component {
   componentWillEnter(callback) {
     // const el = ReactDOM.findDOMNode(this)
     // TweenMax.fromTo(el, 1, {opacity: 0}, {opacity: 1, onComplete: callback})
-    this.startTyping(callback)
   }
 
-  componentWillLeave(callback) {
+  componentWillUnmount() {
     // const el = ReactDOM.findDOMNode(this)
-    this.removeType(callback)
+    this.removeType()
     // TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
   }
 
@@ -88,7 +91,6 @@ class Tweet extends Component {
       .addScene(3500)
       .addScene(`${this.tweetId}:${stripLinks(allTweetDetails.text)}`, 100)
       .addScene((done) => {
-        callback()
         done()
       })
   }
@@ -97,7 +99,6 @@ class Tweet extends Component {
     this.theater
       .addScene(`${this.tweetId}: `, 50)
       .addScene((done) => {
-        callback()
         done()
       })
   }

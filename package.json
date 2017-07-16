@@ -68,6 +68,7 @@
     "webpack-md5-hash": "^0.0.5"
   },
   "dependencies": {
+    "@vimeo/player": "^2.1.0",
     "babel-polyfill": "^6.20.0",
     "body-parser": "^1.17.2",
     "d3": "^4.8.0",
@@ -94,7 +95,6 @@
     "react-sortable-hoc": "^0.6.3",
     "react-swipeable": "^4.0.1",
     "react-transition-group": "^2.0.2",
-    "react-vimeo": "^1.0.0",
     "react-youtube": "^7.4.0",
     "redux": "^3.6.0",
     "redux-form": "^6.4.3",

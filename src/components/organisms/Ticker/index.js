@@ -37,6 +37,7 @@ const Levels = styled.div`
   position: absolute;
   flex-direction: row;
   flex-wrap: wrap;
+  transition: transform .75s ease-in-out;
 `
 
 const StyledIcon = styled(Icon)`
@@ -51,6 +52,7 @@ class Ticker extends Component {
     super(props)
     this.state = {
       headerChange: false,
+      headerPos: '0',
     }
     this.tMax = new TimelineMax()
   }
@@ -72,8 +74,8 @@ class Ticker extends Component {
   revealHeader() {
     clearTimeout(this.state.headerChange)
 
-    this.tMax.to(this.moreHeaderInfo, 0.75, {
-      y: '-42px',
+    this.setState({
+      headerPos: '-42'
     })
 
     this.setState({
@@ -82,13 +84,14 @@ class Ticker extends Component {
   }
 
   hideHeader() {
-    this.tMax.to(this.moreHeaderInfo, 0.75, {
-      y: '0px',
+    this.setState({
+      headerPos: '0'
     })
   }
 
   render() {
     const { children, icon } = this.props
+    const { headerPos } = this.state
     return (
       <HeaderWrapper>
         <StyledIcon icon={icon} height={35} />
@@ -97,6 +100,7 @@ class Ticker extends Component {
             innerRef={(el) => {
               this.moreHeaderInfo = el
             }}
+            style={{ transform: `translateY(${headerPos}px)` }}
           >
             {children}
           </Levels>

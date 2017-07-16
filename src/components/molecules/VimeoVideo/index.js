@@ -6,7 +6,7 @@ import TransitionGroup from 'react-transition-group/TransitionGroup'
 
 import { resumeServiceSlideshow, pauseServiceSlideshow } from 'store/actions'
 
-import Vimeo from 'react-vimeo'
+// import Vimeo from '@vimeo/player'
 
 const styles = ({ ...props }) => css`
   color: black;
@@ -24,7 +24,16 @@ const styles = ({ ...props }) => css`
     height: 100%;
   }
 `
-const VimeoContainer = styled(TransitionGroup)`${styles}`
+
+const VimeoContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`
+
+const VimeoWrapper = styled(TransitionGroup)`${styles}`
 
 class VimeoVideo extends Component {
   static propTypes = {
@@ -36,33 +45,48 @@ class VimeoVideo extends Component {
 
   constructor() {
     super()
-    this.onVideoEnd = this.onVideoEnd.bind(this)
-    console.log('vimeo video constructor')
+    // this.onVideoEnd = this.onVideoEnd.bind(this)
+    // console.log('vimeo video constructor')
   }
 
-  onVideoEnd() {
-    console.log('VimeoVideo onVideoEnd fired')
-    this.props.resumeInstaSlideshow()
+  componentDidMount() {
+    // https://github.com/vimeo/player.js/issues/3
+    const VimeoPlayer = require('@vimeo/player')
+    const player = new VimeoPlayer(this.vimeoIframe, {
+      byline: false,
+    })
+    player.setVolume(0)
+
+    player.on('ended', () => {
+      this.props.resumeInstaSlideshow()
+    })
   }
 
-  handleVideoReady(event) {
-    console.log('vimeo video ready event', event)
-    console.log(this.props)
-    event.target.mute()
-  }
+  // onVideoEnd() {
+  //   console.log('VimeoVideo onVideoEnd fired')
+  //   this.props.resumeInstaSlideshow()
+  // }
+
+  // handleVideoReady(event) {
+  //   console.log('vimeo video ready event', event)
+  // }
 
   render() {
     const { url, serviceId } = this.props
     return (
-      <VimeoContainer>
-        <Vimeo
-          videoId={serviceId}
-          url={url}
-          onEnded={this.onVideoEnd}
-          onReady={(event) => { this.handleVideoReady(event) }}
-          autoplay
-        />
-      </VimeoContainer>
+      <VimeoWrapper>
+        <VimeoContainer>
+          <iframe
+            ref={(c) => { this.vimeoIframe = c }}
+            src={`https://player.vimeo.com/video/${serviceId}?autoplay=1`}
+            frameBorder="0"
+            // videoId={serviceId}
+            // onEnded={this.onVideoEnd}
+            // onReady={(event) => { this.handleVideoReady(event) }}
+            // autoplay
+          />
+        </VimeoContainer>
+      </VimeoWrapper>
     )
   }
 }

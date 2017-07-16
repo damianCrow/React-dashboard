@@ -126,16 +126,16 @@ const Twitter = ({ children, ...props, post, slideShowKey }) => {
         <Header icon="twitter" slideShowKey={slideShowKey}>
           <HeaderLevel>
             <span>@{post.user.screen_name}</span>
-            <TwitterCaption>{moment(post.created_at).calendar()}</TwitterCaption>
+            <TwitterCaption>{`${moment.duration(moment().diff(moment(post.created_at))).humanize()} ago`}</TwitterCaption>
           </HeaderLevel>
           <HeaderLevel>
             <MetaTags tags={metaTags} />
           </HeaderLevel>
         </Header>
         <TwitterMedia>
-          <TransitionWrapper>
+          <FadingTransitionWrapper key={slideShowKey}>
             <Tweet allTweetDetails={post} key={slideShowKey} />
-          </TransitionWrapper>
+          </FadingTransitionWrapper>
         </TwitterMedia>
       </TwitterFrame>
     </TwitterWrapper>
