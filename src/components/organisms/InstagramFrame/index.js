@@ -28,7 +28,6 @@ const IconStyles = css`
 `
 
 const InstagramMedia = styled.div`
-  position: relative;
   overflow: hidden;
   flex: 1 0 auto;
   margin: 1rem;
@@ -44,18 +43,6 @@ const InstagramCaption = styled.span`
   margin: 1rem .5rem;
 `
 
-// const footerStyles = ({ ...props }) => css`
-//   background-color: rgba(0,0,0,.5);
-//   display: flex;
-//   width: 100%;
-//   overflow: hidden;
-//   flex: 0 0 3rem;
-//   align-items: center;
-//   justify-content: space-between;
-//   margin-top: auto;
-//   flex-direction: row;
-// `
-
 const Frame = styled.div`
   display: flex;
   flex-direction: column;
@@ -63,7 +50,7 @@ const Frame = styled.div`
   justify-content: center;
   left: 0;
   overflow: hidden;
-  position: absolute;
+  position: relative;
   text-align: left;
   top: 0;
   width: 100%;
@@ -77,6 +64,7 @@ const HeaderLevel = styled.div`
   align-items: center;
   flex: 0 0 100%;
   justify-content: space-between;
+  z-index: 1;
 `
 
 const StyledIcon = styled(Icon)`${IconStyles}`

@@ -14,6 +14,7 @@ const HeaderWrapper = styled.header`
   width: 100%;
   flex: 0 1 auto;
   align-items: stretch;
+  z-index: 2;
 `
 
 const MoreHeaderInfo = styled.div`
@@ -54,56 +55,47 @@ class Ticker extends Component {
     this.tMax = new TimelineMax()
   }
 
-  componentDidMount() {
-  // this.circleWrappers = ReactDOM.findDOMNode(this._clockContainer);
-
-    this._MoreHeaderInfo =
-        ReactDOM.findDOMNode(this._MoreHeaderInfo)
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.slideShowKey !== this.props.slideShowKey) {
       this.openAndClose()
-      return true
     }
-    return true
   }
 
   openAndClose() {
     clearTimeout(this.state.headerChange)
 
     this.setState({
-      headerChange: setTimeout(() => this.revealHeader(), 2000)
+      headerChange: setTimeout(() => this.revealHeader(), 2000),
     })
   }
 
   revealHeader() {
     clearTimeout(this.state.headerChange)
 
-    this.tMax.to(this._MoreHeaderInfo, .75, {
+    this.tMax.to(this.moreHeaderInfo, 0.75, {
       y: '-42px',
     })
 
     this.setState({
-      headerChange: setTimeout(() => this.hideHeader(), 5000)
+      headerChange: setTimeout(() => this.hideHeader(), 5000),
     })
   }
 
   hideHeader() {
-    this.tMax.to(this._MoreHeaderInfo, .75, {
+    this.tMax.to(this.moreHeaderInfo, 0.75, {
       y: '0px',
     })
   }
 
   render() {
-    const { children, icon, slideShowKey } = this.props
+    const { children, icon } = this.props
     return (
       <HeaderWrapper>
         <StyledIcon icon={icon} height={35} />
         <MoreHeaderInfo>
           <Levels
             innerRef={(el) => {
-              this._MoreHeaderInfo = el;
+              this.moreHeaderInfo = el
             }}
           >
             {children}
@@ -117,7 +109,7 @@ class Ticker extends Component {
 Ticker.propTypes = {
   children: PropTypes.any,
   icon: PropTypes.string.isRequired,
-  slideShowKey: PropTypes.any
+  slideShowKey: PropTypes.any,
 }
 
 export default Ticker
