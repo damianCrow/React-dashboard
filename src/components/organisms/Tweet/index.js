@@ -53,9 +53,6 @@ class Tweet extends Component {
 
   componentDidMount() {
     const { allTweetDetails } = this.props
-    console.log('tweet props', this.props)
-    // console.log('allTweetDetails', allTweetDetails)
-    // console.log('this._tweetText', this._tweetText)
 
     this._tweetText.id = `tweet-${allTweetDetails.id_str}`
 
