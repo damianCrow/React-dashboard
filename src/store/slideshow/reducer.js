@@ -48,35 +48,3 @@ export const slideshowState = (service = '') => {
     }
   }
 }
-
-// export default (state = initialState, action) => {
-//   switch (action.type) {
-
-//     case SLIDESHOW_START:
-//       return {
-//         ...state,
-//         max: action.max,
-//       }
-
-//     case SLIDESHOW_INCREMENT:
-//       return {
-//         ...state,
-//         current: state.current + 1,
-//       }
-
-//     case SLIDESHOW_RESTART:
-//       return {
-//         ...state,
-//         current: 0,
-//       }
-
-//     case SLIDESHOW_PAUSE:
-//       return {
-//         ...state,
-//         message: action.message,
-//       }
-
-//     default:
-//       return state
-//   }
-// }

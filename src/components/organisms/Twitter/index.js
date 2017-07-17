@@ -127,7 +127,9 @@ const Twitter = ({ children, ...props, post, slideShowKey }) => {
         <Header icon="twitter" slideShowKey={slideShowKey}>
           <HeaderLevel>
             <span>@{post.user.screen_name}</span>
-            <TwitterCaption>{`${moment.duration(moment().diff(moment(post.created_at))).humanize()} ago`}</TwitterCaption>
+            <TwitterCaption>
+              {`${moment.duration(moment().diff(moment(post.created_at, 'dd MMM DD HH:mm:ss ZZ YYYY', 'en'))).humanize()} ago`}
+            </TwitterCaption>
           </HeaderLevel>
           <HeaderLevel>
             <MetaTags tags={metaTags} />

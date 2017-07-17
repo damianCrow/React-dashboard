@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import styled, { css } from 'styled-components'
@@ -10,7 +10,7 @@ import { resumeServiceSlideshow, pauseServiceSlideshow } from 'store/actions'
 
 import YouTube from 'react-youtube'
 
-const styles = ({ ...props }) => css`
+const styles = css`
   color: black;
   display: block;
   height: 100%;
@@ -23,7 +23,6 @@ const styles = ({ ...props }) => css`
   width: 100%;
 `
 
-// const InstagramWrapperStyled = styled(InstagramTransitionWrapper)`${wrapperStyles}`
 const YouTubeContainer = styled(TransitionGroup)`${styles}`
 
 const youTubeOpts = {
@@ -44,13 +43,12 @@ class YouTubeVideo extends Component {
     serviceId: PropTypes.string,
     resumeInstaSlideshow: PropTypes.func.isRequired,
     pauseInstaSlideshow: PropTypes.func.isRequired,
-    // slideShowKey: PropTypes.number.isRequired,
   }
 
   constructor() {
     super()
+    // TODO: Is this needed?
     this.onVideoEnd = this.onVideoEnd.bind(this)
-    console.log('youtube video constructor')
   }
 
   componentDidMount() {
@@ -58,7 +56,6 @@ class YouTubeVideo extends Component {
   }
 
   onVideoEnd() {
-    console.log('YouTubeVideo onVideoEnd fired')
     this.props.resumeInstaSlideshow()
   }
 
@@ -68,8 +65,6 @@ class YouTubeVideo extends Component {
    * @returns {void}
    */
   handleVideoReady(event) {
-    console.log('youtube video ready event', event)
-    console.log(this.props)
     event.target.mute()
     // this.props.pauseInstaSlideshow()
   }
