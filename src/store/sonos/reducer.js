@@ -1,8 +1,6 @@
 import unionBy from 'lodash/unionBy'
-import assign from 'lodash/assign'
 import merge from 'lodash/merge'
 import find from 'lodash/find'
-import isEmpty from 'lodash/isEmpty'
 import { initialState } from './selectors'
 import {
   SONOS_PULL_REQUEST,
@@ -43,26 +41,26 @@ import {
 // }
 
 function mergeByKey(arr1, arr2, key) {
-  console.log('merging arr1', arr1)
-  console.log('with arr2', arr2)
+  // console.log('merging arr1', arr1)
+  // console.log('with arr2', arr2)
   const result = arr1.map((item) => {
     // add the properties from second array matching the userID
     // to the object from first array and return the updated object
     return merge(item, find(arr2, { [key]: item[key] }))
   })
-  console.log('result', result)
+  // console.log('result', result)
   return result
 }
 
 function mergeSonos(newState, oldState, key) {
-  console.log(newState, oldState, key)
+  // console.log(newState, oldState, key)
   return unionBy(newState, oldState, key)
 }
 
 // TODO: Write this better.
 function mergeTop(newState, oldState, key) {
-  console.log('MERGE topology')
-  console.log(newState, oldState, key)
+  // console.log('MERGE topology')
+  // console.log(newState, oldState, key)
   const newArray = []
   newState.forEach((group, index) => {
     // const speakersNames = group.members.map((member) => member.roomName)
@@ -71,7 +69,7 @@ function mergeTop(newState, oldState, key) {
     oldState.forEach((existingGroup, index) => {
       if (group[key] === existingGroup[key]) {
         const groupMod = group
-        console.log('groupMod.members', groupMod.members)
+        // console.log('groupMod.members', groupMod.members)
         // groupMod.members = group.members.map((member) => member.roomName)
         newArray[index] = (merge(group, existingGroup))
         newArray[index].members = group.members.map((member) => member.roomName)
@@ -79,7 +77,7 @@ function mergeTop(newState, oldState, key) {
     })
     // newArray[index].members = group.members.map((member) => member.roomName)
   })
-  console.log('newArray', newArray)
+  // console.log('newArray', newArray)
   return newArray
 }
 

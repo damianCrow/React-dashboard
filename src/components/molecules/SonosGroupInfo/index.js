@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 import styled from 'styled-components'
 
 // import { Icon, Link, Heading, Badge } from 'components'
@@ -28,8 +28,6 @@ const SpeakerInfo = styled.div`
 `
 
 const SonosGroupInfo = ({ children, ...props, speakers, featuredSpeaker }) => {
-  console.log('featuredSpeaker: ', featuredSpeaker)
-
   return (
     <Wrapper>
       <SpeakerInfo>

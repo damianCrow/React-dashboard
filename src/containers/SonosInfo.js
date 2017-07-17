@@ -50,7 +50,7 @@ class SonosInfoContainer extends Component {
       return (
         <SonosContainer>
           {speakers.map(speaker => {
-            console.log('speaker.state', speaker.state)
+            // console.log('speaker.state', speaker.state)
             if (speaker.state.playbackState !== 'STOPPED') {
               return (
                 <SonosPlayer

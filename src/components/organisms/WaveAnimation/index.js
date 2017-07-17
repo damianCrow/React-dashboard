@@ -1,13 +1,9 @@
 import React, { Component } from 'react'
-import styled from 'styled-components'
-
-import SineWaves from 'sine-waves/sine-waves.js'
-
-import { fonts } from 'components/globals'
+import SineWaves from 'sine-waves/sine-waves'
 
 class WaveAnimation extends Component {
 
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this.waveConfig = {
@@ -60,14 +56,16 @@ class WaveAnimation extends Component {
   }
 
   startWaves() {
-    this.waveConfig.el = this._canvas
-    console.log('this.waveConfig', this.waveConfig)
+    this.waveConfig.el = this.waveCanvas
     this.currentWave = new SineWaves(this.waveConfig)
   }
 
-  render () {
+  render() {
     return (
-      <canvas style={{ position: 'absolute', top: '0', width: '100%', height: '100%', left: '0' }} ref={(el) => { this._canvas = el }} />
+      <canvas
+        ref={(el) => { this.waveCanvas = el }}
+        style={{ position: 'absolute', top: '0', width: '100%', height: '100%', left: '0' }}
+      />
     )
   }
 }
