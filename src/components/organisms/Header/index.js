@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { ifProp } from 'styled-tools'
 
 // import { colors } from 'components/globals'
-import { Icon, DigitalClock, WeatherIcon, Temperature } from 'components'
+import { Icon, DigitalClock, WeatherIcon, Temperature, Clock } from 'components'
 
 const Wrapper = styled.div`
   display: flex;
@@ -13,10 +13,6 @@ const Wrapper = styled.div`
   height: ${props => props.height ? props.height : '50px'};
   justify-content: flex-start;
   background: rgba(0, 0, 0, .1);
-
-  & > :not(:first-child) {
-    margin-left: 1rem;
-  }
 `
 
 const ColourdIcon = styled(Icon)`
@@ -31,6 +27,11 @@ const ColourdIcon = styled(Icon)`
   }
 `
 
+const Clocks = styled.div`
+  margin-left: auto;
+  display: flex;
+`
+
 const Header = (props) => {
   return (
     <Wrapper {...props}>
@@ -38,6 +39,32 @@ const Header = (props) => {
       <DigitalClock />
       <WeatherIcon />
       <Temperature />
+      <Clocks>
+        <Clock
+          country="United Kingdom"
+          countryAbbr="UK"
+          gradient="#00928F, #50B848"
+          location="London"
+          locationAbbr="LDN"
+          timezone="Europe/London"
+        />
+        <Clock
+          country="United States of America"
+          countryAbbr="USA"
+          gradient="#FDEF42, #50B848"
+          location="Los Angeles"
+          locationAbbr="LA"
+          timezone="America/Los_Angeles"
+        />
+        <Clock
+          country="Bahrain"
+          countryAbbr="BAH"
+          gradient="#FBB568, #FDEF42"
+          location="Manama"
+          locationAbbr="MAN"
+          timezone="Etc/GMT+3"
+        />
+      </Clocks>
     </Wrapper>
   )
 }
