@@ -8,6 +8,7 @@ import { Instagram, InstagramAuth, SplashScreen } from 'components'
 class InstagramContainer extends Component {
   componentDidMount() {
     this.props.socketConnected && this.props.serviceRequest()
+    this.props.startInstaSlideshow(20)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -20,15 +21,16 @@ class InstagramContainer extends Component {
       serviceRequest()
     }
 
-    // console.log('componentWillReceiveProps instagram')
+    // If we're on the next item in the slideshow.
+    if (this.props.slideshow.current !== slideshow.current) {
+      if (!isEmpty && slideshow.status === 'ready') {
+        startInstaSlideshow(20)
+      }
 
-    if (!isEmpty && slideshow.status === 'ready') {
-      startInstaSlideshow(20)
-    }
-
-    if (!isEmpty) {
-      if (posts[slideshow.current].type === 'video' && slideshow.status === 'playing') {
-        pauseInstaSlideshow()
+      if (!isEmpty) {
+        if (posts[slideshow.current].type === 'video' && slideshow.status === 'playing') {
+          pauseInstaSlideshow()
+        }
       }
     }
   }

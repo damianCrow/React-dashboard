@@ -11,14 +11,14 @@ function connectStream(socket) {
   // Return redux-saga's eventChannel which handles socket actions
   return eventChannel(emit => {
     socket.on('transport-state', (state) => {
-      console.log('transport-state received ')
-      console.log(state)
+      // console.log('transport-state received ')
+      // console.log(state)
       emit(actions.sonosNewState(state))
     })
 
     socket.on('topology-change', (state) => {
-      console.log('topology-change received')
-      console.log(state)
+      // console.log('topology-change received')
+      // console.log(state)
       emit(actions.sonosNewTopology(state))
     })
     return () => {}

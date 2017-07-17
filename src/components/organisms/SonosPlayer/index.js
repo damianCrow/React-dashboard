@@ -23,7 +23,7 @@ const PlayerContainer = styled.div`
 const SonosPlayer = ({playerState, speakers, featuredSpeaker, children, ...props}) => {
 
   // console.log('playerState', playerState)
-  console.log('SonosPlayer featuredSpeaker: ', featuredSpeaker)
+  // console.log('SonosPlayer featuredSpeaker: ', featuredSpeaker)
   // console.log('SonosPlayer isEmpty: ', isEmpty)
 
   // const isEmpty = posts.length === 0
