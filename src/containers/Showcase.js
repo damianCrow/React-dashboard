@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { storeServerPlaylist, startSlideshow, pauseServiceSlideshow } from 'store/actions'
+import { storeServerPlaylist, startSlideshow } from 'store/actions'
 import { SocketConnector } from 'hoc'
 import { Showcase, SplashScreen } from 'components'
 
@@ -12,7 +12,7 @@ class ShowcaseContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     // Try and move this logic back to the HOC container
-    const { socketConnected, serviceRequest, playlist, startInstaSlideshow, slideshow, pauseInstaSlideshow } = nextProps
+    const { socketConnected, playlist, startInstaSlideshow, slideshow } = nextProps
 
     const isEmpty = playlist.length === 0
 
@@ -24,41 +24,25 @@ class ShowcaseContainer extends Component {
         },
       }).then((response) => { return response.json() })
         .then((data) => {
-          console.log('BOOOOOOOM BABY 💥 data: ', data)
           this.props.thisShouldActuallyBeASagaButWhatever(data.playlist)
         })
     }
 
-    // console.log('componentWillReceiveProps showcase')
-
     if (!isEmpty && slideshow.status === 'ready') {
       startInstaSlideshow(nextProps.playlist.length)
     }
-
-    // if (!isEmpty) {
-    //   if (playlist[slideshow.current].type === 'video' && slideshow.status === 'playing') {
-    //     pauseInstaSlideshow()
-    //   }
-    // }
   }
 
   render() {
-    const { status, /*message,*/ playlist, slideshow } = this.props
-    // console.log('showcase status', status)
+    const { status, playlist, slideshow } = this.props
 
     const isEmpty = playlist.length === 0
-    // console.log('render playlist', playlist)
-    // console.log('render playlist isEmpty', isEmpty)
-
-    // console.log('slideshow', slideshow)
-    // console.log('isEmpty', isEmpty)
 
     if (status === 'failed') {
       return (
         <span>{status}</span>
       )
     } else if (!isEmpty) {
-      console.log('playlist[slideshow.current]', playlist[slideshow.current])
       return (
         <Showcase
           url={playlist[slideshow.current].url}

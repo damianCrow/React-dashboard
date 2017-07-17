@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { ifProp } from 'styled-tools'
 
 // import { colors } from 'components/globals'
-import { Icon, DigitalClock } from 'components'
+import { Icon, DigitalClock, WeatherIcon, Temperature } from 'components'
 
 const Wrapper = styled.div`
   display: flex;
@@ -36,6 +36,8 @@ const Header = (props) => {
     <Wrapper {...props}>
       <ColourdIcon height={50} icon="interwink" />
       <DigitalClock />
+      <WeatherIcon />
+      <Temperature />
     </Wrapper>
   )
 }

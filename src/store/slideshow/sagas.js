@@ -4,15 +4,11 @@ import * as actions from './actions'
 import { maxSlideshow, currentSlideshow } from './selectors'
 
 function* nextSlide(action, delayTime = 15000) {
-  console.log('nextSlide')
-
   // yield put(actions.startServiceSlideshow(action.service, action.max))
   const service = action.service
   const max = yield select(maxSlideshow(service))
   const current = yield select(currentSlideshow(service))
   yield delay(delayTime)
-  console.log('current saga: ', current)
-  console.log('max saga: ', max)
   // TODO: Make this a seperate async func
   if (current !== max) {
     yield put(actions.incrementServiceSlideshow(service))

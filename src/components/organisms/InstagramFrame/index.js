@@ -21,12 +21,6 @@ const TransitionWrapper = styled(TransitionGroup)`
   height: 100%;
 `
 
-const IconStyles = css`
-  z-index: 59;
-  padding: .25rem;
-  flex: 0 0 auto;
-`
-
 const InstagramMedia = styled.div`
   overflow: hidden;
   flex: 1 0 auto;
@@ -67,27 +61,11 @@ const HeaderLevel = styled.div`
   z-index: 1;
 `
 
-const StyledIcon = styled(Icon)`${IconStyles}`
-// const Header = styled(Ticker)`${compHeader}`
-
-// const PlaybackIcon = styled.Icon`
-//   display: absolute;
-// `
-
-// const StyledIcon = styled(Icon)`${iconStyles}`
-
 const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey, resumeAutoSlides }) => {
-  // console.log('Instagram frame posts: ', posts)
-  // console.log('INSTAGRAM COMP mediaType', mediaType)
-  // console.log('INSTAGRAM COMP posts', posts)
-  // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
-
   const metaTags = [
     { icon: 'heart', metaInfo: posts.likes.count },
     { icon: 'comment', metaInfo: posts.comments.count },
   ]
-
-  console.log('mediaType', mediaType)
 
   let currentPost
   if (mediaType === 'image' || mediaType === 'carousel') {
@@ -132,10 +110,6 @@ const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey, re
   )
 }
 
-// const mapDispatchToProps = (dispatch) => ({
-//   resumeAutoSlides: dispatch(incrementServiceSlideshow('instagram')),
-// })
-
 InstagramFrame.propTypes = {
   children: PropTypes.any,
   posts: PropTypes.object.isRequired,
@@ -144,10 +118,5 @@ InstagramFrame.propTypes = {
   resumeAutoSlides: PropTypes.object,
 }
 
-// InstagramFrame.defaultProps = {
-//   currentVideo: '',
-// }
-
 export default InstagramFrame
-// export default connect(null, mapDispatchToProps)(InstagramFrame)
 

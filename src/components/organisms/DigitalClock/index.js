@@ -29,10 +29,10 @@ class DigitalClock extends Component {
   }
 
   componentDidMount() {
-    setInterval(this.update, 1000)
+    setInterval(this.update(), 1000)
   }
 
-  update = () => {
+  update() {
     this.setState({
       time: new Date(),
     })
