@@ -33,7 +33,7 @@ const Video = styled.video`
   object-fit: cover;
   position: absolute;
   top: 0;
-  transform: scale(1.1)
+  transform: scale(1.1);
   width: 100%;
 `
 
