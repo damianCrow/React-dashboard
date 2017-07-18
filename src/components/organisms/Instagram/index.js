@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 import styled, { css } from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
@@ -58,13 +58,30 @@ const footerStyles = ({ ...props }) => css`
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
 const Instagram = ({ children, ...props, posts, mediaType, slideShowKey }) => {
-  // console.log('Instagram comp posts: ', posts)
-  // console.log('INSTAGRAM COMP mediaType', mediaType)
-  // console.log('INSTAGRAM COMP posts', posts)
-  // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
+  let currentPost
+  if (mediaType === 'image' || mediaType === 'carousel') {
+    currentPost = (
+      <MediaBluredBack
+        media={posts.images.thumbnail.url}
+        type="image"
+      />
+    )
+  } else if (mediaType === 'video') {
+    currentPost = (
+      <MediaBluredBack
+        media={posts.videos.low_bandwidth.url}
+        type="video"
+      />
+    )
+  }
 
   return (
     <InstagramWrapper>
+      <TransitionWrapper>
+        <FadingTransitionWrapper key={slideShowKey}>
+          {currentPost}
+        </FadingTransitionWrapper>
+      </TransitionWrapper>
       <InstagramFrame {...props} />
     </InstagramWrapper>
   )

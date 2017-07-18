@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 import styled, { css } from 'styled-components'
 
 import { Icon, Link, Paragraph } from 'components'
@@ -41,7 +41,7 @@ const SplashScreenContainer = styled.div`${styles}`
 const SplashScreen = ({ children, ...props, icon, service }) => {
   return (
     <SplashScreenContainer>
-      <Icon {...props} icon={icon} height={100} />
+      <Icon {...props} icon={icon} fillColor="#fff" height={100} />
       <LoadingMessage>Loading {service}</LoadingMessage>
     </SplashScreenContainer>
   )
