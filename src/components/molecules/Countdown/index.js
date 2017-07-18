@@ -10,10 +10,10 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: 1s;
+  transition: 1s cubic-bezier(0, 0.26, 0.92, 0.32);
 
   &.flip {
-    transform: rotateX(89deg);
+    transform: rotateX(90deg);
   }
 `
 const WrapperFront = styled.div`
@@ -21,14 +21,13 @@ const WrapperFront = styled.div`
   width: 100%;
   height: 100%;
   background: linear-gradient(to right, #00928f 0%, #50b848 100%);
-  transform-style: preserve-3d;
   backface-visibility: hidden;
   border-radius: 5px;
   box-shadow: 0 5px 20px rgba(0, 146, 143, .5), 0 0 8px 5px rgba(80, 184, 72, .5) inset;
-  transform: translateZ(50px);
+  transform: translateZ(40.5px);
 `
 const WrapperBack = styled(WrapperFront)`
-  transform: rotateX(-90deg) translateZ(-50px);
+  transform: rotateX(-90deg) translateZ(40.5px);
 `
 const TimeLeft = styled(Heading)`
   color: #ffffff;
@@ -84,20 +83,12 @@ class Countdown extends Component {
     }
 
     this.idx = 0
-    this.intervals = 0
-    this.idx2 = this.idx + 1
-    this.getRemainingTime(this.eventsArray[this.idx].startDateTime, this.updateDisplayTime)
+    this.getRemainingTime(this.eventsArray[this.idx].startDateTime)
 
     setInterval(() => {
-      this.intervals += 1
       this.rotateCountdown()
-      if (this.intervals % 2 === 0) {
-        this.incrementIdx()
-        this.getRemainingTime(this.eventsArray[this.idx].startDateTime)
-      } else {
-        this.getRemainingTime(this.eventsArray[this.idx2].startDateTime)
-      }
-     }, 5000)
+      this.incrementIdx()
+    }, 15000)
   }
 
   getRemainingTime(startDateTime) {
@@ -105,34 +96,30 @@ class Countdown extends Component {
     const currentTime = moment().unix()
     const diffTime = eventTime - currentTime
     const timeSpan = moment.duration(diffTime * 1000, 'milliseconds')
-    const test = () => {
+    const getDisplayTime = () => {
       if (diffTime > 0) {
-        let dura = moment.duration(timeSpan.asMilliseconds() - 1000, 'milliseconds')
-        let y = moment.duration(dura).years()
-        let mo = moment.duration(dura).months()
-        let w = moment.duration(dura).weeks()
-        let d = moment.duration(dura).days()
-        let h = moment.duration(dura).hours()
-        let m = moment.duration(dura).minutes()
-        let s = moment.duration(dura).seconds()
-        const test1 = moment.duration(dura).humanize()
-        console.log(test1)
-        // if (this.props.countDownDisplay !== moment.duration(dura).humanize()) {
-          this.props.updateCountdown(test1)
-        // }
+        const dura = moment.duration(timeSpan.asMilliseconds() - 1000, 'milliseconds')
+        // let y = moment.duration(dura).years()
+        // let mo = moment.duration(dura).months()
+        // let w = moment.duration(dura).weeks()
+        // let d = moment.duration(dura).days()
+        // let h = moment.duration(dura).hours()
+        // let m = moment.duration(dura).minutes()
+        // let s = moment.duration(dura).seconds() 
+        this.props.updateCountdown(moment.duration(dura).humanize())
+        clearInterval(countDownInterval)
       }
     }
-    setInterval(test.bind(this), 1000)
+    const countDownInterval = setInterval(getDisplayTime.bind(this), 1000)
   }
 
   incrementIdx() {
-    if (this.idx < this.eventsArray.length - 2) {
-      this.idx += 2
-      this.idx2 = this.idx + 1
+    if (this.idx < this.eventsArray.length - 1) {
+      this.idx += 1
     } else {
       this.idx = 0
-      this.idx2 = this.idx + 1
     }
+    this.getRemainingTime(this.eventsArray[this.idx].startDateTime)
   }
 
   rotateCountdown() {
@@ -154,9 +141,9 @@ class Countdown extends Component {
         </WrapperFront>
         <WrapperBack innerRef={(countdownWrapper2) => { this.countdownWrapper2 = countdownWrapper2 }} onClick={this.rotateCountdown.bind(this)}>
           <TimeLeft level={1}>{this.props.countDownDisplay}</TimeLeft>
-          <EventIcon icon={this.eventsArray[this.idx2].eventIconName} fillColor={'#ffffff'} height={60} />
-          <EventDate level={5}>{`${moment(this.eventsArray[this.idx2].startDateTime, 'DD-MM-YYYY HH:mm:ss').format('Do MMMM')} :`}</EventDate>
-          <EventTitle level={5}>{this.eventsArray[this.idx2].eventTitle}</EventTitle>
+          <EventIcon icon={this.eventsArray[this.idx].eventIconName} fillColor={'#ffffff'} height={60} />
+          <EventDate level={5}>{`${moment(this.eventsArray[this.idx].startDateTime, 'DD-MM-YYYY HH:mm:ss').format('Do MMMM')} :`}</EventDate>
+          <EventTitle level={5}>{this.eventsArray[this.idx].eventTitle}</EventTitle>
         </WrapperBack>
       </Wrapper>
     )
