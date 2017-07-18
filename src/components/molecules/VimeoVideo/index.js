@@ -73,7 +73,7 @@ class VimeoVideo extends Component {
   // }
 
   render() {
-    const { url, serviceId } = this.props
+    const { serviceId } = this.props
     return (
       <VimeoWrapper>
         <VimeoContainer>
@@ -81,10 +81,6 @@ class VimeoVideo extends Component {
             ref={(c) => { this.vimeoIframe = c }}
             src={`https://player.vimeo.com/video/${serviceId}?autoplay=1`}
             frameBorder="0"
-            // videoId={serviceId}
-            // onEnded={this.onVideoEnd}
-            // onReady={(event) => { this.handleVideoReady(event) }}
-            // autoplay
           />
         </VimeoContainer>
       </VimeoWrapper>

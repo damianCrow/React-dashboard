@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { initialState } from './selectors'
-import { SHOWCASE_NEW_POSTS } from './actions'
+import { SHOWCASE_NEW_POSTS, UPDATE_COUNTDOWN } from './actions'
 import { GOT_NEW_PLAYLIST } from '../admin/actions'
 import { slideshowState } from '../slideshow/reducer'
 
@@ -17,6 +17,12 @@ function showcaseReducerWrapper() {
         return {
           ...state,
           playlist: action.playlist,
+        }
+      case UPDATE_COUNTDOWN:
+        // console.log('new countdown', action.payload)
+        return {
+          ...state,
+          countDown: action.payload,
         }
       default:
         return state

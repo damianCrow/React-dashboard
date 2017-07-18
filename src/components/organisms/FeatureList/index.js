@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Feature, Header } from 'components'
+import { Feature, Countdown } from 'components'
 import { SonosInfo, Twitter, Instagram, GoogleCalendar, Harvest, Showcase } from 'containers'
 
 const Grid = styled.div`
@@ -32,6 +32,11 @@ const FeatureList = ({ ...props }) => {
         </Feature>
         <Feature square>
           <Twitter />
+        </Feature>
+      </GridRow>
+      <GridRow>
+        <Feature megaWide>
+          <Countdown />
         </Feature>
       </GridRow>
       <GridRow>
