@@ -10,7 +10,14 @@ const Temp = styled.span`
   text-align: center;
   color: white;
   font-family: ${fonts.primary};
+  font-weight: bold;
   font-size: 3rem;
+  padding: 1rem;
+  > span {
+    font-weight: lighter;
+    font-size: 2rem;
+    vertical-align: top;
+  }
 `
 
 class Temperature extends Component {
@@ -21,7 +28,8 @@ class Temperature extends Component {
   render() {
     return (
       <Temp>
-        {this.props.temperatureFigure}°C
+        {Math.round(this.props.temperatureFigure)}
+        <span>°</span>C
       </Temp>
     )
   }
