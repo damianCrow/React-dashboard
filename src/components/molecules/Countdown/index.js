@@ -15,10 +15,11 @@ const Wrapper = styled.div`
   border: 1px solid #037771;
   transform: perspective(800px);
   top: -2px;
+  border-radius: 5px;
 
   &.flip {  
     transform: rotateX(-180deg);
-    top: 1px;
+    top: 2px;
   }
 `
 const WrapperFront = styled.div`
@@ -39,7 +40,7 @@ const TimeLeft = styled(Heading)`
   margin: 0;
   width: 25%;
   float: left;
-  line-height: 80px;
+  line-height: 81px;
   background-color: #00928f;
 `
 const EventIcon = styled(Icon)`
@@ -57,7 +58,7 @@ const EventDate = styled(Heading)`
   float: left;
   color: #ffffff;
   font-weight: 100;
-  line-height: 80px;
+  line-height: 81px;
   margin: 0;
   transform: translate(0, 0);
   left: 15px;
@@ -66,7 +67,7 @@ const EventTitle = styled(Heading)`
   float: left;
   color: #ffffff;
   font-weight: 600;
-  line-height: 80px;
+  line-height: 81px;
   margin: 0;
   width: 47%;
   left: 30px;
@@ -96,7 +97,7 @@ class Countdown extends Component {
     setInterval(() => {
       this.rotateCountdown()
       this.incrementIdx()
-    }, 5000)
+    }, 15000)
   }
 
   getRemainingTime(startDateTime) {
