@@ -8,10 +8,11 @@ import styled from 'styled-components'
 const MediaWrapper = styled.div`
   height: 100%;
   left: 0;
+  mix-blend-mode: lighten;
+  opacity: .5;
+  position: absolute;
   top: 0;
   width: 100%;
-  position: absolute;
-  background: black;
 `
 
 const Image = styled.img`
@@ -19,10 +20,10 @@ const Image = styled.img`
   height: 100%;
   left: 0;
   object-fit: cover;
+  opacity: .5;
   position: absolute;
   top: 0;
   transform: scale(1.1);
-  opacity: .5;
   width: 100%;
 `
 
@@ -38,28 +39,11 @@ const Video = styled.video`
 `
 
 class MediaBluredBack extends Component {
-  // componentWillEnter (callback) {
-  //   const el = ReactDOM.findDOMNode(this)
-  //   console.log('InstagramImage, componentWillEnter')
-  //   // callback()
-  //   TweenMax.fromTo(el, 1, {opacity: 0}, {opacity: 1, onComplete: callback})
-  // }
-
-  // componentWillLeave (callback) {
-  //   const el = ReactDOM.findDOMNode(this)
-  //   console.log('InstagramImage, componentWillLeave')
-  //   // callback()
-  //   TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
-  // }
-
   render() {
     const { type, media } = this.props
     return (
       <MediaWrapper>
-        {(type === 'image' || type === 'carousel') &&
-          <Image src={media} />
-        }
-        {<Video src={media} autoPlay="true" muted />}
+        {(type === 'image' || type === 'carousel') ? <Image src={media} /> : <Video src={media} autoPlay="true" muted /> }
       </MediaWrapper>
     )
   }

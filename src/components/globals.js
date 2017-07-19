@@ -84,7 +84,6 @@ export const animations = {
 }
 
 export const compHeader = css`
-  border-bottom: 1px solid rgba(256,256,256,.5);
   display: flex;
   width: 100%;
   overflow: hidden;
@@ -93,4 +92,6 @@ export const compHeader = css`
   margin-top: auto;
   flex-direction: row;
   z-index: 100;
+  box-sizing: border-box;
+  padding: 1rem;
 `

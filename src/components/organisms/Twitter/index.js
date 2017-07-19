@@ -20,12 +20,6 @@ const TransitionWrapper = styled(TransitionGroup)`
   height: 100%;
 `
 
-const IconStyles = css`
-  z-index: 59;
-  padding: .25rem;
-  flex: 0 0 auto;
-`
-
 const TwitterWrapper = styled.section`
   color: white;
   display: flex;
@@ -44,7 +38,7 @@ const TwitterWrapper = styled.section`
 const TwitterMedia = styled.div`
   position: relative;
   overflow: hidden;
-  flex: 1 0 auto;
+  flex: 1 1 auto;
   margin: 0rem;
   display: flex;
   align-items: center;
@@ -90,17 +84,51 @@ const TwitterBackground = styled.div`
   height: 100%;
 `
 const HeaderLevel = styled.div`
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  display: flex;
   align-items: center;
-  flex: 0 0 100%;
+  display: flex;
+  flex: 1;
+  height: 100%;
   justify-content: space-between;
+  width: 100%;
 `
 
-const StyledIcon = styled(Icon)`${IconStyles}`
-const Header = styled(Ticker)`${compHeader}`
+const Footer = styled.footer`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 65px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  box-sizing: border-box;
+`
+
+const StyledIcon = styled(Icon)`
+  z-index: 59;
+  padding: .25rem;
+  flex: 0 0 auto;
+  opacity: .5;
+`
+
+const UserName = styled.span`
+  display: inline-block;
+  font-family: ${fonts.primary};
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: .5;
+  &:after {
+    content: '|';
+    margin: 0 .25rem;
+    font-weight: normal;
+  }
+`
+
+
+const Header = styled.header`${compHeader}`
 
 // const PlaybackIcon = styled.Icon`
 //   display: absolute;
@@ -117,29 +145,34 @@ const Twitter = ({ children, ...props, post, slideShowKey }) => {
   return (
     <TwitterWrapper>
       <TwitterFrame>
-        <TwitterBackground>
+        {/* <TwitterBackground>
           <TransitionWrapper>
             <FadingTransitionWrapper key={post.user.id_str}>
               <MediaBluredBack type="image" media={post.user.profile_banner_url} />
             </FadingTransitionWrapper>
           </TransitionWrapper>
-        </TwitterBackground>
-        <Header icon="twitter" slideShowKey={slideShowKey}>
-          <HeaderLevel>
-            <span>@{post.user.screen_name}</span>
-            <TwitterCaption>
-              {`${moment.duration(moment().diff(moment(post.created_at, 'dd MMM DD HH:mm:ss ZZ YYYY', 'en'))).humanize()} ago`}
-            </TwitterCaption>
-          </HeaderLevel>
-          <HeaderLevel>
-            <MetaTags tags={metaTags} />
-          </HeaderLevel>
+        </TwitterBackground> */}
+        <Header>
+          <UserName>@{post.user.screen_name}</UserName>
+          <Ticker slideShowKey={slideShowKey}>
+            <HeaderLevel>
+              <TwitterCaption>
+                {`${moment.duration(moment().diff(moment(post.created_at, 'dd MMM DD HH:mm:ss ZZ YYYY', 'en'))).humanize()} ago`}
+              </TwitterCaption>
+            </HeaderLevel>
+            <HeaderLevel>
+              <MetaTags tags={metaTags} />
+            </HeaderLevel>
+          </Ticker>
         </Header>
         <TwitterMedia>
           <FadingTransitionWrapper key={slideShowKey}>
             <Tweet allTweetDetails={post} key={slideShowKey} />
           </FadingTransitionWrapper>
         </TwitterMedia>
+        <Footer>
+          <StyledIcon icon={'twitter'} height={35} />
+        </Footer>
       </TwitterFrame>
     </TwitterWrapper>
   )

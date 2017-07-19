@@ -1,21 +1,19 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom'
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import styled from 'styled-components'
 
 import { Icon } from 'components'
 
-import { TweenMax } from 'gsap'
-
 const HeaderWrapper = styled.header`
-  display: flex;
+  display: block;
   overflow: hidden;
-  align-items: center;
   position: relative;
   width: 100%;
   flex: 0 1 auto;
   align-items: stretch;
   z-index: 2;
+  box-sizing: border-box;
+  opacity: .5;
 `
 
 const MoreHeaderInfo = styled.div`
@@ -23,21 +21,19 @@ const MoreHeaderInfo = styled.div`
   overflow: hidden;
   position: relative;
   align-items: center;
-  flex: 1 1 100%;
+  width: 100%;
+  min-height: 50px;
+  display: flex;
 `
 
 const Levels = styled.div`
-  display: flex;
+  display: block;
   flex-direction: column;
-  flex: 1;
-  align-items: center;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   position: absolute;
-  flex-direction: row;
-  flex-wrap: wrap;
   transition: transform .75s ease-in-out;
 `
 
@@ -76,7 +72,7 @@ class Ticker extends Component {
     clearTimeout(this.state.headerChange)
 
     this.setState({
-      headerPos: '-42'
+      headerPos: '-50',
     })
 
     this.setState({
@@ -86,7 +82,7 @@ class Ticker extends Component {
 
   hideHeader() {
     this.setState({
-      headerPos: '0'
+      headerPos: '0',
     })
   }
 
@@ -95,7 +91,7 @@ class Ticker extends Component {
     const { headerPos } = this.state
     return (
       <HeaderWrapper>
-        <StyledIcon icon={icon} height={35} />
+        { /* <StyledIcon icon={icon} height={35} /> */ }
         <MoreHeaderInfo>
           <Levels
             innerRef={(el) => {
@@ -113,7 +109,7 @@ class Ticker extends Component {
 
 Ticker.propTypes = {
   children: PropTypes.any,
-  icon: PropTypes.string.isRequired,
+  icon: PropTypes.string,
   slideShowKey: PropTypes.any,
 }
 
