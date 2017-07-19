@@ -15,11 +15,14 @@ const Wrapper = styled.span`
   margin: 0.1em;
   box-sizing: border-box;
 
-  & > svg, & > svg > * {
+  & > svg {
     width: 100%;
     height: 100%;
     fill: ${prop('fillColor', 'currentcolor')} !important;
     stroke: transparent;
+    & * {
+      fill: ${prop('fillColor', 'currentcolor')} !important;
+    }
   }
 `
 

@@ -20,14 +20,14 @@
 			"startDateTime":"25-12-2020 08:30:00",
 			"endDateTime":"30-11-2020 08:30:00",
 			"eventTitle":"Test Event 3",
-			"eventIconName":"formula-e",
+			"eventIconName":"github",
 			"eventType":"F1"
 		},{
 			"id":"rJWcsrIHb",
 			"startDateTime":"21-08-2021 11:00:00",
 			"endDateTime":"16-10-2021 08:30:00",
 			"eventTitle":"Test Event 4",
-			"eventIconName":"redux",
+			"eventIconName":"atomic-design",
 			"eventType":"F1"
 		}
 	]

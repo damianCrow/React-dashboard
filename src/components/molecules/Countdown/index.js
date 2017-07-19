@@ -6,14 +6,19 @@ import { updateCountdown } from 'store/actions'
 import { Heading, Icon } from 'components'
 
 const Wrapper = styled.div`
-  position: absolute
+  position: absolute;
   width: 100%;
-  height: 100%;
+  height: calc(100% + 2px);
   transform-style: preserve-3d;
-  transition: 1s cubic-bezier(0, 0.26, 0.92, 0.32);
+  transition: 2s ease-in-out;
+  transform-origin: 100% 40.5px;
+  border: 1px solid #037771;
+  transform: perspective(800px);
+  top: -2px;
 
-  &.flip {
-    transform: rotateX(90deg);
+  &.flip {  
+    transform: rotateX(-180deg);
+    top: 1px;
   }
 `
 const WrapperFront = styled.div`
@@ -22,12 +27,9 @@ const WrapperFront = styled.div`
   height: 100%;
   background: linear-gradient(to right, #00928f 0%, #50b848 100%);
   backface-visibility: hidden;
-  border-radius: 5px;
-  box-shadow: 0 5px 20px rgba(0, 146, 143, .5), 0 0 8px 5px rgba(80, 184, 72, .5) inset;
-  transform: translateZ(40.5px);
 `
 const WrapperBack = styled(WrapperFront)`
-  transform: rotateX(-90deg) translateZ(40.5px);
+  transform: rotateX(180deg);
 `
 const TimeLeft = styled(Heading)`
   color: #ffffff;
@@ -44,6 +46,12 @@ const EventIcon = styled(Icon)`
   margin: 0 0 0 10%;
   height: 100%;
   float: left;
+  position: relative;
+  & > * {
+    transform: translateY(-50%);
+    top: 50%;
+    position: absolute;
+  }
 `
 const EventDate = styled(Heading)`
   float: left;
@@ -88,7 +96,7 @@ class Countdown extends Component {
     setInterval(() => {
       this.rotateCountdown()
       this.incrementIdx()
-    }, 15000)
+    }, 5000)
   }
 
   getRemainingTime(startDateTime) {
