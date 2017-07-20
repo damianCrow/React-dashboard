@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 import styled, { css } from 'styled-components'
 
 import { fonts } from 'components/globals'
@@ -18,18 +18,10 @@ const styles = ({ ...props, trackInfo }) => css`
   width: 100%;
 
   &:before {
-    background:
-      linear-gradient(
-        rgba(0, 0, 0, .5),
-        rgba(0, 0, 0, .5)
-      ),
-      url(${trackInfo.currentTrack.absoluteAlbumArtUri})
-    background-size: cover;
-    background-position: center;
+    background-color: #0b8977;
     transform: scale(1.2);
     opacity: 1;
     content: '';
-    filter: blur(10px);
     height: 100%;
     left: 0;
     object-fit: cover;
@@ -86,17 +78,25 @@ const AlbumArtContainer = styled.div`
   flex: 0 1 100%;
 `
 
-const AlbumArt = styled.img`
+const AlbumArtNext = styled.img`
   display: block;
   position: absolute;
-  height: 100%;
-  width: 100%;
   object-fit: contain;
+  top: 50%;
+  right: 0;
+  height: auto;
+  width: 40%;
+  transform: translateY(-50%);
+`
+const AlbumArtCurrent = styled(AlbumArtNext)`
+  height: auto;
+  width: 50%;
+  left: 25%;
+  z-index: 2;
+  box-shadow: 5px 5px 25px 3px #333;
 `
 
-const StyledWave = styled.div`
-  position: absolute;
-  top: 0;
+const AlbumArtPrevious = styled(AlbumArtNext)`
   left: 0;
 `
 
@@ -106,15 +106,16 @@ const StyledWave = styled.div`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const SonosTrack = ({...props, trackInfo}) => {
+const SonosTrack = ({ ...props, trackInfo, previousTrack }) => {
   const playbackState = trackInfo.playbackState
   const currentTrack = trackInfo.currentTrack
-
   return (
     <SonosCurrentTrackWrapper {...props}>
       <SonosCurrentTrack>
         <AlbumArtContainer>
-          <AlbumArt src={trackInfo.currentTrack.absoluteAlbumArtUri} />
+          <AlbumArtPrevious src={previousTrack.absoluteAlbumArtUri} />
+          <AlbumArtCurrent src={trackInfo.currentTrack.absoluteAlbumArtUri} />
+          <AlbumArtNext src={trackInfo.nextTrack.absoluteAlbumArtUri} />
         </AlbumArtContainer>
         <TrackInfo>
           <Track>
@@ -137,6 +138,7 @@ const SonosTrack = ({...props, trackInfo}) => {
 SonosTrack.propTypes = {
   children: PropTypes.any,
   trackInfo: PropTypes.object,
+  previousTrack: PropTypes.object,
 }
 
 export default SonosTrack

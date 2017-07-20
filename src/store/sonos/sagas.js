@@ -21,6 +21,10 @@ function connectStream(socket) {
       // console.log(state)
       emit(actions.sonosNewTopology(state))
     })
+
+    socket.on('speakerZones', (zones) => {
+      emit(actions.sonosZonesReceived(zones))
+    })
     return () => {}
   })
 }

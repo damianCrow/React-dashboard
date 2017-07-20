@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 import styled from 'styled-components'
 
 import { SonosGroupInfo, SonosTrack } from 'components'
@@ -21,17 +21,16 @@ const PlayerContainer = styled.div`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const SonosPlayer = ({playerState, speakers, featuredSpeaker, children, ...props}) => {
-
+const SonosPlayer = ({ previousTrack, playerState, speakers, featuredSpeaker, children, ...props }) => {
   // console.log('playerState', playerState)
   // console.log('SonosPlayer featuredSpeaker: ', featuredSpeaker)
-  // console.log('SonosPlayer isEmpty: ', isEmpty)
+  console.log('SonosPlayer isEmpty: ', featuredSpeaker)
 
   // const isEmpty = posts.length === 0
   return (
     <PlayerContainer>
       <SonosGroupInfo speakers={speakers} featuredSpeaker={featuredSpeaker} />
-      <SonosTrack trackInfo={playerState} />
+      <SonosTrack trackInfo={playerState} previousTrack={previousTrack} />
     </PlayerContainer>
   )
 }
@@ -41,6 +40,7 @@ SonosPlayer.propTypes = {
   speakers: PropTypes.array.isRequired,
   playerState: PropTypes.object,
   featuredSpeaker: PropTypes.string,
+  previousTrack: PropTypes.object,
 }
 
 SonosPlayer.defaultProps = {

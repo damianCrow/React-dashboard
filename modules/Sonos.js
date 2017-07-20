@@ -23,11 +23,13 @@ class Sonos {
     })
 
     this.discovery.on('initialized', () => {
-      // console.log('this.discovery.zones[0].members[0].system', this.discovery.zones[0].members[0].system)
+      // console.log('this.discovery.zones', this.discovery.zones[0])
       // console.log('this.discovery.zones[1].coordinator', this.discovery.zones[1].coordinator)
       this.socket.emit('successful.create-request.SONOS')
+      this.socket.emit('speakerZones', this.discovery.zones)
     })
   }
+
 
   listenForState() {
     console.log('server module sonos listenForState')

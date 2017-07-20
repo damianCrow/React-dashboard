@@ -3,6 +3,7 @@ export const SONOS_PULL_REQUEST = 'SONOS_PULL_REQUEST'
 export const SONOS_CREATE_SUCCESS = 'SONOS_CREATE_SUCCESS'
 export const SONOS_CREATE_FAILURE = 'SONOS_CREATE_FAILURE'
 export const SERVER_REQUEST_SUCCESS = 'SERVER_REQUEST_SUCCESS'
+export const SONOS_ZONES_RECEIVED = 'SONOS_ZONES_RECEIVED'
 
 
 export const sonosCreateRequest = (request) => ({
@@ -53,4 +54,9 @@ export const sonosNewState = (speakers) => ({
 export const sonosNewTopology = (topology) => ({
   type: SONOS_NEW_TOPOLOGY,
   topology,
+})
+
+export const sonosZonesReceived = (zones) => ({
+  type: SONOS_ZONES_RECEIVED,
+  zones,
 })

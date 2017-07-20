@@ -10,16 +10,14 @@ const Wrapper = styled.div`
   width: 100%;
   height: calc(100% + 2px);
   transform-style: preserve-3d;
-  transition: 2s ease-in-out;
+  transition: all 2s ease-in-out;
   transform-origin: 100% 40.5px;
   border: 1px solid #037771;
-  transform: perspective(800px);
-  top: -2px;
+  transform: perspective(800px) translateY(-2px);
   border-radius: 5px;
 
   &.flip {  
-    transform: rotateX(-180deg);
-    top: 2px;
+    transform: rotateX(-180deg) translateY(-2px) perspective(800px);
   }
 `
 const WrapperFront = styled.div`

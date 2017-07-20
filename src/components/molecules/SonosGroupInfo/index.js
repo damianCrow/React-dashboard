@@ -31,11 +31,7 @@ const SonosGroupInfo = ({ children, ...props, speakers, featuredSpeaker }) => {
   return (
     <Wrapper>
       <SpeakerInfo>
-        {/* speakers.map((speaker, i) => <span key={i}>
-          {!!i && ', '}
-          {speaker}
-        </span>) */}
-        {speakers.map((member) => member)}
+        {featuredSpeaker}
       </SpeakerInfo>
     </Wrapper>
   )

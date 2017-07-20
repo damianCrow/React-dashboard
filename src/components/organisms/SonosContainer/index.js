@@ -8,7 +8,7 @@ import { fonts } from 'components/globals'
 
 const SonosContainerStyled = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
   background: black;
   left: 0;

@@ -39,24 +39,25 @@ class SonosInfoContainer extends Component {
 
   render() {
     const { speakers } = this.props
-
     // const isGroupsEmpty = groups.length === 0
     // const isStateEmpty = sonosStates.length === 0
-
-    // console.log('isGroupsEmpty ', isGroupsEmpty)
-    // console.log('isStateEmpty ', isStateEmpty)
 
     if (speakers.length) {
       return (
         <SonosContainer>
           {speakers.map(speaker => {
-            // console.log('speaker.state', speaker.state)
             if (speaker.state.playbackState !== 'STOPPED') {
+              let previousTrackObj = {}
+              if (this.props.previousTracksObj[speaker.uuid].length > 1) {
+                previousTrackObj = this.props.previousTracksObj[speaker.uuid][this.props.previousTracksObj[speaker.uuid].length - 2]
+              }
               return (
                 <SonosPlayer
                   key={speaker.uuid}
                   speakers={speaker.members}
                   playerState={speaker.state}
+                  previousTrack={previousTrackObj}
+                  featuredSpeaker={speaker.roomName}
                 />
               )
             }
@@ -74,6 +75,7 @@ class SonosInfoContainer extends Component {
 // Listen and capture any changes made as a result of the the actions below.
 const mapStateToProps = (state) => ({
   speakers: state.sonos.speakers,
+  previousTracksObj: state.sonos.previousTracksObj,
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -84,6 +86,7 @@ SonosInfoContainer.propTypes = {
   socketConnected: PropTypes.bool,
   serviceRequest: PropTypes.func,
   speakers: PropTypes.array,
+  previousTracksObj: PropTypes.object,
 }
 
 SonosInfoContainer.defaultProps = {

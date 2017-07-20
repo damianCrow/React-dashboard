@@ -9,6 +9,7 @@ import {
   SONOS_CREATE_SUCCESS,
   SONOS_NEW_STATE,
   SONOS_NEW_TOPOLOGY,
+  SONOS_ZONES_RECEIVED,
 } from './actions'
 
 
@@ -81,6 +82,22 @@ function mergeTop(newState, oldState, key) {
   return newArray
 }
 
+const updatePreviousTrack = (action, state) => {
+  let updateObj = {}
+  Object.keys(state.previousTracksObj).forEach((key) => {
+    if (action.speakers.uuid === key) {
+      if (state.previousTracksObj[key].length > 5) {
+        state.previousTracksObj[key].splice(0, state.previousTracksObj[key].length - 2)
+      }
+      updateObj = {
+        ...state.previousTracksObj,
+        [action.speakers.uuid]: [...state.previousTracksObj[action.speakers.uuid], action.speakers.state.currentTrack],
+      }
+      return updateObj
+    }
+  })
+  return updateObj
+}
 
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -114,16 +131,21 @@ export default (state = initialState, action) => {
       return {
         ...state,
         speakers: mergeSonos([action.speakers], state.speakers, 'uuid'),
+        previousTracksObj: updatePreviousTrack(action, state),
       }
 
     case SONOS_NEW_TOPOLOGY:
       return {
         ...state,
         speakers: mergeTop(action.topology, state.speakers, 'uuid'),
-        // speakersNames: action.speakerNames,
-        // uuid: action.uuid,
+        speakerZones: action.topology,
       }
-
+   
+    case SONOS_ZONES_RECEIVED:
+      return {
+        ...state,
+        speakerZones: action.zones,
+      }
 
     default:
       return state
