@@ -104,7 +104,16 @@ const AlbumArtPrevious = styled(AlbumArtNext)`
 //   display: absolute;
 // `
 
-// const StyledIcon = styled(Icon)`${iconStyles}`
+
+const handleSrcError = (image) => {
+  if (image !== undefined || null) {
+    const ogSrc = image.src
+    setTimeout(() => {
+      image.src = ogSrc
+    }, 15000)
+  }
+  image.src = '/public/albumArtLoading.gif'
+}
 
 const SonosTrack = ({ ...props, trackInfo, previousTrack }) => {
   const playbackState = trackInfo.playbackState
@@ -113,9 +122,21 @@ const SonosTrack = ({ ...props, trackInfo, previousTrack }) => {
     <SonosCurrentTrackWrapper {...props}>
       <SonosCurrentTrack>
         <AlbumArtContainer>
-          <AlbumArtPrevious src={previousTrack.absoluteAlbumArtUri} />
-          <AlbumArtCurrent src={trackInfo.currentTrack.absoluteAlbumArtUri} />
-          <AlbumArtNext src={trackInfo.nextTrack.absoluteAlbumArtUri} />
+          <AlbumArtPrevious
+            innerRef={(previousTrack) => { this.previousTrack = previousTrack }}
+            src={previousTrack.absoluteAlbumArtUri}
+            onError={handleSrcError.bind(this, this.previousTrack)}
+          />
+          <AlbumArtCurrent
+            innerRef={(currentTrack) => { this.currentTrack = currentTrack }}
+            src={trackInfo.currentTrack.absoluteAlbumArtUri}
+            onError={handleSrcError.bind(this, this.currentTrack)}
+          />
+          <AlbumArtNext
+            innerRef={(nextTrack) => { this.nextTrack = nextTrack }}
+            src={trackInfo.nextTrack.absoluteAlbumArtUri} 
+            onError={handleSrcError.bind(this, this.nextTrack)}
+          />
         </AlbumArtContainer>
         <TrackInfo>
           <Track>

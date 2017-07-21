@@ -14,17 +14,15 @@ class Sonos {
     this.app = app
     this.socket = socket
     this.maxGroups = 4
-  }
 
-  request() {
     this.discovery = new SonosSystem({
       port: 8080,
       cacheDir: './.cache',
     })
+  }
 
+  request() {
     this.discovery.on('initialized', () => {
-      // console.log('this.discovery.zones', this.discovery.zones[0])
-      // console.log('this.discovery.zones[1].coordinator', this.discovery.zones[1].coordinator)
       this.socket.emit('successful.create-request.SONOS')
       this.socket.emit('speakerZones', this.discovery.zones)
     })

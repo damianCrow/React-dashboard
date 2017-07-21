@@ -140,7 +140,7 @@ export default (state = initialState, action) => {
         speakers: mergeTop(action.topology, state.speakers, 'uuid'),
         speakerZones: action.topology,
       }
-   
+
     case SONOS_ZONES_RECEIVED:
       return {
         ...state,

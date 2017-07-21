@@ -22,11 +22,6 @@ const PlayerContainer = styled.div`
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
 const SonosPlayer = ({ previousTrack, playerState, speakers, featuredSpeaker, children, ...props }) => {
-  // console.log('playerState', playerState)
-  // console.log('SonosPlayer featuredSpeaker: ', featuredSpeaker)
-  console.log('SonosPlayer isEmpty: ', featuredSpeaker)
-
-  // const isEmpty = posts.length === 0
   return (
     <PlayerContainer>
       <SonosGroupInfo speakers={speakers} featuredSpeaker={featuredSpeaker} />
