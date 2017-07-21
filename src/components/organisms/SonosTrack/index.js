@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styled, { css } from 'styled-components'
-
 import { fonts } from 'components/globals'
 
 import { WaveAnimation } from 'components'
@@ -30,7 +29,6 @@ const styles = ({ ...props, trackInfo }) => css`
     width: 100%;
   }
 `
-// background-image: url(${playerState.state.currentTrack.absoluteAlbumArtUri});
 
 const SonosCurrentTrackWrapper = styled.div`${styles}`
 
@@ -99,20 +97,16 @@ const AlbumArtCurrent = styled(AlbumArtNext)`
 const AlbumArtPrevious = styled(AlbumArtNext)`
   left: 0;
 `
-
-// const PlaybackIcon = styled.Icon`
-//   display: absolute;
-// `
-
-
-const handleSrcError = (image) => {
+const handleSrcError = (e) => {
+  const image = e.target
   if (image !== undefined || null) {
     const ogSrc = image.src
-    setTimeout(() => {
+    image.src = '/public/albumArtLoading.gif'
+    const srcReset = setTimeout(() => {
       image.src = ogSrc
-    }, 15000)
+      return clearTimeout(srcReset)
+    }, 10000)
   }
-  image.src = '/public/albumArtLoading.gif'
 }
 
 const SonosTrack = ({ ...props, trackInfo, previousTrack }) => {
@@ -123,19 +117,16 @@ const SonosTrack = ({ ...props, trackInfo, previousTrack }) => {
       <SonosCurrentTrack>
         <AlbumArtContainer>
           <AlbumArtPrevious
-            innerRef={(previousTrack) => { this.previousTrack = previousTrack }}
             src={previousTrack.absoluteAlbumArtUri}
-            onError={handleSrcError.bind(this, this.previousTrack)}
+            onError={(e) => { handleSrcError(e) }}
           />
           <AlbumArtCurrent
-            innerRef={(currentTrack) => { this.currentTrack = currentTrack }}
             src={trackInfo.currentTrack.absoluteAlbumArtUri}
-            onError={handleSrcError.bind(this, this.currentTrack)}
+            onError={(e) => { handleSrcError(e) }}
           />
           <AlbumArtNext
-            innerRef={(nextTrack) => { this.nextTrack = nextTrack }}
-            src={trackInfo.nextTrack.absoluteAlbumArtUri} 
-            onError={handleSrcError.bind(this, this.nextTrack)}
+            src={trackInfo.nextTrack.absoluteAlbumArtUri}
+            onError={(e) => { handleSrcError(e) }}
           />
         </AlbumArtContainer>
         <TrackInfo>
@@ -163,19 +154,3 @@ SonosTrack.propTypes = {
 }
 
 export default SonosTrack
-
-// import React, { PropTypes } from 'react'
-
-// const SonosInfo = ({posts}) => (
-//   <ul>
-//     {posts.map((post, i) =>
-//       <li key={i}>{post.title}</li>
-//     )}
-//   </ul>
-// )
-
-// SonosInfo.propTypes = {
-//   posts: PropTypes.array.isRequired
-// }
-
-// export default SonosInfo
