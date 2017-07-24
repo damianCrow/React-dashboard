@@ -1,13 +1,13 @@
 import { combineReducers } from 'redux'
 import { initialState } from './selectors'
 import { SHOWCASE_NEW_POSTS, UPDATE_COUNTDOWN } from './actions'
-import { GOT_NEW_PLAYLIST } from '../admin/actions'
+import { SOCKET_ADMIN_EMIT_PLAYLIST_RECEIVED } from '../admin/actions'
 import { slideshowState } from '../slideshow/reducer'
 
 function showcaseReducerWrapper() {
   return (state = initialState, action) => {
     switch (action.type) {
-      case GOT_NEW_PLAYLIST:
+      case SOCKET_ADMIN_EMIT_PLAYLIST_RECEIVED:
         return {
           ...state,
           fetching: false,

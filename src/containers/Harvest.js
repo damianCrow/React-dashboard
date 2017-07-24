@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { serviceRequest } from 'store/actions'
-import { SocketConnector } from 'hoc'
 import { Auth, TimesheetLeaderBoard } from 'components'
 
 class HarvestContainer extends Component {
@@ -67,4 +66,4 @@ HarvestContainer.defaultProps = {
   message: '',
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SocketConnector(HarvestContainer))
+export default connect(mapStateToProps, mapDispatchToProps)(HarvestContainer)

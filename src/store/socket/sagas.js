@@ -1,11 +1,18 @@
+import { eventChannel } from 'redux-saga'
 import { take, takeLatest, takeEvery, put, call, fork, select } from 'redux-saga/effects'
 import io from 'socket.io-client'
-import * as actions from './actions'
-import { getSocketConnection } from './selectors'
+import shortid from 'shortid'
 
+import * as actions from './actions'
+
+// import { getSocketConnection } from './selectors'
+
+const socket = io()
 
 function connect() {
-  const socket = io()
+  if (socket.connected) {
+    return socket
+  }
   return new Promise(resolve => {
     socket.on('connect', () => {
       resolve(socket)
@@ -13,68 +20,103 @@ function connect() {
   })
 }
 
-function serverRequest(socket, createAction) {
-  const { request } = createAction
-  // console.log('socket createRequest fired')
-  // console.log('socket, ', socket)
-  // console.log('request', request)
-  // console.log(`successful.create-request.${request}`)
-  socket.emit('create-request', { request })
-  return new Promise((resolve, reject) => {
-    // console.log('request', request)
-    socket.on(`successful.create-request.${request}`, (result) => {
-      // console.log(result)
-      resolve(result)
-    })
-    socket.on(`unsuccessful.create-request.${request}`, (result) => {
-      reject(result)
-    })
+// Socket listeners from server actions.
+function requestAndReceive(socket, actionRequest) {
+  // Tell the server we want to connect the "stream"
+  // socket.emit('SOCKET_DATA_REQUEST', { service: 'INSTAGRAM', request: '', package: {} })
+  const channelId = shortid.generate()
+  socket.emit('SOCKET_DATA_REQUEST', { ...actionRequest, id: channelId })
+  // Return redux-saga's eventChannel which handles socket actions
+  return eventChannel(emit => {
+    const sucessHandler = (event) => {
+      // console.log('event', event)
+      // puts event payload into the channel
+      // this allows a Saga to take this payload from the returned channel
+      emit(actions.socketDataSuccess(event.service, event.serverAction, event.request, event.id, event.payload))
+    }
+
+    const failureHandler = (event) => {
+      // console.log('event', event)
+      // puts event payload into the channel
+      // this allows a Saga to take this payload from the returned channel
+      emit(actions.socketDataFailed(event.service, event.serverAction, event.request, event.id, event.payload))
+    }
+
+    socket.on('SOCKET_DATA_REQUEST_SUCCESSFUL', sucessHandler)
+    socket.on('SOCKET_DATA_REQUEST_UNSUCCESSFUL', failureHandler)
+
+    // the subscriber must return an unsubscribe function
+    // this will be invoked when the saga calls `channel.close` method
+    // TODO: Does this ever fire doe? ¯\_(ツ)_/¯
+    const unsubscribe = () => {
+      socket.off('SOCKET_DATA_REQUEST_SUCCESSFUL', sucessHandler)
+      socket.off('SOCKET_DATA_REQUEST_UNSUCCESSFUL', failureHandler)
+    }
+
+    return unsubscribe
+  }, undefined, (recivedAction) => recivedAction.id === channelId
+  )
+}
+
+function listenForUpdates(socket) {
+  // Tell the server we want to connect the "stream"
+  // Return redux-saga's eventChannel which handles socket actions
+  return eventChannel(emit => {
+    const sucessHandler = (event) => {
+      // console.log('event', event)
+      // puts event payload into the channel
+      // this allows a Saga to take this payload from the returned channel
+      console.log('SOCKET_DATA_EMIT recived, event: ', event)
+      emit(actions.socketEmitReceived(event.service, event.description, event.payload))
+    }
+
+    socket.on('SOCKET_DATA_EMIT', sucessHandler)
+    // socket.on('SOCKET_DATA_REQUEST_UNSUCCESSFUL', failureHandler)
+
+    return () => {}
   })
 }
 
-export function* createServerRequest(socket, createAction) {
-  // console.log('createServerRequest socket', socket)
-  // console.log('createServerRequest createAction', createAction)
-  try {
-    yield call(serverRequest, socket, createAction)
-    yield put(actions.serviceSuccess(createAction.request))
-  } catch (e) {
-    yield put(actions.serviceFailure(e))
-  }
-}
-
-
-// // Handles connecting, message processing and disconnecting
-// export default function* () {
-//   yield take(actions.SOCKET_CONNECT_REQUEST) // Blocking: will wait for the action
-//   const socket = yield call(connect) // Blocking: will wait for connect (If connect returns a Promise)
-//   yield put(actions.socketConnectSuccess(socket))
-// }
-
-function* serviceRequestWatch() {
-  // console.log('serviceRequestWatch, socket:', socket)
-  yield takeEvery('SERVICE_REQUEST', function* logger(action) {
-    // const state = yield select()
-    // const createAction = yield take(action.serviceRequest) // Blocking: will wait for the action
-    const socket = yield select(getSocketConnection)
-    yield call(createServerRequest, socket, action)
-    // console.log('action', action)
-    // console.log('state after', state)
-  })
-}
-
-
-function* flow() {
+export function* processServerRequestChannel(socket, actionRequest) {
+  const channel = yield call(requestAndReceive, socket, actionRequest)
   while (true) {
-    yield take(actions.SOCKET_CONNECT_REQUEST) // Blocking: will wait for the action
-    const socket = yield call(connect) // Blocking: will wait for connect (If connect returns a Promise)
-    yield put(actions.socketConnectSuccess(socket))
+    // Watch the channel for any chances and load them into an action
+    const action = yield take(channel)
+    // Fire whatever actions come from the channel
+    yield put(action)
+    // console.log('channel', channel)
+    channel.close()
   }
+}
+
+export function* processListenChannel(socket) {
+  const channel = yield call(listenForUpdates, socket)
+  while (true) {
+    // Watch the channel for any chances and load them into an action
+    const action = yield take(channel)
+    // Fire whatever actions come from the channel
+    yield put(action)
+  }
+}
+
+// This 💩 here, requests 💩 from the node server and gives back some results 👍📊
+function* requestChannel() {
+  yield takeEvery(actions.SOCKET_DATA_REQUEST, function* logger(action) {
+    const socket = yield call(connect)
+    yield put(actions.socketConnectSuccess(socket.connected))
+    yield call(processServerRequestChannel, socket, action)
+  })
+}
+
+// This 💩 listens for 💩 from the node server
+function* listenChannel() {
+  const socket = yield call(connect)
+  yield put(actions.socketConnectSuccess(socket.connected))
+  yield call(processListenChannel, socket)
 }
 
 // Handles connecting, message processing and disconnecting
 export default function* () {
-  yield fork(flow)
-  yield fork(serviceRequestWatch)
+  yield fork(requestChannel)
+  yield fork(listenChannel)
 }
-

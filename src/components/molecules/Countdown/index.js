@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react'
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import styled from 'styled-components'
 import moment from 'moment'
 import { connect } from 'react-redux'
@@ -21,7 +22,7 @@ const Wrapper = styled.div`
   }
 `
 const WrapperFront = styled.div`
-  position: absolute
+  position: absolute;
   width: 100%;
   height: 100%;
   background: linear-gradient(to right, #00928f 0%, #50b848 100%);

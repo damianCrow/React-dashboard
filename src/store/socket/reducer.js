@@ -17,7 +17,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         connected: true,
-        connection: action.socket,
       }
 
     default:

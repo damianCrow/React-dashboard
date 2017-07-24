@@ -26,10 +26,14 @@ class Instagram {
     this.port = port
   }
 
-  request() {
-    this.checkAuth().then(
-      this.socket.emit('successful.create-request.INSTAGRAM')
-    )
+  request(newRequest) {
+    console.log('instagram newRequest: ', newRequest)
+    return new Promise((resolve, reject) => {
+      this[newRequest]()
+        .then((data) => {
+          resolve(data)
+        })
+    })
   }
 
   checkAuth() {
@@ -173,18 +177,23 @@ class Instagram {
    *
    * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
    */
-  grabPosts() {
-    this.checkAuth().then(instagram => {
-      instagram.user_media_recent(INSTAGRAM_USER_ID, (err, posts, pagination, remaining, limit) => {
-        if (err) {
-          console.log('err', err)
-          this.socket.emit('instagram-new-posts-error', { err })
-        } else {
-          this.socket.emit('instagram-new-posts', { posts })
-        }
+  posts() {
+    // console.log('instagram grabPosts: ')
+    return new Promise((resolve, reject) => {
+      this.checkAuth().then(instagram => {
+        // console.log('auth cool, now pulling in grabposts')
+        instagram.user_media_recent(INSTAGRAM_USER_ID, (err, posts, pagination, remaining, limit) => {
+          if (err) {
+            reject(err)
+            // this.socket.emit('instagram-new-posts-error', { err })
+          } else {
+            resolve(posts)
+            // this.socket.emit('instagram-new-posts', { posts })
+          }
+        })
+      }).catch((error) => {
+        reject(error)
       })
-    }).catch((error) => {
-      console.log('error', error)
     })
   }
 

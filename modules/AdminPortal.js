@@ -15,9 +15,9 @@ const upload = multer({ storage })
 
 class AdminPortal {
 
-  constructor(app, socket) {
+  constructor(app, sockets) {
     this.app = app
-    this.socket = socket
+    this.sockets = sockets
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: true }))
     this.handleRequests()
@@ -29,7 +29,7 @@ class AdminPortal {
     })
 
     this.app.post('/admin/playlist-update', upload.array(), (req, res) => {
-      console.log('firing shizzz ', this.socket.connected)
+      // console.log('firing shizzz ', this.socket.connected)
       fs.readFile('./public/user-data/showcase-media.json', 'utf8', (err, data) => {
         if (err) {
           console.log(err)
@@ -40,7 +40,7 @@ class AdminPortal {
             if (err) {
               console.log(err)
             } else {
-              this.socket.emit('GOT_NEW_PLAYLIST', req.body)
+              this.sockets.emit('SOCKET_DATA_EMIT', { service: 'ADMIN', description: 'PLAYLIST', payload: req.body })
             }
           })
         }

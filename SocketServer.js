@@ -1,16 +1,5 @@
-const socketIo = require('socket.io')
 // const moment = require('moment')
 // const cleanDeep = require('clean-deep')
-
-// const GoogleCalendar = require('./modules/GoogleCalendar.js')
-const Harvest = require('./modules/Harvest.js')
-const Sonos = require('./modules/Sonos.js')
-const Showcase = require('./modules/Showcase.js')
-const Instagram = require('./modules/Instagram.js')
-const TwitterApi = require('./modules/Twitter.js')
-const Google = require('./modules/Google.js')
-const AdminPortal = require('./modules/AdminPortal.js')
-
 
 /**
  * Class for the Socket data handling.
@@ -23,27 +12,22 @@ class Sockets {
    * @param {Object} server Express server.
    * @param {Object} environment - run rabbit or not?
    */
-  constructor(server, app, port) {
-    this.io = socketIo(server)
-
-    this.app = app
-
-    // TODO: Remove the need for this.
-    this.port = port
-
-    this.channels = []
+  constructor(sockets) {
+    this.io = sockets
   }
 
   /**
    * init, wait for the sockets to connect before emitting / listening for
    messages.
    */
-  init() {
+  requests(services) {
+    console.log('socketserver requests')
     this.io.on('connection', socket => {
+      console.log('socket connected')
       //  TODO: Send a fail or success notfication.
-      this.listenForServiceConnectRequests(socket)
-      this.listenForReadRequests(socket)
-      this.adminPortal = new AdminPortal(this.app, socket)
+      // this.listenForServiceConnectRequests(socket)
+      this.listenForReadRequests(socket, services)
+      // this.adminPortal = new AdminPortal(this.app, socket)
     })
   }
 
@@ -51,81 +35,44 @@ class Sockets {
    * init, wait for the sockets to connect before emitting / listening for
    messages.
    */
-  listenForServiceConnectRequests(socket) {
+  listenForReadRequests(socket, services) {
     // console.log('this.io.sockets', this.io.sockets)
-    socket.on('create-request', requestedService => {
-      console.log('create-request, requestedService:', requestedService.request)
-      switch (requestedService.request) {
-        case 'INSTAGRAM':
-          this.instagram = new Instagram(this.app, socket, this.port)
-          this.instagram.request()
-          break
-        case 'CALENDAR':
-          break
-        case 'HARVEST':
-          this.harvestTime = new Harvest(this.app, socket)
-          this.harvestTime.request()
-          break
-        case 'SHOWCASE':
-          this.showcase = new Showcase(this.app, socket)
-          this.showcase.request()
-          break
-        case 'SONOS':
-          this.sonos = new Sonos(this.app, socket)
-          this.sonos.request()
-          break
-        case 'TWITTER':
-          this.twitter = new TwitterApi(this.app, socket, this.port)
-          this.twitter.request()
-          break
-        default:
-          break
-      }
-      // const channel = this.provideRabbitChannel(connection, requestedFeed.feed)
-      // console.log('channel: ', channel)
-    })
-  }
+    socket.on('SOCKET_DATA_REQUEST', requestMeta => {
+      // console.log('services', services)
+      console.log('requestMeta', requestMeta)
+      // console.log('pull-request, requestMeta.service:', requestMeta.service)
+      const requestedService = Object.keys(services)
+        .find((service) => service.toUpperCase() === requestMeta.data.service)
 
-  /**
-   * init, wait for the sockets to connect before emitting / listening for
-   messages.
-   */
-  listenForReadRequests(socket) {
-    // console.log('this.io.sockets', this.io.sockets)
-    socket.on('pull-request', payload => {
-      // console.log('pull-request, payload.service:', payload.service)
-      switch (payload.service) {
-        // case 'ADMIN':
-        //   this.adminPortal.handleUpload(payload.request, payload.package)
-        //   break
-        case 'INSTAGRAM':
-          this.instagram.grabPosts()
-          break
-        case 'CALENDAR':
-          break
-        case 'HARVEST':
-          this.harvestTime.getUsersAndTimes()
-          break
-        case 'SHOWCASE':
-          // this.showcase.pullLivePlaylist()
-          this.showcase.request()
-          break
-        case 'SONOS':
-          // this.sonos = new Sonos(this.app, socket)
-          this.sonos.listenForState()
-          break
-        case 'TWITTER':
-          this.twitter.grabPosts()
-          break
-        case 'GOOGLE':
-          this.google = new Google(this.app, socket)
-          this.google.handleRequests(payload.request, payload.package)
-          break
-        default:
-          break
+      const successReply = payload => {
+        socket.emit('SOCKET_DATA_REQUEST_SUCCESSFUL', {
+          service: requestMeta.data.service,
+          serverAction: requestMeta.data.serverAction.toUpperCase(),
+          request: requestMeta.data.request.toUpperCase(),
+          id: requestMeta.id,
+          payload,
+        })
       }
-      // const channel = this.provideRabbitChannel(connection, requestedFeed.feed)
-      // console.log('channel: ', channel)
+
+      const failReply = error => {
+        socket.emit('SOCKET_DATA_REQUEST_UNSUCCESSFUL', {
+          service: requestMeta.data.service,
+          serverAction: requestMeta.data.serverAction.toUpperCase(),
+          request: requestMeta.data.request.toUpperCase(),
+          id: requestMeta.id,
+          payload: error,
+        })
+      }
+
+      if (requestMeta.data.serverAction === 'emit') {
+        // 
+      } else {
+        console.log('requestedService', requestedService)
+        console.log('requestMeta.data.request', requestMeta.data.request)
+        services[requestedService][requestMeta.data.request]()
+          .then(payload => successReply(payload))
+          .catch(error => failReply(error))
+      }
     })
   }
 

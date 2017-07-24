@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { sonosReadRequest, serviceRequest, sonosStateMatch, featuredSpeaker } from 'store/actions'
-import { SocketConnector } from 'hoc'
+import { socketDataRequest, serviceRequest, sonosStateMatch, featuredSpeaker } from 'store/actions'
 
 import { SonosContainer, SonosGroupQueue, SonosPlayer, SplashScreen } from 'components'
 
@@ -17,30 +16,11 @@ class SonosInfoContainer extends Component {
   }
 
   componentDidMount() {
-    this.props.socketConnected && this.props.serviceRequest()
+    this.props.serviceRequest()
   }
-
-  componentWillReceiveProps(nextProps) {
-    // Try and move this logic back to the HOC container
-    const { socketConnected, serviceRequest } = nextProps
-
-    if (socketConnected && !this.props.socketConnected) {
-      serviceRequest()
-    }
-  }
-
-  // speakerNames(members) {
-  //   let speakerNames = []
-  //   for (let i = 0; i < members.length; i++) {
-  //     speakerNames[i] = ` ${members[i].roomName}`
-  //   }
-  //   return speakerNames
-  // }
 
   render() {
     const { speakers } = this.props
-    // const isGroupsEmpty = groups.length === 0
-    // const isStateEmpty = sonosStates.length === 0
 
     if (speakers.length) {
       return (
@@ -110,7 +90,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  serviceRequest: () => dispatch(serviceRequest('SONOS')),
+  serviceRequest: () => dispatch(socketDataRequest({ service: 'SONOS', serverAction: 'pull', request: 'zones' })),
 })
 
 SonosInfoContainer.propTypes = {
@@ -126,4 +106,4 @@ SonosInfoContainer.defaultProps = {
   sonosRequest: false,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SocketConnector(SonosInfoContainer))
+export default connect(mapStateToProps, mapDispatchToProps)(SonosInfoContainer)

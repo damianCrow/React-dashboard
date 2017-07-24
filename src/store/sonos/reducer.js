@@ -6,9 +6,9 @@ import {
   SONOS_PULL_REQUEST,
   SONOS_READ_REQUEST,
   SONOS_READ_SUCCESS,
-  SONOS_CREATE_SUCCESS,
-  SONOS_NEW_STATE,
-  SONOS_NEW_TOPOLOGY,
+  SOCKET_SONOS_PULL_ZONES_SUCCESS,
+  SOCKET_SONOS_EMIT_TRANSPORT_RECEIVED,
+  SOCKET_SONOS_EMIT_TOPOLOGY_RECEIVED,
   SONOS_ZONES_RECEIVED,
 } from './actions'
 
@@ -102,49 +102,27 @@ const updatePreviousTrack = (action, state) => {
 export default (state = initialState, action) => {
   switch (action.type) {
 
-    case SONOS_CREATE_SUCCESS:
+    case SOCKET_SONOS_PULL_ZONES_SUCCESS:
       return {
         ...state,
-        connected: true,
-      }
-
-    case SONOS_PULL_REQUEST:
-      return {
-        ...state,
-        requested: true,
-      }
-
-    case SONOS_READ_REQUEST:
-      return {
-        ...state,
-        speakers: [action.speakers],
-      }
-
-    case SONOS_READ_SUCCESS:
-      return {
-        ...state,
-        speakers: [action.speakers],
+        speakers: [].concat(...action.payload.map(zone => zone.coordinator)),
+        speakerZones: action.payload,
       }
 
       // Check if exists in array and merge
-    case SONOS_NEW_STATE:
+    case SOCKET_SONOS_EMIT_TRANSPORT_RECEIVED:
+      // console.log('SOCKET_SONOS_EMIT_TRANSPORT_RECEIVED action', action)
       return {
         ...state,
-        speakers: mergeSonos([action.speakers], state.speakers, 'uuid'),
+        speakers: mergeSonos([action.payload], state.speakers, 'uuid'),
         previousTracksObj: updatePreviousTrack(action, state),
       }
 
-    case SONOS_NEW_TOPOLOGY:
+    case SOCKET_SONOS_EMIT_TOPOLOGY_RECEIVED:
       return {
         ...state,
         speakers: mergeTop(action.topology, state.speakers, 'uuid'),
         speakerZones: action.topology,
-      }
-
-    case SONOS_ZONES_RECEIVED:
-      return {
-        ...state,
-        speakerZones: action.zones,
       }
 
     default:

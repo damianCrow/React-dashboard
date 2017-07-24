@@ -40,6 +40,13 @@ const updateServerFilesIndex = (newUploadObj) => {
 const adminReducer = (state = initialState, action) => {
   switch (action.type) {
 
+    case 'SOCKET_ADMIN_PUSHPLAYLISTTOFRONT_SUCCESS':
+      console.log('SOCKET_ADMIN_PUSHPLAYLISTTOFRONT_SUCCESS action', action)
+      return {
+        ...state,
+        fetching: false,
+      }
+
     case GET_NEW_PLAYLIST:
       return {
         ...state,

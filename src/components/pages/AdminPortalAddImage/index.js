@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import { Link } from 'react-router'
 import styled from 'styled-components'
 import shortid from 'shortid'
 import { connect } from 'react-redux'
-import { imageUploaded, addEntryToPlaylist, uploadAndOverideQueue, overideQueue, publishPlaylist } from 'store/actions'
+import { imageUploaded, addEntryToPlaylist, uploadAndOverideQueue, overideQueue, publishPlaylist, socketDataRequest } from 'store/actions'
 import { AdminPortalTemplate, Field, ButtonWrapper, Button, Heading, SwipableArea } from 'components'
 
 const AdminLink = styled(Link)`
@@ -160,10 +160,12 @@ AdminPortalAddImageForm.propTypes = {
   overideQueue: PropTypes.func,
   uploadAndOverideQueue: PropTypes.func,
   publishPlaylist: PropTypes.func,
+  serviceRequest: PropTypes.func,
 }
 
 const mapDispatchToProps = (dispatch) => ({
   imageUploaded: (newImageObj) => dispatch(imageUploaded(newImageObj)),
+  serviceRequest: (newPlaylist) => dispatch(socketDataRequest({ service: 'ADMIN', request: 'pushPlaylistToFront', payload: newPlaylist })),
   addEntryToPlaylist: (entryObj) => dispatch(addEntryToPlaylist(entryObj)),
   uploadAndOverideQueue: (newImageObj) => dispatch(uploadAndOverideQueue(newImageObj)),
   overideQueue: (newObj) => dispatch(overideQueue(newObj)),

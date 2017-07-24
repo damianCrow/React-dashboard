@@ -1,32 +1,28 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { serviceRequest, startSlideshow, pauseServiceSlideshow } from 'store/actions'
-import { SocketConnector } from 'hoc'
+import { startSlideshow, pauseServiceSlideshow, socketDataRequest, numberOfSlideshowPosts } from 'store/actions'
 import { Instagram, InstagramAuth, SplashScreen } from 'components'
 
 class InstagramContainer extends Component {
   componentDidMount() {
-    this.props.socketConnected && this.props.serviceRequest()
-    this.props.startInstaSlideshow(20)
+    this.props.serviceRequest()
   }
 
   componentWillReceiveProps(nextProps) {
     // Try and move this logic back to the HOC container
-    const { socketConnected, serviceRequest, posts, startInstaSlideshow, slideshow, pauseInstaSlideshow } = nextProps
+    const { numberOfSlideshowPosts, posts, startInstaSlideshow, slideshow, pauseInstaSlideshow } = nextProps
 
     const isEmpty = posts.length === 0
 
-    if (socketConnected && !this.props.socketConnected) {
-      serviceRequest()
+    if (posts.length !== this.props.posts.length && slideshow.status !== 'ready') {
+      numberOfSlideshowPosts(this.props.posts.length)
+    }
+    if (!isEmpty && slideshow.status === 'ready') {
+      startInstaSlideshow(posts.length)
     }
 
-    // If we're on the next item in the slideshow.
     if (this.props.slideshow.current !== slideshow.current) {
-      if (!isEmpty && slideshow.status === 'ready') {
-        startInstaSlideshow(20)
-      }
-
       if (!isEmpty) {
         if (posts[slideshow.current].type === 'video' && slideshow.status === 'playing') {
           pauseInstaSlideshow()
@@ -37,12 +33,8 @@ class InstagramContainer extends Component {
 
   render() {
     const { status, message, posts, slideshow } = this.props
-    // console.log('instagram status', status)
 
     const isEmpty = posts.length === 0
-
-    // console.log('slideshow', slideshow)
-    // console.log('isEmpty', isEmpty)
 
     if (status === 'failed') {
       return (
@@ -76,14 +68,15 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  serviceRequest: () => dispatch(serviceRequest('INSTAGRAM')),
+  serviceRequest: () => dispatch(socketDataRequest({ service: 'INSTAGRAM', serverAction: 'pull', request: 'posts' })),
   startInstaSlideshow: (max) => dispatch(startSlideshow('instagram', max)),
+  numberOfSlideshowPosts: (max) => dispatch(numberOfSlideshowPosts('instagram', max)),
   pauseInstaSlideshow: () => dispatch(pauseServiceSlideshow('instagram')),
 })
 
 InstagramContainer.propTypes = {
-  socketConnected: PropTypes.bool,
   serviceRequest: PropTypes.func,
+  numberOfSlideshowPosts: PropTypes.func,
   startInstaSlideshow: PropTypes.func,
   pauseInstaSlideshow: PropTypes.func,
   slideshow: PropTypes.object,
@@ -99,4 +92,4 @@ InstagramContainer.defaultProps = {
   status: '',
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SocketConnector(InstagramContainer))
+export default connect(mapStateToProps, mapDispatchToProps)(InstagramContainer)

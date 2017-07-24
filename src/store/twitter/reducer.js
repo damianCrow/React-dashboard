@@ -3,19 +3,19 @@ import { initialState } from './selectors'
 import { slideshowState } from '../slideshow/reducer'
 
 import {
-  TWITTER_NEW_POSTS,
+  SOCKET_TWITTER_PULL_TWEETS_SUCCESS,
   TWITTER_NEW_POSTS_ERROR,
   TWITTER_UNAUTHORIZED,
 } from './actions'
 
 function twitterReducerWrapper() {
-  return function (state = initialState, action) {
+  return (state = initialState, action) => {
     switch (action.type) {
 
-      case TWITTER_NEW_POSTS:
+      case SOCKET_TWITTER_PULL_TWEETS_SUCCESS:
         return {
           ...state,
-          posts: action.posts,
+          posts: action.payload,
           status: 'success',
         }
 

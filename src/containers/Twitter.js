@@ -1,30 +1,20 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import has from 'lodash/has'
 import { connect } from 'react-redux'
-import { serviceRequest, startSlideshow } from 'store/actions'
-import { SocketConnector } from 'hoc'
+import { socketDataRequest, startSlideshow } from 'store/actions'
 
 import { Twitter, Auth, SplashScreen } from 'components'
 
 class TwitterContainer extends Component {
 
-  constructor() {
-    super()
-    this.state = { post: {} }
-  }
-
   componentDidMount() {
-    this.props.socketConnected && this.props.serviceRequest()
+    this.props.serviceRequest()
+    this.props.startInstaSlideshow(20)
   }
 
   componentWillReceiveProps(nextProps) {
     // Try and move this logic back to the HOC container
-    const { socketConnected, serviceRequest, posts, startInstaSlideshow, slideshow } = nextProps
-
-    if (socketConnected && !this.props.socketConnected) {
-      serviceRequest()
-    }
+    const { posts, startInstaSlideshow, slideshow } = nextProps
 
     if (posts.length > 0) {
       if (['retweeted_status'].every(prop => prop in posts[slideshow.current])) {
@@ -82,7 +72,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  serviceRequest: () => dispatch(serviceRequest('TWITTER')),
+  serviceRequest: () => dispatch(socketDataRequest({ service: 'TWITTER', serverAction: 'pull', request: 'tweets' })),
   startInstaSlideshow: (max) => dispatch(startSlideshow('twitter', max)),
 })
 
@@ -103,4 +93,4 @@ TwitterContainer.defaultProps = {
   status: '',
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SocketConnector(TwitterContainer))
+export default connect(mapStateToProps, mapDispatchToProps)(TwitterContainer)

@@ -8,6 +8,15 @@ const historyApiFallback = require('connect-history-api-fallback');
 const config = require('./webpack.config');
 const express = require('express');
 const auth = require('http-auth');
+const socketIo = require('socket.io')
+
+const Harvest = require('./modules/Harvest.js')
+const Sonos = require('./modules/Sonos.js')
+const Showcase = require('./modules/Showcase.js')
+const Instagram = require('./modules/Instagram.js')
+const TwitterApi = require('./modules/Twitter.js')
+const Google = require('./modules/Google.js')
+const AdminPortal = require('./modules/AdminPortal.js')
 
 const ip = process.env.IP || '0.0.0.0';
 const port = process.env.PORT || 3000;
@@ -25,8 +34,18 @@ const server = app.listen(port, () => {
   console.info('🌎   🖥... Listening at http://%s:%s', ip, port);
 });
 
-let socketServer = new Sockets(server, app, port)
-socketServer.init()
+const sockets = socketIo(server)
+
+const services = {
+  instagram: new Instagram(app, sockets),
+  admin: new AdminPortal(app, sockets),
+  twitter: new TwitterApi(app, sockets),
+  sonos: new Sonos(app, sockets),
+  // harvest: new Harvest(this.app, this.port),
+}
+
+const socketHandler = new Sockets(sockets)
+socketHandler.requests(services)
 
 app.use(historyApiFallback({
   verbose: false

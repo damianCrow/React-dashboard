@@ -1,35 +1,27 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { storeServerPlaylist, startSlideshow } from 'store/actions'
-import { SocketConnector } from 'hoc'
+import { storeServerPlaylist, startSlideshow, numberOfSlideshowPosts } from 'store/actions'
 import { Showcase, SplashScreen } from 'components'
 
 class ShowcaseContainer extends Component {
   componentDidMount() {
-    this.props.socketConnected && this.props.serviceRequest()
+    fetch('/public/user-data/showcase-media.json', {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((response) => { return response.json() })
+      .catch(err => console.log('showcase fetch err: ', err))
+      .then((data) => {
+        this.props.thisShouldActuallyBeASagaButWhatever(data.playlist)
+        this.props.startInstaSlideshow(this.props.playlist.length)
+      })
   }
 
   componentWillReceiveProps(nextProps) {
-    // Try and move this logic back to the HOC container
-    const { socketConnected, playlist, startInstaSlideshow, slideshow } = nextProps
-
-    const isEmpty = playlist.length === 0
-
-    if (socketConnected && !this.props.socketConnected) {
-      fetch('/public/user-data/showcase-media.json', {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then((response) => { return response.json() })
-        .then((data) => {
-          this.props.thisShouldActuallyBeASagaButWhatever(data.playlist)
-        })
-    }
-
-    if (!isEmpty && slideshow.status === 'ready') {
-      startInstaSlideshow(nextProps.playlist.length)
+    if (nextProps.playlist.length !== this.props.playlist.length && nextProps.slideshow.status !== 'ready') {
+      nextProps.numberOfSlideshowPosts(nextProps.playlist.length)
     }
   }
 
@@ -69,12 +61,13 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   thisShouldActuallyBeASagaButWhatever: (playlist) => dispatch(storeServerPlaylist(playlist)),
   startInstaSlideshow: (max) => dispatch(startSlideshow('showcase', max)),
+  numberOfSlideshowPosts: (max) => dispatch(numberOfSlideshowPosts('showcase', max)),
 })
 
 ShowcaseContainer.propTypes = {
   socketConnected: PropTypes.bool,
   thisShouldActuallyBeASagaButWhatever: PropTypes.func,
-  serviceRequest: PropTypes.func,
+  numberOfSlideshowPosts: PropTypes.func,
   startInstaSlideshow: PropTypes.func,
   slideshow: PropTypes.object,
   playlist: PropTypes.array,
@@ -89,4 +82,4 @@ ShowcaseContainer.defaultProps = {
   status: '',
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SocketConnector(ShowcaseContainer))
+export default connect(mapStateToProps, mapDispatchToProps)(ShowcaseContainer)

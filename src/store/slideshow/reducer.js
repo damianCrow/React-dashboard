@@ -5,6 +5,7 @@ import {
   SLIDESHOW_RESTART,
   SLIDESHOW_START,
   SLIDESHOW_RESUME,
+  SLIDESHOW_EDIT,
 } from './actions'
 
 
@@ -41,6 +42,12 @@ export const slideshowState = (service = '') => {
         return {
           ...state,
           status: 'paused',
+        }
+
+      case `${service}_${SLIDESHOW_EDIT}`:
+        return {
+          ...state,
+          max: action.max - 1,
         }
 
       default:

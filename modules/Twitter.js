@@ -26,11 +26,11 @@ class TwitterApi {
     this.port = port
   }
 
-  request() {
-    this.checkAuth().then(
-      this.socket.emit('successful.create-request.TWITTER')
-    )
-  }
+  // request() {
+  //   this.checkAuth().then(
+  //     this.socket.emit('successful.create-request.TWITTER')
+  //   )
+  // }
 
 
   checkAuth() {
@@ -178,17 +178,21 @@ class TwitterApi {
    *
    * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
    */
-  grabPosts() {
-    this.checkAuth().then(twitter => {
-      twitter.get('statuses/user_timeline', { screen_name: TWITTER_USER_NAME }, (error, posts, response) => {
-        if (!error) {
-          this.socket.emit('twitter-new-posts', { posts })
-        } else {
-          this.socket.emit('twitter-new-posts-error', { error })
-        }
+  tweets() {
+    return new Promise((resolve, reject) => {
+      this.checkAuth().then(twitter => {
+        twitter.get('statuses/user_timeline', { screen_name: TWITTER_USER_NAME }, (error, posts, response) => {
+          if (!error) {
+            resolve(posts)
+            // this.socket.emit('twitter-new-posts', { posts })
+          } else {
+            reject(error)
+            // this.socket.emit('twitter-new-posts-error', { error })
+          }
+        })
+      }).catch((error) => {
+        console.log('error', error)
       })
-    }).catch(function (error) {
-      console.log('error', error)
     })
   }
 

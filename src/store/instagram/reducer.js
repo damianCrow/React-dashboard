@@ -3,34 +3,32 @@ import { initialState } from './selectors'
 import { slideshowState } from '../slideshow/reducer'
 
 import {
-  INSTAGRAM_NEW_POSTS,
-  INSTAGRAM_NEW_POSTS_ERROR,
-  INSTAGRAM_UNAUTHORIZED,
+  SOCKET_INSTAGRAM_PULL_POSTS_SUCCESS,
 } from './actions'
 
 function instagramReducerWrapper() {
-  return function (state = initialState, action) {
+  return (state = initialState, action) => {
     switch (action.type) {
 
-      case INSTAGRAM_NEW_POSTS:
+      case SOCKET_INSTAGRAM_PULL_POSTS_SUCCESS:
         return {
           ...state,
-          posts: action.posts,
+          posts: action.payload,
           status: 'success',
         }
 
-      case INSTAGRAM_NEW_POSTS_ERROR:
-        return {
-          ...state,
-          message: action.message,
-        }
+      // case INSTAGRAM_NEW_POSTS_ERROR:
+      //   return {
+      //     ...state,
+      //     message: action.message,
+      //   }
 
-      case INSTAGRAM_UNAUTHORIZED:
-        return {
-          ...state,
-          // message: action.message,
-          status: 'auth-failed',
-        }
+      // case INSTAGRAM_UNAUTHORIZED:
+      //   return {
+      //     ...state,
+      //     // message: action.message,
+      //     status: 'auth-failed',
+      //   }
 
       default:
         return state

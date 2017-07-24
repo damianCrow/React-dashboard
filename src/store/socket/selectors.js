@@ -1,6 +1,5 @@
 export const initialState = {
   connected: false,
-  connection: {},
   requested: false,
 }
 

@@ -1,167 +1,110 @@
+const fs = require('fs')
+
 const SonosSystem = require('sonos-discovery')
 
-// If modifying these scopes, delete your previously saved credentials
-// at ~/.credentials/calendar-nodejs-quickstart.json
-// const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-
-// Example 1: Creating a new class (declaration-form)
-// ===============================================================
-
-// A base class is defined using the new reserved 'class' keyword
 class Sonos {
 
-  constructor(app, socket) {
+  constructor(app, sockets) {
     this.app = app
-    this.socket = socket
+    this.sockets = sockets
     this.maxGroups = 4
 
     this.discovery = new SonosSystem({
       port: 8080,
       cacheDir: './.cache',
     })
+
+    // const player = this.discovery.getAnyPlayer()
+
+
+    this.listenSaveEmit()
   }
 
-  request() {
-    this.discovery.on('initialized', () => {
-      this.socket.emit('successful.create-request.SONOS')
-      this.socket.emit('speakerZones', this.discovery.zones)
-    })
-  }
-
-
-  listenForState() {
+  listenSaveEmit() {
     console.log('server module sonos listenForState')
 
-    // const groups = []
-    // sonosGroups.forEach((group) => {
-    //   // console.log('group', group)
-    //   groups.push(
-    //     {
-    //       speakerNames: group.members.map((member) => member.roomName),
-    //       uuid: group.uuid,
-    //       state:
-    //     }
-    //   )
-    // })
+    this.discovery.on('initialized', () => {
+      // this.sockets.emit('speakerZones', this.discovery.zones)
+      // this.sockets.emit('SOCKET_DATA_EMIT', { service: 'SONOS', description: 'TOPOLOGY', payload: sonosGroups })
+      // console.log('discovery.players', this.discovery.players)
+      // this.saveToServer()
+    })
 
-
-   // let groupStates = []
-
-    this.discovery.on('topology-change', sonosGroups => {
-      // console.log('topology-change')
-
-      // console.log('sonosGroups', sonosGroups)
-      // console.log('sonosGroups', sonosGroups)
-      // console.log('sonosGroups.members', sonosGroups.members)
-      // console.log('sonosGroups.members()', sonosGroups.members())
-      // console.log('sonosGroups[0].members', sonosGroups[0].members)
-      // console.log('sonosGroups[1].members', sonosGroups[1].members)
-
+    this.discovery.on('topology-change', zones => {
       const releventChanges = []
-      sonosGroups.forEach((group) => {
+      zones.forEach(group => {
         // console.log('group', group)
         releventChanges.push(
           {
-            speakerNames: group.members.map((member) => member.roomName),
+            speakerNames: group.members.map(member => member.roomName),
             uuid: group.uuid,
           }
         )
       })
 
-      // sonosGroups.forEach((group, index) => {
-      //   // console.log('group', group)
-      //   groups[index] = () => { return group.members.forEach(function(member){console.log('member.roomName', member.roomName)}) }
-      // })
-
-      // console.log('groups', groups)
-
-      // const releventChanges = Object.assign(
-      //   { members: sonosGroups.map((group) => {
-      //     return Object.assign({ roomName: group.members.roomName }, group)
-      //   }) }, sonosGroups)
-
-
-      // console.log('topology-change releventChanges', releventChanges)
-      this.socket.emit('topology-change', sonosGroups)
-
-      // THIS SPITS OUT DETAILS ABOUT ALL GROUPS
-
-      // socketServer.sockets.emit('topology-change', discovery.players)
-      // console.log('topology-change (data)')
-      // console.log(data[0].coordinator.groupState)
-      // console.log('discovery.players[0].coordinator.roomName', discovery.players[0].coordinator.roomName)
-      // console.log('topology-change data: ', data)
-      // console.log('player.members:')
-
-      // console.log('sonosGroups', sonosGroups)
-
-      // this.socket.emit('action', { type: 'RECEIVE_SONOS_GROUPS', data: { data: sonosGroups, status: 'success' } })
-
-      // for (const player of data) {
-      //   // console.log(player)
-      //   // console.log(player.coordinator.roomName)
-      //   // console.log('-- members:')
-      //   for (const member of player.members) {
-      //     // console.log(member.roomName)
-      //   }
-      //   // console.log(player.members)
-      // }
+      this.sockets.emit('SOCKET_DATA_EMIT', { service: 'SONOS', description: 'TOPOLOGY', payload: zones })
     })
 
     this.discovery.on('transport-state', newSonosState => {
-      // THIS SPITS OUT EACH GROUPS DETAILS (EACH IN THEIR OWN CALL)
-
-      // if (groupStates[newSonosState.uuid]) {
-      //   groupStates[newSonosState.uuid] =
-      // }
-
-      // console.log(data)
-      // if (data.roomName === 'Back Studio') {
-      //   this.socket.emit('action', {type: 'MESSAGE', data: data.state})
-      // }
-      // console.log('transport-state')
-      // console.log('newSonosState', newSonosState)
-      // this.socket.emit(newSonosState)
-
       const releventChanges = newSonosState
       releventChanges.speakerNames = []
 
-      newSonosState.system.players.forEach((group) => {
+      newSonosState.system.players.forEach(group => {
         // console.log('group', group)
         releventChanges.speakerNames.push(group.roomName)
       })
 
-      // console.log('newSonosState.system', newSonosState.system.players)
-      this.socket.emit('transport-state', newSonosState)
+      // console.log('newSonosState.speakerNames', newSonosState.speakerNames)
+      this.sockets.emit('SOCKET_DATA_EMIT', { service: 'SONOS', description: 'TRANSPORT', payload: newSonosState })
     })
 
-    this.discovery.on('group-volume', function (data) {
+    this.discovery.on('group-volume', data => {
       // socketServer.sockets.emit('group-volume', data)
     })
 
-    this.discovery.on('volume-change', function (data) {
+    this.discovery.on('volume-change', data => {
       // socketServer.sockets.emit('volume', data)
     })
 
-    this.discovery.on('group-mute', function (data) {
+    this.discovery.on('group-mute', data => {
       // socketServer.sockets.emit('group-mute', data)
     })
 
-    this.discovery.on('mute-change', function (data) {
+    this.discovery.on('mute-change', data => {
       // socketServer.sockets.emit('mute', data)
     })
 
-    this.discovery.on('favorites', function (data) {
+    this.discovery.on('favorites', data => {
       // socketServer.sockets.emit('favorites', data)
     })
 
-    this.discovery.on('queue-change', function (player) {
+    this.discovery.on('queue-change', data => {
       // console.log('queue-changed', player.players)
       // delete queues[player.uuid]
       // loadQueue(player.uuid)
       //   .then(queue => {
       //     socketServer.sockets.emit('queue', { uuid: player.uuid, queue })
       //   })
+    })
+  }
+
+  zones() {
+    return new Promise((resolve, reject) => {
+      resolve(this.discovery.zones)
+    })
+  }
+
+  saveToServer(newSonosState) {
+    fs.readFile('./public/sonos.json', 'utf8', (err, data) => {
+      if (err) {
+        console.log(err)
+      } else {
+        fs.writeFile('./public/sonos.json', JSON.stringify(data), 'utf8', (err) => {
+          if (err) {
+            console.log(err)
+          }
+        })
+      }
     })
   }
 

@@ -3,38 +3,43 @@ export const SOCKET_CONNECT_REQUEST = 'SOCKET_CONNECT_REQUEST'
 export const SOCKET_CONNECT_SUCCESS = 'SOCKET_CONNECT_SUCCESS'
 export const SOCKET_CONNECT_FAILURE = 'SOCKET_CONNECT_FAILURE'
 
-export const socketConnectRequest = (data, resolve, reject) => ({
-  type: SOCKET_CONNECT_REQUEST,
-  data,
-  resolve,
-  reject,
-})
+export const SOCKET_DATA_REQUEST = 'SOCKET_DATA_REQUEST'
 
-export const socketConnectSuccess = socket => ({
+// Gets fired by saga on first socketDataRequest dispatch
+export const socketConnectSuccess = connected => ({
   type: SOCKET_CONNECT_SUCCESS,
-  socket,
+  connected,
 })
 
-export const socketConnectFailure = error => ({
-  type: SOCKET_CONNECT_FAILURE,
-  error,
+// Data example: { service: 'INSTAGRAM', request: 'grabPosts' }
+export const socketDataRequest = (data) => ({
+  type: SOCKET_DATA_REQUEST,
+  data,
 })
 
-export const SERVICE_REQUEST = 'SERVICE_REQUEST'
-export const SERVICE_SUCCESS = 'SERVICE_SUCCESS'
-export const SERVICE_FAILURE = 'SERVICE_FAILURE'
+// eg: 'SOCKET_INSTAGRAM_GRABPOSTS_SUCCESS'
+export const socketDataSuccess = (service, serverAction, request, id, payload) => {
+  return {
+    type: `SOCKET_${service}_${serverAction}_${request}_SUCCESS`,
+    id,
+    payload,
+  }
+}
 
-export const serviceRequest = (request) => ({
-  type: SERVICE_REQUEST,
-  request,
+export const socketDataFailed = (service, serverAction, request, id, message) => ({
+  type: `SOCKET_${service}_${serverAction}_${request}_FAILED`,
+  id,
+  message,
 })
 
-export const serviceSuccess = (service) => ({
-  type: `${service}_SERVICE_SUCCESS`,
-})
-
-export const serviceFailure = error => ({
-  type: SERVICE_FAILURE,
-  error,
-})
-
+// eg: 'SOCKET_INSTAGRAM_GRABPOSTS_SUCCESS'
+export const socketEmitReceived = (service, description, payload) => {
+  // console.log('socketEmitReceived, service', service)
+  // console.log('socketEmitReceived, description', description)
+  // console.log('socketEmitReceived, payload', payload)
+  // console.log(`SOCKET_${service}_EMIT_${description}_RECEIVED`)
+  return {
+    type: `SOCKET_${service}_EMIT_${description}_RECEIVED`,
+    payload,
+  }
+}
