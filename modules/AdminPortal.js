@@ -29,7 +29,6 @@ class AdminPortal {
     })
 
     this.app.post('/admin/playlist-update', upload.array(), (req, res) => {
-      // console.log('firing shizzz ', this.socket.connected)
       fs.readFile('./public/user-data/showcase-media.json', 'utf8', (err, data) => {
         if (err) {
           console.log(err)
