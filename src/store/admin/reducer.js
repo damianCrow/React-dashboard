@@ -10,6 +10,7 @@ import {
   UPLOAD_AND_OVERIDE_QUEUE,
   OVERIDE_QUEUE,
   GET_NEW_PLAYLIST,
+  SHOW_HIDE_PLATLIST_ITEM,
 } from './actions'
 
 const publishPlaylist = (overideQueue, playlist) => {
@@ -27,7 +28,7 @@ const publishPlaylist = (overideQueue, playlist) => {
   })
 }
 
-const updateServerFilesIndex = (newUploadObj) => {
+const updateServerFilesIndex = newUploadObj => {
   return fetch('/admin/files-index-update', {
     method: 'post',
     headers: {
@@ -35,6 +36,25 @@ const updateServerFilesIndex = (newUploadObj) => {
     },
     body: JSON.stringify(newUploadObj),
   })
+}
+
+const showHidePlaylistItem = (action) => {
+  let updatedPlaylist
+  action.playlist.map((item, idx) => {
+    if (item.id === action.payload) {
+      if (item.hidden === true) {
+        item.hidden = false
+        action.playlist.splice(idx, 1)
+
+        updatedPlaylist = [...action.playlist.filter(item => item.hidden === false), item, ...action.playlist.filter(item => item.hidden === true)]
+      } else {
+        item.hidden = true
+        action.playlist.splice(idx, 1)
+        updatedPlaylist = [...action.playlist, item]
+      }
+    }
+  })
+  return updatedPlaylist
 }
 
 const adminReducer = (state = initialState, action) => {
@@ -70,7 +90,14 @@ const adminReducer = (state = initialState, action) => {
     case DELETE_PLAYLIST_ITEM:
       return {
         ...state,
-        playlist: action.playlist.filter((item) => item.id !== action.payload),
+        playlist: action.playlist.filter(item => item.id !== action.payload),
+        saved: false,
+      }
+
+    case SHOW_HIDE_PLATLIST_ITEM:
+      return {
+        ...state,
+        playlist: showHidePlaylistItem(action),
         saved: false,
       }
 
@@ -109,7 +136,7 @@ const adminReducer = (state = initialState, action) => {
     case RECIEVED_PLAYLIST_FROM_SERVER:
       return {
         ...state,
-        playlist: [...state.playlist, ...action.payload],
+        playlist: [...state.playlist, ...action.payload.filter(item => item.hidden === false), ...action.payload.filter(item => item.hidden === true)],
         saved: true,
       }
 

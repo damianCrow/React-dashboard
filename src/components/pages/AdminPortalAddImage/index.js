@@ -51,6 +51,7 @@ class AdminPortalAddImageForm extends Component {
       }).then((response) => response.json()).then((data) => {
         const newObj = {
           id: shortid.generate(),
+          hidden: false,
           type: 'Image',
           title: data.imageTitle,
           url: data.imagePath,
@@ -67,6 +68,7 @@ class AdminPortalAddImageForm extends Component {
     } else {
       const newObj = {
         id: shortid.generate(),
+        hidden: false,
         type: 'Image',
         title: this.imageTitle.value,
         url: this.imageUrl.value,

@@ -40,7 +40,13 @@ class AdminPortal {
             if (err) {
               console.log(err)
             } else {
-              this.sockets.emit('SOCKET_DATA_EMIT', { service: 'ADMIN', description: 'PLAYLIST', payload: req.body })
+              const activePlaylistItems = []
+              req.body.playlist.forEach((item) => {
+                if (item.hidden === false) {
+                  activePlaylistItems.push(item)
+                }
+              })
+              this.sockets.emit('SOCKET_DATA_EMIT', { service: 'ADMIN', description: 'PLAYLIST', payload: { overideQueue: req.body.overideQueue, playlist: activePlaylistItems } })
             }
           })
         }

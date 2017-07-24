@@ -48,6 +48,7 @@ class AdminPortalAddVideoForm extends Component {
 
     const newObj = {
       id: shortid.generate(),
+      hidden: false,
       type: 'Video',
       title: this.videoTitle.value,
       url: this.videoUrl.value,
