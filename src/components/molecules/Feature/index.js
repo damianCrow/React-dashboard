@@ -17,7 +17,7 @@ const WrapperStyles = ({ fullWidth, wide, square, superWide, megaWide }) => css`
     content: " ";
     width: 100%;
     overflow: hidden;
-    ${megaWide && 'padding-top: 7.5%; box-shadow: 0 5px 10px rgba(0, 146, 143, .5), 0 0 8px 5px rgba(80, 184, 72, .5) inset;'}
+    ${megaWide && 'padding-top: 7.5%; perspective: 1000px;'}
     ${superWide && 'padding-top: 20%;'}
     ${wide && 'padding-top: 56.25%;'}
     ${square && 'padding-top: 100%;'}
