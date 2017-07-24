@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { font } from 'styled-theme'
-import { updatePlaylist, deletePlaylistItem, recievedPlaylistFromServer } from 'store/actions'
+import { updatePlaylist, deletePlaylistItem, recievedPlaylistFromServer, showHideItem } from 'store/actions'
 import { Button } from 'components'
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc'
 
@@ -25,6 +25,9 @@ const ListItem = styled.li`
  border-radius: 5px;
  list-style: none;
  position: relative;
+ &.hidden {
+  background: linear-gradient(to right, #C4C1C1 0%, #706E6E 100%);
+ }
 `
 const ListItemText = styled.span`
  height: 50%;
@@ -49,23 +52,52 @@ z-index: 2;
 top: 5px;
 `
 
-const SortableItem = SortableElement(({ value, deleteFunc, playlist }) => {
+const SortableItem = SortableElement(({ value, deleteFunc, showHideFunc, playlist }) => {
+  let isHidden
+  let itemClass
+  let btnColor
+  if (value.hidden) {
+    isHidden = 'Show'
+    itemClass = 'hidden'
+    btnColor = 'grayscale'
+  } else {
+    isHidden = 'Hide'
+    itemClass = 'not-hidden'
+    btnColor = 'primary'
+  }
   return (
-    <ListItem>
+    <ListItem className={itemClass}>
       <ListItemText>{value.title}</ListItemText>
       <ListItemText>{value.type}</ListItemText>
       <ListButton>
-        <Button id={value.id} height={30} palette="secondary" onClick={deleteFunc.bind(this, playlist)}>Delete</Button>
+        <Button
+          id={value.id}
+          height={30} palette={btnColor}
+          onClick={showHideFunc.bind(this, playlist)}
+        >{isHidden}</Button>
+        <Button
+          id={value.id}
+          height={30}
+          palette="secondary"
+          onClick={deleteFunc.bind(this, playlist)}
+        >Delete</Button>
       </ListButton>
     </ListItem>
   )
 })
 
-const SortableList = SortableContainer(({ items, deleteFunc }) => {
+const SortableList = SortableContainer(({ items, deleteFunc, showHideFunc }) => {
   return (
     <List>
       {items.map((value, index) => (
-        <SortableItem playlist={items} deleteFunc={deleteFunc} key={`item-${index}`} index={index} value={value} />
+        <SortableItem
+          playlist={items}
+          deleteFunc={deleteFunc}
+          showHideFunc={showHideFunc}
+          key={`item-${index}`}
+          index={index}
+          value={value}
+        />
       ))}
     </List>
   )
@@ -80,7 +112,8 @@ class SortableComponent extends Component {
         return response.json()
       }).then((j) => {
         this.props.recievedPlaylistFromServer(j.playlist)
-        localStorage.setItem('playList', JSON.stringify(j.playlist))
+        const playlistToStore = [...j.playlist.filter(item => item.hidden === false), ...j.playlist.filter(item => item.hidden === true)]
+        localStorage.setItem('playList', JSON.stringify(playlistToStore))
       })
     }
   }
@@ -101,6 +134,7 @@ class SortableComponent extends Component {
     return (
       <SortableList
         deleteFunc={this.props.deletePlaylistItem}
+        showHideFunc={this.props.showHideItem}
         items={this.props.playlist}
         pressDelay={200}
         onSortEnd={this.onSortEnd.bind(this)}
@@ -124,12 +158,14 @@ SortableComponent.propTypes = {
   saved: PropTypes.bool,
   updateAdminPlaylist: PropTypes.func,
   deletePlaylistItem: PropTypes.func,
+  showHideItem: PropTypes.func,
   recievedPlaylistFromServer: PropTypes.func,
 }
 
 const mapDispatchToProps = (dispatch) => ({
   updateAdminPlaylist: (updatedPlaylist, savedState) => dispatch(updatePlaylist(updatedPlaylist, savedState)),
   deletePlaylistItem: (playlist, item) => dispatch(deletePlaylistItem(playlist, item)),
+  showHideItem: (playlist, item) => dispatch(showHideItem(playlist, item)),
   recievedPlaylistFromServer: (playlistFromServer) => dispatch(recievedPlaylistFromServer(playlistFromServer)),
 })
 

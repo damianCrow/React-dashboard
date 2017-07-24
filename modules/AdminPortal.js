@@ -40,7 +40,13 @@ class AdminPortal {
             if (err) {
               console.log(err)
             } else {
-              this.socket.emit('GOT_NEW_PLAYLIST', req.body)
+              const activePlaylistItems = []
+              req.body.playlist.forEach((item) => {
+                if (item.hidden === false) {
+                  activePlaylistItems.push(item)
+                }
+              })
+              this.socket.emit('GOT_NEW_PLAYLIST', { overideQueue: req.body.overideQueue, playlist: activePlaylistItems })
             }
           })
         }

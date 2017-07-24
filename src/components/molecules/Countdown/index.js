@@ -7,21 +7,21 @@ import { Heading, Icon } from 'components'
 
 const Wrapper = styled.div`
   position: absolute;
-  width: 100%;
+  width: calc(100% + 2px);
   height: calc(100% + 2px);
   transform-style: preserve-3d;
   transition: all 2s ease-in-out;
   transform-origin: 100% 40.5px;
   border: 1px solid #037771;
-  transform: perspective(800px) translateY(-2px);
+  transform: perspective(800px) translate(-1px, -2px);
   border-radius: 5px;
 
   &.flip {  
-    transform: rotateX(-180deg) translateY(-2px) perspective(800px);
+    transform: rotateX(-180deg) translate(-1px, -2px) perspective(800px);
   }
 `
 const WrapperFront = styled.div`
-  position: absolute
+  position: absolute;
   width: 100%;
   height: 100%;
   background: linear-gradient(to right, #00928f 0%, #50b848 100%);
