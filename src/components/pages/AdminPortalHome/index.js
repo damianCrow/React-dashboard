@@ -17,7 +17,7 @@ class adminPortalHome extends Component {
   }
 
   handlePusblish() {
-    this.props.publishPlaylist()
+    this.props.publishPlaylist(false)
     // this.props.serviceRequest({ playlist: this.props.playlist, overideQueue: false })
   }
 

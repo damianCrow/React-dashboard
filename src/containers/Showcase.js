@@ -14,7 +14,7 @@ class ShowcaseContainer extends Component {
     }).then((response) => { return response.json() })
       .catch(err => console.log('showcase fetch err: ', err))
       .then((data) => {
-        this.props.thisShouldActuallyBeASagaButWhatever(data.playlist)
+        this.props.thisShouldActuallyBeASagaButWhatever(data.playlist.filter(item => item.hidden === false))
         this.props.startInstaSlideshow(this.props.playlist.length)
       })
   }

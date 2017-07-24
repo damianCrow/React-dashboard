@@ -14,7 +14,13 @@ const IconWrapper = styled.g`
   animation-direction: normal;
 `
 
-const Drops = styled.path`
+// const Cloud = styled.path`
+//   fill-opacity: 1;
+//   stroke-width: 0;
+//   stroke-color: ${props => props.color ? props.color : '#000'};
+// `
+
+const EntireIcon = styled.path`
   fill-opacity: 1;
   fill: ${props => props.color ? props.color : '#000'};
   stroke-width: 0;
@@ -82,11 +88,11 @@ class RainIcon extends Component {
       <IconWrapper>
         <g>
           <g>
-            <Drops {...this.props} innerRef={e => this.eachDrop.push(e)} d="M57 57.7l-2.2 2c-1 1.3-1 3.2 0 4.3 1.2 1.2 3 1.2 4.3 0 1.3-1 1.3-3 0-4.2l-2-2z" />
-            <Drops {...this.props} innerRef={e => this.eachDrop.push(e)} d="M50 57.7l-2 2C46.8 61 46.8 63 48 64c1 1.2 3 1.2 4.2 0s1.2-3 0-4.2l-2-2z" />
-            <Drops {...this.props} innerRef={e => this.eachDrop.push(e)} d="M43 57.7l-2 2C39.6 61 39.6 63 41 64s3 1.2 4.2 0c1-1 1-3 0-4.2l-2.2-2z" />
+            <EntireIcon {...this.props} innerRef={e => this.eachDrop.push(e)} d="M57 57.7l-2.2 2c-1 1.3-1 3.2 0 4.3 1.2 1.2 3 1.2 4.3 0 1.3-1 1.3-3 0-4.2l-2-2z" />
+            <EntireIcon {...this.props} innerRef={e => this.eachDrop.push(e)} d="M50 57.7l-2 2C46.8 61 46.8 63 48 64c1 1.2 3 1.2 4.2 0s1.2-3 0-4.2l-2-2z" />
+            <EntireIcon {...this.props} innerRef={e => this.eachDrop.push(e)} d="M43 57.7l-2 2C39.6 61 39.6 63 41 64s3 1.2 4.2 0c1-1 1-3 0-4.2l-2.2-2z" />
           </g>
-          <path d="M60 41.6c-.8 0-1.4 0-2 .2-2.8-4.8-8-8.2-14-8.2-9 0-16 7.2-16 16 0 6 3.2 11.2 8 14 .4-1.3 1-2.5 2-3.5-3.6-2-6-6-6-10.4 0-6.6 5.3-12 12-12 5.6 0 10.4 4 11.6 9.3 1.3-1 2.7-1.4 4.3-1.4 4.4 0 8 3.6 8 8 0 3.5-2.2 6.4-5.3 7.5.8 1.3 1.2 2.6 1.2 4 4.6-1.7 8-6 8-11.4 0-6.6-5.4-12-12-12z" />
+          <EntireIcon {...this.props} d="M60 41.6c-.8 0-1.4 0-2 .2-2.8-4.8-8-8.2-14-8.2-9 0-16 7.2-16 16 0 6 3.2 11.2 8 14 .4-1.3 1-2.5 2-3.5-3.6-2-6-6-6-10.4 0-6.6 5.3-12 12-12 5.6 0 10.4 4 11.6 9.3 1.3-1 2.7-1.4 4.3-1.4 4.4 0 8 3.6 8 8 0 3.5-2.2 6.4-5.3 7.5.8 1.3 1.2 2.6 1.2 4 4.6-1.7 8-6 8-11.4 0-6.6-5.4-12-12-12z" />
         </g>
       </IconWrapper>
     )
