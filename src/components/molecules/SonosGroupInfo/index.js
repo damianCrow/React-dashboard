@@ -21,7 +21,7 @@ const SpeakerInfo = styled.div`
   background: rgba(0, 0, 0, .5);
   color: white;
   align-self: center;
-  font-size: .75rem;
+  font-size: .67rem;
   padding: .25rem 1rem;
   margin-bottom: 1rem;
   text-transform: uppercase;

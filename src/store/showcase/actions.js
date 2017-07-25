@@ -19,4 +19,3 @@ export const newShowcasePostsError = (err) => ({
   type: SHOWCASE_NEW_POSTS_ERROR,
   message: err,
 })
-

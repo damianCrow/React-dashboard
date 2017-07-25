@@ -66,7 +66,7 @@ function listenForUpdates(socket) {
       // console.log('event', event)
       // puts event payload into the channel
       // this allows a Saga to take this payload from the returned channel
-      console.log('SOCKET_DATA_EMIT recived, event: ', event)
+      // console.log('SOCKET_DATA_EMIT recived, event: ', event)
       emit(actions.socketEmitReceived(event.service, event.description, event.payload))
     }
 

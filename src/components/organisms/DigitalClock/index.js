@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-
 import moment from 'moment-timezone'
-
 import { fonts } from 'components/globals'
 
 const Wrapper = styled.div`
@@ -18,31 +16,30 @@ const Wrapper = styled.div`
     margin-left: 1rem;
   }
 `
-
 class DigitalClock extends Component {
 
   constructor(props) {
     super(props)
 
     this.state = {
-      time: new Date(),
+      theDateUK: new Date(),
     }
+    this.updateTimeUK = this.updateTimeUK.bind(this)
   }
 
   componentDidMount() {
-    setInterval(this.update(), 1000)
+    requestAnimationFrame(this.updateTimeUK)
   }
 
-  update() {
-    this.setState({
-      time: new Date(),
-    })
+  updateTimeUK() {
+    this.setState({ theDateUK: new Date() })
+    requestAnimationFrame(this.updateTimeUK)
   }
 
   render() {
     return (
       <Wrapper>
-        <span>{moment(this.state.time).format('HH:mm')}</span>
+        <span>{moment(this.state.theDateUK).format('HH:mm')}</span>
         {/* <span>🇭🇰 {moment(this.state.time).tz('Asia/Hong_Kong').format('LT')}</span>
         <span>🇩🇪 {moment(this.state.time).tz('Europe/Berlin').format('LT')}</span> */}
       </Wrapper>

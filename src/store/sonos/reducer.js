@@ -84,6 +84,11 @@ function mergeTop(newState, oldState, key) {
 
 const updatePreviousTrack = (action, state) => {
   let updateObj = {}
+
+  if (!action.speakers) {
+    action.speakers = action.payload
+  }
+
   Object.keys(state.previousTracksObj).forEach((key) => {
     if (action.speakers.uuid === key) {
       if (state.previousTracksObj[key].length > 5) {
@@ -111,7 +116,6 @@ export default (state = initialState, action) => {
 
       // Check if exists in array and merge
     case SOCKET_SONOS_EMIT_TRANSPORT_RECEIVED:
-      // console.log('SOCKET_SONOS_EMIT_TRANSPORT_RECEIVED action', action)
       return {
         ...state,
         speakers: mergeSonos([action.payload], state.speakers, 'uuid'),
