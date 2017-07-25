@@ -46,7 +46,7 @@ const FeatureList = ({ ...props }) => {
       </GridRow>
       <GridRow>
         <Feature superWide>
-          {/* <Harvest /> */}
+          <Harvest />
         </Feature>
       </GridRow>
     </Grid>

@@ -41,7 +41,7 @@ const services = {
   admin: new AdminPortal(app, sockets),
   twitter: new TwitterApi(app, sockets),
   sonos: new Sonos(app, sockets),
-  // harvest: new Harvest(this.app, this.port),
+  harvest: new Harvest(app, sockets),
 }
 
 const socketHandler = new Sockets(sockets)

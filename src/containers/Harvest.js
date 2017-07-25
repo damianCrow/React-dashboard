@@ -1,23 +1,24 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { serviceRequest } from 'store/actions'
+import { socketDataRequest } from 'store/actions'
 import { Auth, TimesheetLeaderBoard } from 'components'
 
 class HarvestContainer extends Component {
 
+
   componentDidMount() {
-    this.props.socketConnected && this.props.serviceRequest()
+    this.props.serviceRequest()
   }
 
-  componentWillReceiveProps(nextProps) {
-    // Try and move this logic back to the HOC container
-    const { socketConnected, serviceRequest, posts } = nextProps
+  // componentWillReceiveProps(nextProps) {
+  //   // Try and move this logic back to the HOC container
+  //   const { socketConnected, serviceRequest, posts } = nextProps
 
-    if (socketConnected && !this.props.socketConnected) {
-      serviceRequest()
-    }
-  }
+  //   if (socketConnected && !this.props.socketConnected) {
+  //     serviceRequest()
+  //   }
+  // }
 
   render() {
     const { posts, status, message } = this.props
@@ -49,7 +50,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  serviceRequest: () => dispatch(serviceRequest('HARVEST')),
+  serviceRequest: () => dispatch(socketDataRequest({ service: 'HARVEST', serverAction: 'pull', request: 'getUsersAndTimes' })),
 })
 
 HarvestContainer.propTypes = {

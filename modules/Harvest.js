@@ -21,12 +21,18 @@ class HarvestTimesheets {
     this.app = app
     this.socket = socket
     this.credentials = {}
+
+    this.setupAccessForNewToken()
   }
 
-  request() {
-    this.checkAuth().then(
-      this.socket.emit('successful.create-request.HARVEST')
-    )
+  request(newRequest) {
+    console.log('harvest newRequest: ', newRequest)
+    return new Promise((resolve, reject) => {
+      this[newRequest]()
+        .then((data) => {
+          resolve(data)
+        })
+    })
   }
 
   checkAuth() {
@@ -69,7 +75,8 @@ class HarvestTimesheets {
         if (err) {
           // No token stored, so get a new one.
           // Setup to catch authorize user in the consuctor
-          this.setupAccessForNewToken()
+          // this.setupAccessForNewToken()
+          this.generateAuthUrl()
           reject(err)
         } else {
           // We have a processed token stored and ready to go, use it.
@@ -105,27 +112,32 @@ class HarvestTimesheets {
     }
   }
 
+  generateAuthUrl() {
+    // TODO: Send auth url via sockets to front end button
+    const authUrl = `${HARVEST_HOST}/oauth2/authorize?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
+    console.log('authUrl', authUrl)
+  }
+
   setupAccessForNewToken() {
     console.log('setupAccessForNewToken')
     // Dispatch a frontend action to push the auth link!!!!!!!!!
-    this.socket.emit('action', {
-      type: 'NEED_TO_AUTH_HARVEST',
-      data: { status: 'auth-failed' },
-    })
+
+    // this.socket.emit('action', {
+    //   type: 'NEED_TO_AUTH_HARVEST',
+    //   data: { status: 'auth-failed' },
+    // })
 
     // Send the user to harvest.getAccessTokenURL()) and grab the access code passed as a get parameter
     // e.g. By running an express.js server at redirect_url
     // const accessCode = req.query.code
-
-    const authUrl = `${HARVEST_HOST}'/oauth2/authorize?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
-
-    this.app.get('/authorize_harvest', (req, res) => {
-      // This will redirect back to our setup '/handle_calendar_auth' with the code
-      res.redirect(authUrl)
-    })
+    // this.app.get('/authorize_harvest', (req, res) => {
+    //   // This will redirect back to our setup '/handle_calendar_auth' with the code
+    //   res.redirect(authUrl)
+    // })
 
     this.app.get('/harvest_auth', (req, res) => {
       const accessCode = req.query.code
+      console.log('harvest auth accessCode = ', accessCode)
       // This needs to go back to autherise and fire our request with sucess
       this.getNewToken(accessCode, 'access')
         .then(tokenDetails => {
@@ -147,9 +159,7 @@ class HarvestTimesheets {
    */
   getNewToken(code, codeType) {
     return new Promise((resolve, reject) => {
-      // console.log(`--GET NEW ACCESS TOKEN WITH ${codeType} CODE--`)
-      // console.log('accessCode', code)
-      console.log('getNewToken')
+      console.log(`--GET NEW HARVEST ACCESS TOKEN WITH ${codeType} CODE (getNewToken)--`)
       console.log('code', code)
       console.log('codeType', codeType)
 
@@ -160,7 +170,7 @@ class HarvestTimesheets {
 
       const harvest = new Harvest({
         subdomain: this.credentials.subdomain,
-        redirect_uri: this.credentials.redirect_uri,
+        redirectUri: this.credentials.redirect_uri,
         identifier: this.credentials.client_id,
         secret: this.credentials.secret,
         debug: true,
@@ -173,10 +183,14 @@ class HarvestTimesheets {
         tokenOptions.code = code
         tokenOptions.grant_type = 'authorization_code'
         tokenOptions.redirect_uri = this.credentials.redirect_uri
+        harvest.parseAccessCode(code, function(err, message) {
+          console.log('parseAccessCode err ', err)
+          console.log('parseAccessCode message ', message)
+        })
       }
 
-      // TODO: Does this do anything?
-      restler.post(`${harvest.host}/oauth2/token`, {
+     // TODO: Does this do anything?
+      restler.post(`${this.harvest.host}/oauth2/token`, {
         data: tokenOptions,
       }).on('complete', response => {
         console.log('restler response', response)
@@ -206,34 +220,10 @@ class HarvestTimesheets {
   }
 
   getUsersAndTimes() {
-    this.checkAuth().then((accessToken) => {
-      console.log('--AUTH FINE GETTING DATA--')
-
-      const harvest = new Harvest({
-        subdomain: this.credentials.subdomain,
-        access_token: accessToken,
+    return new Promise((resolve, reject) => {
+      doshit().then(shittopass => {
+        resolve(shittopass)
       })
-
-      console.log('about to fire getUserList')
-      this.getUserList(harvest)
-        .then(users => {
-          const userEntryRequests = users.map((user) => this.getUserTime(harvest, user.user))
-          console.log('BEFORE PROMISE ALL')
-          Promise.all(userEntryRequests)
-            .then(userWithEntries => {
-              this.socket.emit('harvest-new-posts', {
-                users: this.calculateUserTime(userWithEntries),
-              })
-            })
-            .catch(reason => {
-              console.log(reason)
-            })
-        })
-        .catch(error => {
-          console.log(error)
-        })
-    }).catch((error) => {
-      console.log('error', error)
     })
   }
 
