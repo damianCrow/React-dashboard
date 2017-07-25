@@ -21,7 +21,7 @@ class Sockets {
    messages.
    */
   requests(services) {
-    console.log('socketserver requests')
+    // console.log('socketserver requests')
     this.io.on('connection', socket => {
       console.log('socket connected')
       //  TODO: Send a fail or success notfication.
@@ -39,7 +39,7 @@ class Sockets {
     // console.log('this.io.sockets', this.io.sockets)
     socket.on('SOCKET_DATA_REQUEST', requestMeta => {
       // console.log('services', services)
-      console.log('requestMeta', requestMeta)
+      // console.log('requestMeta', requestMeta)
       // console.log('pull-request, requestMeta.service:', requestMeta.service)
       const requestedService = Object.keys(services)
         .find((service) => service.toUpperCase() === requestMeta.data.service)
@@ -67,8 +67,8 @@ class Sockets {
       if (requestMeta.data.serverAction === 'emit') {
         // 
       } else {
-        console.log('requestedService', requestedService)
-        console.log('requestMeta.data.request', requestMeta.data.request)
+        // console.log('requestedService', requestedService)
+        // console.log('requestMeta.data.request', requestMeta.data.request)
         services[requestedService][requestMeta.data.request]()
           .then(payload => successReply(payload))
           .catch(error => failReply(error))
