@@ -2,8 +2,8 @@ const fs = require('fs')
 const Harvest = require('harvest')
 const restler = require('restler')
 const moment = require('moment')
-
 const sumBy = require('lodash/sumBy')
+const oauth2 = require('simple-oauth2')
 
 
 // If modifying these scopes, delete your previously saved credentials
@@ -22,7 +22,60 @@ class HarvestTimesheets {
     this.socket = socket
     this.credentials = {}
 
-    this.setupAccessForNewToken()
+    // this.setupAccessForNewToken()
+    this.oauthSetup()
+  }
+
+  oauthSetup() {
+
+    const credentials = {
+      client: {
+        id: 'WWbd33QH0WQ0vIDvARW0DQ',
+        secret: 'QK8jl37RAv4Gh9NQm61JYH2aSrRAKG8vI3N3HfSSdmHp8nvQ9UV8LYE41uyX2XVFHJR21S2cqU7zLemE2_O3EA',
+      },
+      auth: {
+        tokenHost: 'https://interstateteam.harvestapp.com',
+        tokenPath: '/oauth2/authorize',
+      },
+    }
+
+    const oauth2 = oauth2Loaded.create(credentials)
+
+    // Authorization oauth2 URI
+    const authorizationUri = oauth2Loaded.authorizationCode.authorizeURL({
+      redirect_uri: 'http://localhost:3000/callback',
+      scope: '<scope>',
+      state: '<state>',
+    })
+
+    // Redirect example using Express (see http://expressjs.com/api.html#res.redirect)
+    res.redirect(authorizationUri)
+
+    // Get the access token object (the authorization code is given from the previous step).
+    const tokenConfig = {
+      code: '3y0WHHnQZ2_2eqlF018itU0BJUsWoyzvVVUiaRd0KejpYsiYjjXT9c0Ivoe5C11K-2IMFCI1wS3o9Ye-gNF7mg',
+      redirect_uri: 'http://localhost:3000/harvest_auth',
+    };
+
+    // Callbacks
+    // Save the access token
+    oauth2.authorizationCode.getToken(tokenConfig, (error, result) => {
+      if (error) {
+        return console.log('Access Token Error', error.message)
+      }
+
+      const token = oauth2.accessToken.create(result)
+    })
+
+    // Promises
+    // Save the access token
+    oauth2.authorizationCode.getToken(tokenConfig)
+      .then((result) => {
+        const token = oauth2.accessToken.create(result)
+      })
+      .catch((error) => {
+        console.log('Access Token Error', error.message)
+      })
   }
 
   request(newRequest) {
@@ -176,6 +229,8 @@ class HarvestTimesheets {
         debug: true,
       })
 
+      console.log('this.credentials', this.credentials)
+
       if (codeType === 'refresh') {
         tokenOptions.refresh_token = code
         tokenOptions.grant_type = 'refresh_token'
@@ -183,14 +238,14 @@ class HarvestTimesheets {
         tokenOptions.code = code
         tokenOptions.grant_type = 'authorization_code'
         tokenOptions.redirect_uri = this.credentials.redirect_uri
-        harvest.parseAccessCode(code, function(err, message) {
-          console.log('parseAccessCode err ', err)
-          console.log('parseAccessCode message ', message)
-        })
+        // harvest.parseAccessCode(code, function(err, message) {
+        //   console.log('parseAccessCode err ', err)
+        //   console.log('parseAccessCode message ', message)
+        // })
       }
 
      // TODO: Does this do anything?
-      restler.post(`${this.harvest.host}/oauth2/token`, {
+      restler.post(`${harvest.host}/oauth2/token`, {
         data: tokenOptions,
       }).on('complete', response => {
         console.log('restler response', response)
@@ -221,15 +276,46 @@ class HarvestTimesheets {
 
   getUsersAndTimes() {
     return new Promise((resolve, reject) => {
-      doshit().then(shittopass => {
-        resolve(shittopass)
+      this.checkAuth().then((accessToken) => {
+
+        console.log('--AUTH FINE GETTING DATA--')
+        console.log('this.credentials.subdomain', this.credentials.subdomain)
+        console.log('accessToken', accessToken)
+
+        // console.log('Harvest', Harvest)
+
+        const harvest = new Harvest({
+          subdomain: this.credentials.subdomain,
+          accessToken: accessToken,
+        })
+
+        console.log('about to fire getUserList')
+        this.getUserList(harvest)
+          .then(users => {
+            const userEntryRequests = users.map((user) => this.getUserTime(harvest, user.user))
+            console.log('BEFORE PROMISE ALL')
+            Promise.all(userEntryRequests)
+              .then(userWithEntries => {
+                this.socket.emit('harvest-new-posts', {
+                  users: this.calculateUserTime(userWithEntries),
+                })
+              })
+              .catch(reason => {
+                console.log(reason)
+              })
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      }).catch((error) => {
+        console.log('error', error)
       })
     })
   }
 
   getUserList(harvest) {
     return new Promise((resolve, reject) => {
-      const People = harvest.People
+      const People = harvest.users
       People.list({}, (err, users) => {
         if (err) {
           reject(JSON.stringify(err))
