@@ -111,8 +111,8 @@ class TimesheetLeaderBoard extends Component {
     return (
       <HarvestWrapper>
         {(users.sort((a, b) => b.totalHours.thisWorkWeek - a.totalHours.thisWorkWeek)).map((user) => (
-          <HarvestEntry>
-            <UserCircle key={user.id} email={user.email} />
+          <HarvestEntry key={user.id}>
+            <UserCircle email={user.email} />
             <HarvestHours>
               {user.totalHours.thisWorkWeek}
               <HoursAbrv title="hours">hrs</HoursAbrv>
