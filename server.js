@@ -42,6 +42,7 @@ const services = {
   twitter: new TwitterApi(app, sockets),
   sonos: new Sonos(app, sockets),
   harvest: new Harvest(app, sockets),
+  google: new Google(app, sockets),
 }
 
 const socketHandler = new Sockets(sockets)

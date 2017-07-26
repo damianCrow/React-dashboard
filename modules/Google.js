@@ -23,6 +23,15 @@ class Google {
     this.socket = socket
   }
 
+  // request(newRequest) {
+  //   console.log('google newRequest: ', newRequest)
+  //   return new Promise((resolve, reject) => {
+  //     this[newRequest]()
+  //       .then(data => resolve(data))
+  //       .catch(err => reject(err))
+  //   })
+  // }
+
   handleRequests(request, payloadPackage) {
     this.checkAuth().then((auth) => {
       // this.socket.emit('successful.create-request.GOOGLE')
@@ -196,40 +205,43 @@ class Google {
    *
    * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
    */
-  getUsers(auth, users) {
-    const service = google.admin('directory_v1')
+  getUsers(users) {
+    return new Promise((resolve, reject) => {
+      this.checkAuth().then((auth) => {
+        const service = google.admin('directory_v1')
+        // console.log('google getUsers users: ', users)
+        // WEBHOOK CHANNEL PULL RESOURCES
+        // http://stackoverflow.com/questions/38447589/synchronize-resources-with-google-calendar-for-node-js
+        // http://stackoverflow.com/questions/35048160/googleapi-nodejs-calendar-events-watch-gets-error-push-webhookurlnothttps-or-pu
+        // http://stackoverflow.com/questions/35434828/google-api-calendar-watch-doesnt-work-but-channel-is-created
+        let i
+        const userRequests = []
+        // const userInfo = []
+        for (i = 0; i < users.length; i += 1) {
+          userRequests[i] = Promise.all([
+            this.getUserNames(service, auth, users[i]).catch((Error) => Error),
+            this.getUsersPictures(service, auth, users[i]).catch((Error) => Error),
+          ]).then(values => {
+            // console.log('values[0] unfiltered: ', values[0])
+            // const cleanValues = values.map((value) => {
+            //   // console.log(value instanceof Error)
+            //   if (value.status instanceof Error) {
+            //     return ''
+            //   }
+            //   return value
+            // })
+            // // console.log('values[0] filtered: ', values[0])
+            return Object.assign({}, { name: values[0].name }, { image: values[1].image }, { email: values[0].email })
+          })
+        }
 
-    // console.log('google getUsers users: ', users)
-    // WEBHOOK CHANNEL PULL RESOURCES
-    // http://stackoverflow.com/questions/38447589/synchronize-resources-with-google-calendar-for-node-js
-    // http://stackoverflow.com/questions/35048160/googleapi-nodejs-calendar-events-watch-gets-error-push-webhookurlnothttps-or-pu
-    // http://stackoverflow.com/questions/35434828/google-api-calendar-watch-doesnt-work-but-channel-is-created
-    let i
-    const userRequests = []
-    // const userInfo = []
-    for (i = 0; i < users.length; i += 1) {
-      userRequests[i] = Promise.all([
-        this.getUserNames(service, auth, users[i]).catch((Error) => Error),
-        this.getUsersPictures(service, auth, users[i]).catch((Error) => Error),
-      ]).then(values => {
-        // console.log('values[0] unfiltered: ', values[0])
-        // const cleanValues = values.map((value) => {
-        //   // console.log(value instanceof Error)
-        //   if (value.status instanceof Error) {
-        //     return ''
-        //   }
-        //   return value
-        // })
-        // // console.log('values[0] filtered: ', values[0])
-        return Object.assign({}, { name: values[0].name }, { image: values[1].image }, { email: values[0].email })
+        Promise.all(userRequests).then(values => {
+          // console.log('overall userRequests promise all complete', values[0].name.fullName)
+          resolve(values)
+        }).catch(err => {
+          // console.log(reason)
+        })
       })
-    }
-
-    Promise.all(userRequests).then(values => {
-      // console.log('overall userRequests promise all complete', values[0].name.fullName)
-      this.socket.emit('google-got-users', values)
-    }).catch(reason => {
-      // console.log(reason)
     })
     // this.socket.emit('google-got-users', userInfo)
   }
