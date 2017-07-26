@@ -1,6 +1,4 @@
 const fs = require('fs')
-const Harvest = require('harvest')
-// const restler = require('restler')
 const moment = require('moment')
 const sumBy = require('lodash/sumBy')
 const oauth2 = require('simple-oauth2')
