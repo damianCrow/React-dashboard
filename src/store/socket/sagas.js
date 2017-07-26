@@ -25,7 +25,7 @@ function requestAndReceive(socket, actionRequest) {
   // Tell the server we want to connect the "stream"
   // socket.emit('SOCKET_DATA_REQUEST', { service: 'INSTAGRAM', request: '', package: {} })
   const channelId = shortid.generate()
-  socket.emit('SOCKET_DATA_REQUEST', { ...actionRequest, id: channelId })
+  socket.emit('SOCKET_DATA_REQUEST', { payload: '', ...actionRequest, id: channelId })
   // Return redux-saga's eventChannel which handles socket actions
   return eventChannel(emit => {
     const sucessHandler = (event) => {

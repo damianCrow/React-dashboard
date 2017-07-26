@@ -1,9 +1,10 @@
 const fs = require('fs')
 const Harvest = require('harvest')
-const restler = require('restler')
+// const restler = require('restler')
 const moment = require('moment')
-
 const sumBy = require('lodash/sumBy')
+const oauth2 = require('simple-oauth2')
+const request = require('request-promise')
 
 
 // If modifying these scopes, delete your previously saved credentials
@@ -22,22 +23,29 @@ class HarvestTimesheets {
     this.socket = socket
     this.credentials = {}
 
-    this.setupAccessForNewToken()
+    // this.setupAccessForNewToken()
+    // this.oauthSetup()
+
+    // this.checkAuth()
+    //   .then(accessToken => {
+    //     this.testoAuth(accessToken)
+    //   })
+    //   .catch(err => {
+    //     console.log(err)
+    //   })
   }
 
   request(newRequest) {
     console.log('harvest newRequest: ', newRequest)
     return new Promise((resolve, reject) => {
       this[newRequest]()
-        .then((data) => {
-          resolve(data)
-        })
+        .then(data => resolve(data))
+        .catch(err => reject(err))
     })
   }
 
   checkAuth() {
     return new Promise((resolve, reject) => {
-
       // Load client secrets from a local file.
       fs.readFile(CLIENT_DETAILS, (err, content) => {
         if (err) {
@@ -81,7 +89,8 @@ class HarvestTimesheets {
         } else {
           // We have a processed token stored and ready to go, use it.
           // harvest.parseAccessCode(JSON.parse(token))
-          this.checkAccessToken(resolve, reject, JSON.parse(token))
+          resolve(JSON.parse(token).access_token)
+          // this.checkAccessToken(resolve, reject, JSON.parse(token))
           // resolveAuth(JSON.parse(token).access_token)
         }
       })
@@ -99,16 +108,18 @@ class HarvestTimesheets {
     } else {
       // Token expired
       console.log('token expired, get new token using refresh token')
+      // TODO: This never worked, so work out what we need to do.
+
       // Get a new token using the refresh token
-      this.getNewToken(tokenDetails.refresh_token, 'refresh')
-        .then(tokenDetails => {
-          this.storeToken(tokenDetails)
-          resolveAuth(tokenDetails.access_token)
-        })
-        .catch(error => {
-          console.log(error)
-          rejectAuth(error)
-        })
+      // this.getNewToken(tokenDetails.refresh_token, 'refresh')
+      //   .then(tokenDetails => {
+      //     this.storeToken(tokenDetails)
+      //     resolveAuth(tokenDetails.access_token)
+      //   })
+      //   .catch(error => {
+      //     console.log(error)
+      //     rejectAuth(error)
+      //   })
     }
   }
 
@@ -139,7 +150,7 @@ class HarvestTimesheets {
       const accessCode = req.query.code
       console.log('harvest auth accessCode = ', accessCode)
       // This needs to go back to autherise and fire our request with sucess
-      this.getNewToken(accessCode, 'access')
+      this.getNewAccessToken(accessCode)
         .then(tokenDetails => {
           this.storeToken(tokenDetails)
           res.redirect('/')
@@ -157,54 +168,75 @@ class HarvestTimesheets {
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewToken(code, codeType) {
+  getNewAccessToken(accessCode) {
     return new Promise((resolve, reject) => {
-      console.log(`--GET NEW HARVEST ACCESS TOKEN WITH ${codeType} CODE (getNewToken)--`)
-      console.log('code', code)
-      console.log('codeType', codeType)
+      console.log('--GET NEW HARVEST ACCESS TOKEN WITH ACCESS CODE (getNewToken)--')
+      const credentials = {
+        client: {
+          id: this.credentials.client_id,
+          secret: this.credentials.secret,
+        },
+        auth: {
+          tokenHost: `https://${this.credentials.subdomain}.harvestapp.com`,
+          tokenPath: '/oauth2/token',
+          authorizePath: 'https://api.harvestapp.com/oauth2/authorize',
+        },
+        http: {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      }
 
-      const tokenOptions = {
+      const oauth2Loaded = oauth2.create(credentials)
+
+      // Get the access token object (the authorization code is given from the previous step).
+      const tokenConfig = {
+        code: accessCode,
+        redirect_uri: this.credentials.redirect_uri,
         client_id: this.credentials.client_id,
         client_secret: this.credentials.secret,
+        grant_type: 'authorization_code',
       }
 
-      const harvest = new Harvest({
-        subdomain: this.credentials.subdomain,
-        redirectUri: this.credentials.redirect_uri,
-        identifier: this.credentials.client_id,
-        secret: this.credentials.secret,
-        debug: true,
-      })
-
-      if (codeType === 'refresh') {
-        tokenOptions.refresh_token = code
-        tokenOptions.grant_type = 'refresh_token'
-      } else if (codeType === 'access') {
-        tokenOptions.code = code
-        tokenOptions.grant_type = 'authorization_code'
-        tokenOptions.redirect_uri = this.credentials.redirect_uri
-        harvest.parseAccessCode(code, function(err, message) {
-          console.log('parseAccessCode err ', err)
-          console.log('parseAccessCode message ', message)
+      // Promises
+      // Save the access token
+      oauth2Loaded.authorizationCode.getToken(tokenConfig)
+        .then((result) => {
+          console.log('result', result)
+          // const token = oauth2Loaded.accessToken.create(result)
+          resolve(result)
         })
+        .catch((error) => {
+          reject(`Access Token Error: ' ${error.message}`)
+        })
+    })
+  }
+
+  testoAuth(accessToken) {
+    this.harvestRequest('/account/who_am_i', accessToken)
+      .then(response => console.log(response))
+      .catch(err => console.log(err))
+  }
+
+  harvestRequest(harvestRequest, accessToken) {
+    return new Promise((resolve, reject) => {
+      const options = {
+        // uri: `https://${this.credentials.subdomain}.harvestapp.com/account/who_am_i?access_token=${accessToken}`,
+        uri: `https://${this.credentials.subdomain}.harvestapp.com${harvestRequest}`,
+        qs: {
+          access_token: accessToken, // -> uri + '?access_token=xxxxx%20xxxxx'
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        json: true, // Automatically parses the JSON string in the response
       }
 
-     // TODO: Does this do anything?
-      restler.post(`${this.harvest.host}/oauth2/token`, {
-        data: tokenOptions,
-      }).on('complete', response => {
-        console.log('restler response', response)
-        if (!response.access_token) {
-          console.log('restler rejected')
-          reject('Provided access code was rejected by Harvest, no token was returned')
-        } else {
-          const date = new Date()
-          response.expires_at = date.getTime() + (response.expires_in * 1000)
-          resolve(response)
-          console.log('response', response)
-        }
-        // cb(self.access_token);
-      })
+      request(options)
+        .then(response => resolve(response))
+        .catch(err => reject(err))
     })
   }
 
@@ -221,40 +253,67 @@ class HarvestTimesheets {
 
   getUsersAndTimes() {
     return new Promise((resolve, reject) => {
-      doshit().then(shittopass => {
-        resolve(shittopass)
+      this.checkAuth().then((accessToken) => {
+        this.getUserList(accessToken)
+          .then(users => {
+            const userEntryRequests = users.map((user) => this.getUserTime(accessToken, user.user))
+            // console.log('BEFORE PROMISE ALL')
+            Promise.all(userEntryRequests)
+              .then(userWithEntries => {
+                resolve(this.calculateUserTime(userWithEntries))
+                // this.socket.emit('harvest-new-posts', {
+                //   users: this.calculateUserTime(userWithEntries),
+                // })
+              })
+              .catch(err => reject(err))
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      }).catch((error) => {
+        console.log('error', error)
       })
     })
   }
 
-  getUserList(harvest) {
+  getUserList(accessToken) {
     return new Promise((resolve, reject) => {
-      const People = harvest.People
-      People.list({}, (err, users) => {
-        if (err) {
-          reject(JSON.stringify(err))
-        } else {
-          resolve(users)
-        }
-      })
+      this.harvestRequest('/people', accessToken)
+        .then(users => resolve(users))
+        .catch(err => reject(err))
+
+      // const People = harvest.users
+      // People.list({}, (err, users) => {
+      //   if (err) {
+      //     reject(JSON.stringify(err))
+      //   } else {
+      //     resolve(users)
+      //   }
+      // })
     })
   }
 
-  getUserTime(harvest, user) {
+  getUserTime(accessToken, user) {
     // console.log('getUserTime user: ', user)
     return new Promise((resolve, reject) => {
-      const Reports = harvest.Reports
-      Reports.timeEntriesByUser({
-        user_id: user.id,
-        from: moment().subtract(14, 'd').format('YYYYMMDD'),
-        to: moment().format('YYYYMMDD'),
-      }, (err, userEntries) => {
-        if (err) {
-          reject(JSON.stringify(err))
-        } else {
-          resolve({ user, entries: userEntries })
-        }
-      })
+      this.harvestRequest(`/people/${user.id}/entries?from=${moment().subtract(14, 'd').format('YYYYMMDD')}&to=${moment().format('YYYYMMDD')}`, accessToken)
+        .then(entries => resolve({ user, entries }))
+        .catch(err => reject(err))
+        // .catch(err => console.log('reject people: ', `${user.first_name} ${user.last_name}`))
+
+
+      // const Reports = harvest.Reports
+      // Reports.timeEntriesByUser({
+      //   user_id: user.id,
+      //   from: moment().subtract(14, 'd').format('YYYYMMDD'),
+      //   to: moment().format('YYYYMMDD'),
+      // }, (err, userEntries) => {
+      //   if (err) {
+      //     reject(JSON.stringify(err))
+      //   } else {
+      //     resolve({ user, entries: userEntries })
+      //   }
+      // })
     })
 
     // return new Promise((resolve, reject) => {

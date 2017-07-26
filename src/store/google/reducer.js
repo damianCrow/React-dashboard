@@ -1,7 +1,9 @@
+import unionBy from 'lodash/unionBy'
 import { initialState } from './selectors'
 
+
 import {
-  GOOGLE_GOT_USERS,
+  SOCKET_GOOGLE_PULL_GETUSERS_SUCCESS,
   GOOGLE_GET_USERS_REQUEST,
   GOOGLE_UNAUTHORIZED,
 } from './actions'
@@ -9,10 +11,10 @@ import {
 const google = (state = initialState, action) => {
   switch (action.type) {
 
-    case GOOGLE_GOT_USERS:
+    case SOCKET_GOOGLE_PULL_GETUSERS_SUCCESS:
       return {
         ...state,
-        users: [...state.users, ...action.users],
+        users: unionBy(action.payload, state.users, 'email'),
         status: 'request',
       }
 

@@ -6,7 +6,6 @@ import { Auth, TimesheetLeaderBoard } from 'components'
 
 class HarvestContainer extends Component {
 
-
   componentDidMount() {
     this.props.serviceRequest()
   }

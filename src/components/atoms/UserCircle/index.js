@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { getGoogleUsers } from 'store/actions'
+import { socketDataRequest } from 'store/actions'
 
 
 const Circle = styled.div`
@@ -34,7 +34,7 @@ class UserCircle extends Component {
 
   componentDidMount() {
     // console.log('componentDidMount props', this.props)
-    this.props.fetchGoogleInfo(this.props.email)
+    this.props.serviceRequest([this.props.email])
   }
 
   componentWillReceiveProps(nextProps) {
@@ -74,11 +74,12 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchGoogleInfo: (user) => dispatch(getGoogleUsers([user])),
+  // fetchGoogleInfo: (user) => dispatch(getGoogleUsers([user])),
+  serviceRequest: (user) => dispatch(socketDataRequest({ service: 'GOOGLE', serverAction: 'pull', request: 'getUsers', payload: user })),
 })
 
 UserCircle.propTypes = {
-  fetchGoogleInfo: PropTypes.func,
+  serviceRequest: PropTypes.func,
   name: PropTypes.shape({
     givenName: PropTypes.string,
     familyName: PropTypes.string,
@@ -91,13 +92,13 @@ UserCircle.propTypes = {
 
 UserCircle.defaultProps = {
   name: {
-    givenName: 'Rob',
-    familyName: 'Clayton',
-    fullName: 'Rob Clayton',
-    initals: 'RC',
+    givenName: '?',
+    familyName: '?',
+    fullName: '?',
+    initals: '?',
   },
-  image: 'public/google-user-pics/105997391536096847724.jpg',
-  email: 'rob.c@interstateteam.com',
+  image: '',
+  email: '',
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserCircle)

@@ -69,7 +69,7 @@ class Sockets {
       } else {
         // console.log('requestedService', requestedService)
         // console.log('requestMeta.data.request', requestMeta.data.request)
-        services[requestedService][requestMeta.data.request]()
+        services[requestedService][requestMeta.data.request](requestMeta.data.payload)
           .then(payload => successReply(payload))
           .catch(error => failReply(error))
       }
