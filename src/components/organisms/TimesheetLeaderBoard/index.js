@@ -3,9 +3,11 @@ import { connect } from 'react-redux'
 
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
+import { fonts } from 'components/globals'
+
 
 import { ProfileImage, RadarChart, Users, UserCircle } from 'components'
-import { fonts } from 'components/globals'
+
 
 // import styled, { css } from 'styled-components'
 // import ReactTransitionGroup from 'react-addons-transition-group'
@@ -23,6 +25,30 @@ const HarvestWrapper = styled.div`
   top: 0;
   width: 100%;
   font-family: Helvetica Neue, Helvetica, Roboto, sans-serif;
+`
+
+const HarvestEntry = styled.figure`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-items: center;
+  margin: 0;
+  text-align: center;
+`
+
+const HarvestHours = styled.figcaption`
+  font-family: ${fonts.primary};
+  font-weight: bold;
+  color: white;
+  margin: .5rem auto;
+`
+
+const HoursAbrv = styled.abbr`
+  font-family: ${fonts.primary};
+  font-weight: lighter;
+  color: white;
+  margin: 0 .1rem;
+  text-decoration: none;
 `
 
 // const Spider = styled.div`
@@ -77,13 +103,22 @@ class TimesheetLeaderBoard extends Component {
   render() {
     const { users } = this.props
 
-    const userCircles = users.map((user) =>
-      <UserCircle key={user.id} email={user.email} />
-    )
+    // const userCircles = users.map((user) =>
+    //   <UserCircle key={user.id} email={user.email} />
+    // )
+    users.sort
 
     return (
       <HarvestWrapper>
-        {userCircles}
+        {(users.sort((a, b) => b.totalHours.thisWorkWeek - a.totalHours.thisWorkWeek)).map((user) => (
+          <HarvestEntry>
+            <UserCircle key={user.id} email={user.email} />
+            <HarvestHours>
+              {user.totalHours.thisWorkWeek}
+              <HoursAbrv title="hours">hrs</HoursAbrv>
+            </HarvestHours>
+          </HarvestEntry>
+        ))}
       </HarvestWrapper>
 
     )

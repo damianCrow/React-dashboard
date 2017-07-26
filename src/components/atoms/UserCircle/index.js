@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
+import { fonts } from 'components/globals'
 import { socketDataRequest } from 'store/actions'
 
 
@@ -13,8 +14,10 @@ const Circle = styled.div`
   height: 50px;
   width: 50px;
   border-radius: 50%;
-  border: solid 2px orange;
+  border: solid 2px rgba(256, 256, 256, 0.35);
   ${props => props.image && `background: url('${props.image}') center / cover;`}
+  background-clip: padding-box;
+  padding: 2px;
 `
 
 const Initals = styled.abbr`
@@ -27,7 +30,9 @@ const Initals = styled.abbr`
   border-raidus: 50%;
   text-decoration: none;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  color: white;
+  font-family: ${fonts.primary};
+  font-weight: lighter;
 `
 
 class UserCircle extends Component {
