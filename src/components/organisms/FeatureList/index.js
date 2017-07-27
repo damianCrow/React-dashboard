@@ -28,10 +28,10 @@ const FeatureList = ({ ...props }) => {
           <SonosInfo />
         </Feature>
         <Feature square>
-          <Instagram />
+          <Twitter />
         </Feature>
         <Feature square>
-          <Twitter />
+          <Instagram />
         </Feature>
       </GridRow>
       <GridRow>
@@ -45,7 +45,12 @@ const FeatureList = ({ ...props }) => {
         </Feature>
       </GridRow>
       <GridRow>
-        <Feature superWide>
+        <Feature style={{paddingTop: 52+ '%'}}>
+      
+        </Feature>
+      </GridRow>
+      <GridRow>
+        <Feature madWide>
           <Harvest />
         </Feature>
       </GridRow>

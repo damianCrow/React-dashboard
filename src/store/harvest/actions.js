@@ -9,6 +9,8 @@ export const HARVEST_NEW_POSTS = 'HARVEST_NEW_POSTS'
 export const HARVEST_NEW_POSTS_ERROR = 'HARVEST_NEW_POSTS_ERROR'
 export const RECEIVE_HARVEST_POSTS_ERROR = 'RECEIVE_HARVEST_POSTS_ERROR'
 export const NEED_TO_AUTH_HARVEST = 'NEED_TO_AUTH_HARVEST'
+export const UPDATE_HARVEST_SORTING = 'UPDATE_HARVEST_SORTING'
+
 
 // export const invalidateSonosData = ({
 //   type: INVALIDATE_HARVEST
@@ -26,4 +28,9 @@ export const newHarvestPostsError = (err) => ({
 
 export const harvestUnauthorized = () => ({
   type: HARVEST_UNAUTHORIZED,
+})
+
+export const sortBy = (timePeriod) => ({
+  type: UPDATE_HARVEST_SORTING,
+  payload: timePeriod,
 })

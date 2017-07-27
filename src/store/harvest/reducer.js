@@ -5,6 +5,7 @@ import {
   HARVEST_NEW_POSTS_ERROR,
   SOCKET_HARVEST_PULL_GETUSERSANDTIMES_SUCCESS,
   SOCKET_HARVEST_PULL_GETUSERSANDTIMES_FAILED,
+  UPDATE_HARVEST_SORTING,
 } from './actions'
 
 const harvestStatus = (state = statusInitialState, action) => {
@@ -25,6 +26,12 @@ const harvestStatus = (state = statusInitialState, action) => {
       return {
         ...state,
         status: 'auth-failed',
+      }
+
+    case UPDATE_HARVEST_SORTING:
+      return {
+        ...state,
+        sortBy: action.payload,
       }
 
     default:

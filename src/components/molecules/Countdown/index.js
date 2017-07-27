@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import styled from 'styled-components'
 import moment from 'moment'
 import { connect } from 'react-redux'
@@ -8,17 +8,15 @@ import { Heading, Icon } from 'components'
 
 const Wrapper = styled.div`
   position: absolute;
-  width: calc(100% + 2px);
-  height: calc(100% + 2px);
+  width: 100%;
+  height: 101%;
   transform-style: preserve-3d;
   transition: all 2s ease-in-out;
   transform-origin: 100% 40.5px;
-  border: 1px solid #037771;
-  transform: perspective(800px) translate(-1px, -2px);
-  border-radius: 5px;
+  box-shadow: -5px 5px 20px #037771;
 
   &.flip {  
-    transform: rotateX(-180deg) translate(-1px, -2px) perspective(800px);
+    transform: rotateX(-180deg);
   }
 `
 const WrapperFront = styled.div`
@@ -78,7 +76,6 @@ class Countdown extends Component {
 
   constructor(props) {
     super(props)
-    // localStorage.clear()
     if (!localStorage.getItem('countdownArray')) {
       fetch('/public/user-data/countdown.json').then((response) => {
         return response.json()
@@ -113,7 +110,7 @@ class Countdown extends Component {
         // let d = moment.duration(dura).days()
         // let h = moment.duration(dura).hours()
         // let m = moment.duration(dura).minutes()
-        // let s = moment.duration(dura).seconds() 
+        // let s = moment.duration(dura).seconds()
         this.props.updateCountdown(moment.duration(dura).humanize())
         clearInterval(countDownInterval)
       }
