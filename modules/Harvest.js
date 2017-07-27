@@ -21,7 +21,7 @@ class HarvestTimesheets {
     this.socket = socket
     this.credentials = {}
 
-    // this.setupAccessForNewToken()
+    this.setupAccessForNewToken()
     // this.oauthSetup()
 
     // this.checkAuth()
@@ -31,15 +31,6 @@ class HarvestTimesheets {
     //   .catch(err => {
     //     console.log(err)
     //   })
-  }
-
-  request(newRequest) {
-    console.log('harvest newRequest: ', newRequest)
-    return new Promise((resolve, reject) => {
-      this[newRequest]()
-        .then(data => resolve(data))
-        .catch(err => reject(err))
-    })
   }
 
   checkAuth() {
@@ -57,6 +48,7 @@ class HarvestTimesheets {
 
         this.authorize()
           .then((token) => {
+            // this.generateAuthUrl()
             resolve(token)
           })
           .catch((error) => {
