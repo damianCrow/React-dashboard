@@ -37,33 +37,28 @@ const Showcase = ({ children, ...props, /*media,*/ mediaType, itemId, url, servi
   // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
   let showcaseItem = null
   if (mediaType === 'Image') {
-    showcaseItem = (<ImageFeature
-      currentImage={url}
-      thumbnail={url}
-    />)
+    showcaseItem = <ImageFeature currentImage={url} thumbnail={url} />
   } else if (mediaType === 'Video' && serviceName === 'youtube') {
-    props.pauseInstaSlideshow()
-    showcaseItem = (<YouTubeVideo
-      serviceId={serviceId}
-    />)
+    props.pauseShowcaseSlideshow()
+    showcaseItem = <YouTubeVideo serviceId={serviceId} />
   } else if (mediaType === 'Video' && serviceName === 'vimeo') {
-    props.pauseInstaSlideshow()
-    showcaseItem = (<VimeoVideo
-      url={url}
-      serviceId={serviceId}
-    />)
+    props.pauseShowcaseSlideshow()
+    showcaseItem = <VimeoVideo url={url} serviceId={serviceId} />
   }
 
+  if (showcaseItem) {
+    return (
+      <TransitionWrapper>
+        <FadingTransitionWrapper
+          key={itemId}
+        >
+          {showcaseItem}
+        </FadingTransitionWrapper>
+      </TransitionWrapper>
+    )
+  }
 
-  return (
-    <TransitionWrapper>
-      <FadingTransitionWrapper
-        key={itemId}
-      >
-        {showcaseItem}
-      </FadingTransitionWrapper>
-    </TransitionWrapper>
-  )
+  return null
 }
 
 Showcase.propTypes = {
@@ -72,13 +67,13 @@ Showcase.propTypes = {
   serviceId: PropTypes.string,
   itemId: PropTypes.string.isRequired,
   mediaType: PropTypes.string,
-  pauseInstaSlideshow: PropTypes.func.isRequired,
+  pauseShowcaseSlideshow: PropTypes.func.isRequired,
   serviceName: PropTypes.string,
 }
 
 
 const mapDispatchToProps = (dispatch) => ({
-  pauseInstaSlideshow: () => dispatch(pauseServiceSlideshow('showcase')),
+  pauseShowcaseSlideshow: () => dispatch(pauseServiceSlideshow('SHOWCASE')),
 })
 
 

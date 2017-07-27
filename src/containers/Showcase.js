@@ -5,22 +5,22 @@ import { storeServerPlaylist, startSlideshow, numberOfSlideshowPosts } from 'sto
 import { Showcase, SplashScreen } from 'components'
 
 class ShowcaseContainer extends Component {
-  componentDidMount() {
+  componentWillMount() {
     fetch('/public/user-data/showcase-media.json', {
       method: 'get',
       headers: {
         'Content-Type': 'application/json',
       },
-    }).then((response) => { return response.json() })
+    }).then(response => response.json())
       .catch(err => console.log('showcase fetch err: ', err))
-      .then((data) => {
+      .then(data => {
         this.props.thisShouldActuallyBeASagaButWhatever(data.playlist.filter(item => item.hidden === false))
-        this.props.startInstaSlideshow(this.props.playlist.length)
+        this.props.startShowcaseSlideshow(this.props.playlist.length)
       })
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.playlist.length !== this.props.playlist.length && nextProps.slideshow.status !== 'ready') {
+    if ((nextProps.playlist.length !== this.props.playlist.length) && (nextProps.slideshow.status !== 'ready' && nextProps.slideshow.status !== 'override')) {
       nextProps.numberOfSlideshowPosts(nextProps.playlist.length)
     }
   }
@@ -60,15 +60,15 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   thisShouldActuallyBeASagaButWhatever: (playlist) => dispatch(storeServerPlaylist(playlist)),
-  startInstaSlideshow: (max) => dispatch(startSlideshow('showcase', max)),
-  numberOfSlideshowPosts: (max) => dispatch(numberOfSlideshowPosts('showcase', max)),
+  startShowcaseSlideshow: (max) => dispatch(startSlideshow('SHOWCASE', max)),
+  numberOfSlideshowPosts: (max) => dispatch(numberOfSlideshowPosts('SHOWCASE', max)),
 })
 
 ShowcaseContainer.propTypes = {
   socketConnected: PropTypes.bool,
   thisShouldActuallyBeASagaButWhatever: PropTypes.func,
   numberOfSlideshowPosts: PropTypes.func,
-  startInstaSlideshow: PropTypes.func,
+  startShowcaseSlideshow: PropTypes.func,
   slideshow: PropTypes.object,
   playlist: PropTypes.array,
   status: PropTypes.string,

@@ -7,11 +7,11 @@ export const initialState = {
 // export const getInstagramData = (state = initialState) => state.instagram || []
 
 export const maxSlideshow = (service = '') => {
-  return (state = initialState) => state[service].slideshow.max || initialState.max
+  return (state = initialState) => state[service.toLowerCase()].slideshow.max || initialState.max
 }
 
 export const currentSlideshow = (service = '') => {
-  return (state = initialState) => state[service].slideshow.current || initialState.current
+  return (state = initialState) => state[service.toLowerCase()].slideshow.current || initialState.current
 }
 
 

@@ -1,13 +1,15 @@
 import { delay } from 'redux-saga'
 import { take, takeLatest, takeEvery, put, fork, select, cancel, call } from 'redux-saga/effects'
 import * as actions from '../slideshow/actions'
-import { maxSlideshow, currentSlideshow } from './selectors'
 
 function* checkOverride(action) {
-  if(action.payload.overideQueue) {
-    yield put(actions.pauseServiceSlideshow('SHOWCASE'))
+  if (action.payload.overideQueue) {
     yield put(actions.restartServiceSlideshow('SHOWCASE'))
-    yield put(actions.incrementServiceSlideshow('SHOWCASE'))
+    yield put(actions.pauseServiceSlideshow('SHOWCASE'))
+    console.log('checkOverride action.payload.type = ', action.payload.type)
+    if (action.payload.type !== 'Video') {
+      yield put(actions.resumeServiceSlideshow('SHOWCASE', 15000))
+    }
   }
 }
 

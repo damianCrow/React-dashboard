@@ -24,6 +24,7 @@ export const slideshowState = (service = '') => {
         return {
           ...state,
           status: 'playing',
+          delay: action.delay,
         }
 
       case `${service}_${SLIDESHOW_INCREMENT}`:

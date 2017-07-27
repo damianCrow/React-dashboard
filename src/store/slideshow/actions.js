@@ -27,9 +27,10 @@ export const startServiceSlideshow = (service, max) => ({
   max,
 })
 
-export const resumeServiceSlideshow = (service) => ({
+export const resumeServiceSlideshow = (service, delay = 0) => ({
   type: `${service.toUpperCase()}_${SLIDESHOW_RESUME}`,
   service,
+  delay,
 })
 
 export const incrementServiceSlideshow = (service) => ({

@@ -14,34 +14,38 @@ function* nextSlide(action, delayTime = 15000) {
     yield put(actions.incrementServiceSlideshow(service))
   } else {
     yield put(actions.restartServiceSlideshow(service))
-    yield fork(nextSlide, action)
+    // yield fork(nextSlide, action)
   }
 }
 
-function* playingCarousel(action) {
+function* listenForIncrement(action) {
   yield takeEvery(actions.incrementServiceSlideshow(action.service).type, nextSlide)
 }
 
 function* runCarousel(action) {
-  const slidePlaying = yield fork(playingCarousel, action)
+  const slidePlaying = yield fork(listenForIncrement, action)
   yield take(actions.pauseServiceSlideshow(action.service).type)
   yield cancel(slidePlaying)
 }
 
-function* resumeSlides(action) {
-  while (yield take(actions.resumeServiceSlideshow(action.service).type)) {
-    yield fork(runCarousel, action)
-    yield fork(nextSlide, action, 0)
-  }
+function* resumeSlides(action, resumeOptions) {
+  // const resumeSlideshowSettings = yield takeLatest(actions.resumeServiceSlideshow(action.service).type)
+  console.log('resumeSlideshowSettings resumeOptions = ', resumeOptions)
+  console.log('resumeSlideshowSettings action = ', action)
+  yield fork(runCarousel, action)
+  yield fork(nextSlide, action, resumeOptions.delay)
+}
+
+function* listenForResume(action) {
+  yield takeLatest(actions.resumeServiceSlideshow(action.service).type, resumeSlides, action)
 }
 
 function* beginSlides(action) {
   yield fork(runCarousel, action)
-  yield fork(resumeSlides, action)
   // For the sake of the dispatcher
   yield put(actions.startServiceSlideshow(action.service, action.max))
-  yield delay(15000)
-  yield put(actions.incrementServiceSlideshow(action.service))
+  yield call(resumeSlides, action, { delayTime: 15000 })
+  yield fork(listenForResume, action)
 }
 
 // TODO: Make these pick up the service actions.
