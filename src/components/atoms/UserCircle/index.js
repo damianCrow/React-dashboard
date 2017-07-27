@@ -11,8 +11,9 @@ const Circle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 50px;
-  width: 50px;
+  width: 70px;
+  height: 70px;
+  transform: translateY(30px);
   border-radius: 50%;
   border: solid 2px rgba(256, 256, 256, 0.35);
   ${props => props.image && `background: url('${props.image}') center / cover;`}

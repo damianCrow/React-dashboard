@@ -20,6 +20,7 @@ class HarvestTimesheets {
     this.app = app
     this.socket = socket
     this.credentials = {}
+    this.generateAuthUrl()
 
     this.setupAccessForNewToken()
     // this.oauthSetup()
@@ -393,11 +394,19 @@ class HarvestTimesheets {
           thisWorkWeek: thisWorkWeek(user.entries),
           lastWorkWeek: lastWorkWeek(user.entries),
         },
+        timeSpans: {
+          lastWeek: {
+            start: this.currentTimings().lastWorkWeekDays[0],
+            end: this.currentTimings().lastWorkWeekDays[this.currentTimings().lastWorkWeekDays.length - 1],
+          },
+          thisWeek: {
+            start: this.currentTimings().thisWorkWeekDays[0],
+            end: this.currentTimings().thisWorkWeekDays[this.currentTimings().thisWorkWeekDays.length - 1],
+          },
+        },
       }
     })
-    // console.log('HARVEST DATA', users )
   }
-
 }
 
 module.exports = HarvestTimesheets

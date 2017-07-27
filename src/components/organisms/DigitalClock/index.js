@@ -28,7 +28,7 @@ class DigitalClock extends Component {
   }
 
   componentDidMount() {
-    requestAnimationFrame(this.updateTimeUK)
+    this.updateTimeUK()
   }
 
   updateTimeUK() {
