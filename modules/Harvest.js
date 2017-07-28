@@ -49,7 +49,7 @@ class HarvestTimesheets {
 
         this.authorize()
           .then((token) => {
-            // this.generateAuthUrl()
+            this.generateAuthUrl()
             resolve(token)
           })
           .catch((error) => {
