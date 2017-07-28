@@ -20,9 +20,9 @@ class HarvestTimesheets {
     this.app = app
     this.socket = socket
     this.credentials = {}
-    this.generateAuthUrl()
+    // this.generateAuthUrl()
+    this.init()
 
-    this.setupAccessForNewToken()
     // this.oauthSetup()
 
     // this.checkAuth()
@@ -34,29 +34,40 @@ class HarvestTimesheets {
     //   })
   }
 
-  checkAuth() {
+  init() {
+    this.grabLocalCredentials()
+      .then(() => this.setupAccessForNewToken())
+  }
+
+  grabLocalCredentials() {
     return new Promise((resolve, reject) => {
-      // Load client secrets from a local file.
       fs.readFile(CLIENT_DETAILS, (err, content) => {
         if (err) {
           reject(`Error loading client secret file: '${err}`)
         }
 
-        // Authorize a client with the loaded credentials, then call the
-        // Google Calendar API.
         this.credentials = JSON.parse(content)
-        // console.log('CREDENTIALS', JSON.parse(content))
+        // console.log('this.credentials', this.credentials)
 
-        this.authorize()
-          .then((token) => {
-            this.generateAuthUrl()
-            resolve(token)
-          })
-          .catch((error) => {
-            // It ends here, the user needs to authenticate.
-            console.log(`User needs to authenticate Harvest, error report: ${error} `)
-          })
+        resolve()
+        // console.log('CREDENTIALS', JSON.parse(content))
       })
+    })
+  }
+
+  checkAuth() {
+    return new Promise((resolve, reject) => {
+      // Load client secrets from a local file.
+      this.checkStoredAccessToken()
+        .then((token) => {
+          // Temp untill refresh token is setup.
+          // this.generateAuthUrl()
+          resolve(token)
+        })
+        .catch((error) => {
+          // It ends here, the user needs to authenticate.
+          console.log(`User needs to authenticate Harvest, error report: ${error} `)
+        })
     })
   }
 
@@ -67,7 +78,7 @@ class HarvestTimesheets {
    * @param {Object} credentials The authorization client credentials.
    * @param {function} callback The callback to call with the authorized client.
    */
-  authorize() {
+  checkStoredAccessToken() {
     return new Promise((resolve, reject) => {
       // Check if we have previously stored a token.
       fs.readFile(TOKEN_PATH, (err, token) => {
@@ -75,73 +86,64 @@ class HarvestTimesheets {
           // No token stored, so get a new one.
           // Setup to catch authorize user in the consuctor
           // this.setupAccessForNewToken()
-          this.generateAuthUrl()
           reject(err)
         } else {
-          // We have a processed token stored and ready to go, use it.
-          // harvest.parseAccessCode(JSON.parse(token))
-          resolve(JSON.parse(token).access_token)
-          // this.checkAccessToken(resolve, reject, JSON.parse(token))
-          // resolveAuth(JSON.parse(token).access_token)
+          // We have a processed token stored, first check if it's expired.
+          this.checkAccessTokenExpiration(resolve, reject, JSON.parse(token))
         }
       })
     })
   }
 
-  checkAccessToken(resolveAuth, rejectAuth, tokenDetails) {
+  checkAccessTokenExpiration(resolveAuth, rejectAuth, tokenDetails) {
     const date = new Date()
-    // console.log('tokenDetails.expires_at', tokenDetails.expires_at)
-    // console.log('date.getTime', date.getTime())
 
-    if (tokenDetails.expires_at > date.getTime()) {
-      // Token still fine, send it back
-      resolveAuth(tokenDetails.access_token)
-    } else {
-      // Token expired
-      console.log('token expired, get new token using refresh token')
-      // TODO: This never worked, so work out what we need to do.
+    // Get a new token using the refresh token
+    this.getNewToken(tokenDetails.refresh_token, 'refresh')
+      .then(tokenDetails => {
+        this.storeToken(tokenDetails)
+        resolveAuth(tokenDetails.access_token)
+      })
+      .catch(error => {
+        console.log(error)
+        rejectAuth(error)
+      })
 
-      // Get a new token using the refresh token
-      // this.getNewToken(tokenDetails.refresh_token, 'refresh')
-      //   .then(tokenDetails => {
-      //     this.storeToken(tokenDetails)
-      //     resolveAuth(tokenDetails.access_token)
-      //   })
-      //   .catch(error => {
-      //     console.log(error)
-      //     rejectAuth(error)
-      //   })
-    }
+    // console.log('${tokenDetails.expires_in}00000', `${tokenDetails.expires_in}00000`)
+    // console.log('date.getTime()', date.getTime())
+    // if (`${tokenDetails.expires_in}00000000` > date.getTime()) {
+    //   // Token still fine, send it back
+    //   resolveAuth(tokenDetails.access_token)
+    // } else {
+    //   // Token expired
+    //   console.log('token expired, get new token using refresh token')
+    //   // TODO: This never worked, so work out what we need to do.
+
+
+    // }
   }
 
   generateAuthUrl() {
     // TODO: Send auth url via sockets to front end button
-    const authUrl = `${HARVEST_HOST}/oauth2/authorize?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
-    console.log('authUrl', authUrl)
+
   }
 
   setupAccessForNewToken() {
     console.log('setupAccessForNewToken')
-    // Dispatch a frontend action to push the auth link!!!!!!!!!
+    const authUrl = `${HARVEST_HOST}/oauth2/authorize?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
+    console.log('authUrl', authUrl)
 
-    // this.socket.emit('action', {
-    //   type: 'NEED_TO_AUTH_HARVEST',
-    //   data: { status: 'auth-failed' },
-    // })
-
-    // Send the user to harvest.getAccessTokenURL()) and grab the access code passed as a get parameter
-    // e.g. By running an express.js server at redirect_url
-    // const accessCode = req.query.code
-    // this.app.get('/authorize_harvest', (req, res) => {
-    //   // This will redirect back to our setup '/handle_calendar_auth' with the code
-    //   res.redirect(authUrl)
-    // })
+    // Send the user to authUrl and grab the access code passed as a get parameter
+    this.app.get('/authorize_harvest', (req, res) => {
+      // This will ultimately redirect back to our setup '/harvest_auth' with the code
+      res.redirect(authUrl)
+    })
 
     this.app.get('/harvest_auth', (req, res) => {
       const accessCode = req.query.code
       console.log('harvest auth accessCode = ', accessCode)
       // This needs to go back to autherise and fire our request with sucess
-      this.getNewAccessToken(accessCode)
+      this.getNewToken(accessCode, 'access')
         .then(tokenDetails => {
           this.storeToken(tokenDetails)
           res.redirect('/')
@@ -159,48 +161,87 @@ class HarvestTimesheets {
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewAccessToken(accessCode) {
+  getNewToken(code, codeRequstType) {
     return new Promise((resolve, reject) => {
-      console.log('--GET NEW HARVEST ACCESS TOKEN WITH ACCESS CODE (getNewToken)--')
-      const credentials = {
-        client: {
-          id: this.credentials.client_id,
-          secret: this.credentials.secret,
-        },
-        auth: {
+      console.log(`--GET NEW HARVEST ACCESS TOKEN WITH ${codeRequstType} CODE (getNewToken)--`)
+
+      // const credentials = {
+      //   client: {
+      //     id: this.credentials.client_id,
+      //     secret: this.credentials.secret,
+      //   },
+      //   auth: {
+      //     tokenHost: `https://${this.credentials.subdomain}.harvestapp.com`,
+      //     tokenPath: '/oauth2/token',
+      //     authorizePath: 'https://api.harvestapp.com/oauth2/authorize',
+      //   },
+      //   http: {
+      //     headers: {
+      //       'Content-Type': 'application/x-www-form-urlencoded',
+      //     },
+      //   },
+      // }
+
+      const options = {
+        method: 'POST',
+        uri: `https://${this.credentials.subdomain}.harvestapp.com/oauth2/token`,
+        body: {
           tokenHost: `https://${this.credentials.subdomain}.harvestapp.com`,
           tokenPath: '/oauth2/token',
           authorizePath: 'https://api.harvestapp.com/oauth2/authorize',
         },
-        http: {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
+        json: true, // Automatically stringifies the body to JSON
       }
-
-      const oauth2Loaded = oauth2.create(credentials)
+      //   client: {
+      //     id: this.credentials.client_id,
+      //     secret: this.credentials.secret,
+      //   },
+      //   auth: {
+      //     tokenHost: `https://${this.credentials.subdomain}.harvestapp.com`,
+      //     tokenPath: '/oauth2/token',
+      //     authorizePath: 'https://api.harvestapp.com/oauth2/authorize',
+      //   },
+      //   http: {
+      //     headers: {
+      //       'Content-Type': 'application/x-www-form-urlencoded',
+      //     },
+      //   },
 
       // Get the access token object (the authorization code is given from the previous step).
-      const tokenConfig = {
-        code: accessCode,
-        redirect_uri: this.credentials.redirect_uri,
-        client_id: this.credentials.client_id,
-        client_secret: this.credentials.secret,
-        grant_type: 'authorization_code',
-      }
+      // const requestConfig = {
+      //   client_id: this.credentials.client_id,
+      //   client_secret: this.credentials.secret,
+      //   grant_type: `${codeRequstType}_code`,
+      // }
 
-      // Promises
-      // Save the access token
-      oauth2Loaded.authorizationCode.getToken(tokenConfig)
-        .then((result) => {
-          console.log('result', result)
-          // const token = oauth2Loaded.accessToken.create(result)
-          resolve(result)
-        })
-        .catch((error) => {
-          reject(`Access Token Error: ' ${error.message}`)
-        })
+      // const extraConfig = {
+      //   refresh: {
+      //     refresh_token: code,
+      //   },
+      //   access: {
+      //     code,
+      //     redirect_uri: this.credentials.redirect_uri,
+      //   },
+      // }
+
+      // const oauth2Loaded = oauth2.create(credentials)
+      // console.log('Object.assign(requestConfig, extraConfig[codeRequstType])', Object.assign(requestConfig, extraConfig[codeRequstType]))
+      request(options)
+        .then(response => resolve(response))
+        .catch(err => reject(err))
+
+      // oauth2Loaded.authorizationCode.getToken(Object.assign(requestConfig, extraConfig[codeRequstType]))
+      //   .then((result) => {
+      //     console.log('result', result)
+      //     // const token = oauth2Loaded.accessToken.create(result)
+      //     resolve(result)
+      //   })
+      //   .catch((error) => {
+      //     reject(`Access Token Error: ' ${error.message}`)
+      //   })
     })
   }
 
@@ -263,6 +304,7 @@ class HarvestTimesheets {
           })
       }).catch((error) => {
         console.log('error', error)
+        reject({ message: 'auth-failed' })
       })
     })
   }

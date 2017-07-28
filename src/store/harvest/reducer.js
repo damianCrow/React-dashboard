@@ -25,7 +25,7 @@ const harvestStatus = (state = statusInitialState, action) => {
     case SOCKET_HARVEST_PULL_GETUSERSANDTIMES_FAILED:
       return {
         ...state,
-        status: 'auth-failed',
+        status: action.message,
       }
 
     case UPDATE_HARVEST_SORTING:
