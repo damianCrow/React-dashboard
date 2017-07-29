@@ -1,13 +1,8 @@
 const fs = require('fs')
 const moment = require('moment')
 const sumBy = require('lodash/sumBy')
-const oauth2 = require('simple-oauth2')
 const request = require('request-promise')
 
-
-// If modifying these scopes, delete your previously saved credentials
-// at ~/.credentials/calendar-nodejs-quickstart.json
-// const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 const CRED_DIR = './.credentials/harvest/'
 const HARVEST_HOST = 'https://api.harvestapp.com'
 const TOKEN_PATH = `${CRED_DIR}harvest_token.json`
@@ -20,23 +15,18 @@ class HarvestTimesheets {
     this.app = app
     this.socket = socket
     this.credentials = {}
-    // this.generateAuthUrl()
+
     this.init()
-
-    // this.oauthSetup()
-
-    // this.checkAuth()
-    //   .then(accessToken => {
-    //     this.testoAuth(accessToken)
-    //   })
-    //   .catch(err => {
-    //     console.log(err)
-    //   })
   }
 
   init() {
+    // This needs to be done first, before any async.
+    this.setupLocalAuthPaths()
+
+    // Setup and load the class with the already known credentials,
+    // then make sure the external auth url is correct.
     this.grabLocalCredentials()
-      .then(() => this.setupAccessForNewToken())
+      .then(() => this.setupExternalAuthUrl())
   }
 
   grabLocalCredentials() {
@@ -45,12 +35,8 @@ class HarvestTimesheets {
         if (err) {
           reject(`Error loading client secret file: '${err}`)
         }
-
         this.credentials = JSON.parse(content)
-        // console.log('this.credentials', this.credentials)
-
         resolve()
-        // console.log('CREDENTIALS', JSON.parse(content))
       })
     })
   }
@@ -60,8 +46,6 @@ class HarvestTimesheets {
       // Load client secrets from a local file.
       this.checkStoredAccessToken()
         .then((token) => {
-          // Temp untill refresh token is setup.
-          // this.generateAuthUrl()
           resolve(token)
         })
         .catch((error) => {
@@ -96,47 +80,36 @@ class HarvestTimesheets {
   }
 
   checkAccessTokenExpiration(resolveAuth, rejectAuth, tokenDetails) {
-    const date = new Date()
-
-    // Get a new token using the refresh token
-    this.getNewToken(tokenDetails.refresh_token, 'refresh')
-      .then(tokenDetails => {
-        this.storeToken(tokenDetails)
-        resolveAuth(tokenDetails.access_token)
-      })
-      .catch(error => {
-        console.log(error)
-        rejectAuth(error)
-      })
-
-    // console.log('${tokenDetails.expires_in}00000', `${tokenDetails.expires_in}00000`)
-    // console.log('date.getTime()', date.getTime())
-    // if (`${tokenDetails.expires_in}00000000` > date.getTime()) {
-    //   // Token still fine, send it back
-    //   resolveAuth(tokenDetails.access_token)
-    // } else {
-    //   // Token expired
-    //   console.log('token expired, get new token using refresh token')
-    //   // TODO: This never worked, so work out what we need to do.
-
-
-    // }
+    if (`${tokenDetails.expires_in}00000000` > new Date().getTime()) {
+      // Token still fine, send it back
+      resolveAuth(tokenDetails.access_token)
+    } else {
+      // Token expired
+      console.log('token expired, get new token using refresh token')
+      // Get a new token using the refresh token
+      this.getNewToken(tokenDetails.refresh_token, 'refresh')
+        .then(tokenDetails => {
+          this.storeToken(tokenDetails)
+          resolveAuth(tokenDetails.access_token)
+        })
+        .catch(error => {
+          console.log(error)
+          rejectAuth(error)
+        })
+    }
   }
 
-  generateAuthUrl() {
-    // TODO: Send auth url via sockets to front end button
-
+  setupExternalAuthUrl() {
+    console.log('setupExternalAuthUrl')
+    this.authUrl = `${HARVEST_HOST}/oauth2/authorize?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
+    console.log('this.authUrl', this.authUrl)
   }
 
-  setupAccessForNewToken() {
-    console.log('setupAccessForNewToken')
-    const authUrl = `${HARVEST_HOST}/oauth2/authorize?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
-    console.log('authUrl', authUrl)
-
+  setupLocalAuthPaths() {
     // Send the user to authUrl and grab the access code passed as a get parameter
     this.app.get('/authorize_harvest', (req, res) => {
       // This will ultimately redirect back to our setup '/harvest_auth' with the code
-      res.redirect(authUrl)
+      res.redirect(this.authUrl)
     })
 
     this.app.get('/harvest_auth', (req, res) => {
@@ -161,87 +134,38 @@ class HarvestTimesheets {
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewToken(code, codeRequstType) {
+  getNewToken(code, requstType) {
     return new Promise((resolve, reject) => {
-      console.log(`--GET NEW HARVEST ACCESS TOKEN WITH ${codeRequstType} CODE (getNewToken)--`)
+      console.log(`--GET NEW HARVEST ACCESS TOKEN WITH ${requstType} CODE (getNewToken)--`)
 
-      // const credentials = {
-      //   client: {
-      //     id: this.credentials.client_id,
-      //     secret: this.credentials.secret,
-      //   },
-      //   auth: {
-      //     tokenHost: `https://${this.credentials.subdomain}.harvestapp.com`,
-      //     tokenPath: '/oauth2/token',
-      //     authorizePath: 'https://api.harvestapp.com/oauth2/authorize',
-      //   },
-      //   http: {
-      //     headers: {
-      //       'Content-Type': 'application/x-www-form-urlencoded',
-      //     },
-      //   },
-      // }
+      const extraOptions = {
+        refresh: {
+          grant_type: 'refresh_token',
+          refresh_token: code,
+        },
+        access: {
+          code,
+          redirect_uri: this.credentials.redirect_uri,
+          grant_type: 'authorization_code',
+        },
+      }
 
       const options = {
         method: 'POST',
         uri: `https://${this.credentials.subdomain}.harvestapp.com/oauth2/token`,
-        body: {
-          tokenHost: `https://${this.credentials.subdomain}.harvestapp.com`,
-          tokenPath: '/oauth2/token',
-          authorizePath: 'https://api.harvestapp.com/oauth2/authorize',
-        },
+        form: Object.assign({
+          client_id: this.credentials.client_id,
+          client_secret: this.credentials.secret,
+        }, extraOptions[requstType]),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         json: true, // Automatically stringifies the body to JSON
       }
-      //   client: {
-      //     id: this.credentials.client_id,
-      //     secret: this.credentials.secret,
-      //   },
-      //   auth: {
-      //     tokenHost: `https://${this.credentials.subdomain}.harvestapp.com`,
-      //     tokenPath: '/oauth2/token',
-      //     authorizePath: 'https://api.harvestapp.com/oauth2/authorize',
-      //   },
-      //   http: {
-      //     headers: {
-      //       'Content-Type': 'application/x-www-form-urlencoded',
-      //     },
-      //   },
 
-      // Get the access token object (the authorization code is given from the previous step).
-      // const requestConfig = {
-      //   client_id: this.credentials.client_id,
-      //   client_secret: this.credentials.secret,
-      //   grant_type: `${codeRequstType}_code`,
-      // }
-
-      // const extraConfig = {
-      //   refresh: {
-      //     refresh_token: code,
-      //   },
-      //   access: {
-      //     code,
-      //     redirect_uri: this.credentials.redirect_uri,
-      //   },
-      // }
-
-      // const oauth2Loaded = oauth2.create(credentials)
-      // console.log('Object.assign(requestConfig, extraConfig[codeRequstType])', Object.assign(requestConfig, extraConfig[codeRequstType]))
       request(options)
         .then(response => resolve(response))
         .catch(err => reject(err))
-
-      // oauth2Loaded.authorizationCode.getToken(Object.assign(requestConfig, extraConfig[codeRequstType]))
-      //   .then((result) => {
-      //     console.log('result', result)
-      //     // const token = oauth2Loaded.accessToken.create(result)
-      //     resolve(result)
-      //   })
-      //   .catch((error) => {
-      //     reject(`Access Token Error: ' ${error.message}`)
-      //   })
     })
   }
 
@@ -293,9 +217,6 @@ class HarvestTimesheets {
             Promise.all(userEntryRequests)
               .then(userWithEntries => {
                 resolve(this.calculateUserTime(userWithEntries))
-                // this.socket.emit('harvest-new-posts', {
-                //   users: this.calculateUserTime(userWithEntries),
-                // })
               })
               .catch(err => reject(err))
           })
@@ -314,55 +235,15 @@ class HarvestTimesheets {
       this.harvestRequest('/people', accessToken)
         .then(users => resolve(users))
         .catch(err => reject(err))
-
-      // const People = harvest.users
-      // People.list({}, (err, users) => {
-      //   if (err) {
-      //     reject(JSON.stringify(err))
-      //   } else {
-      //     resolve(users)
-      //   }
-      // })
     })
   }
 
   getUserTime(accessToken, user) {
-    // console.log('getUserTime user: ', user)
     return new Promise((resolve, reject) => {
       this.harvestRequest(`/people/${user.id}/entries?from=${moment().subtract(14, 'd').format('YYYYMMDD')}&to=${moment().format('YYYYMMDD')}`, accessToken)
         .then(entries => resolve({ user, entries }))
         .catch(err => reject(err))
-        // .catch(err => console.log('reject people: ', `${user.first_name} ${user.last_name}`))
-
-
-      // const Reports = harvest.Reports
-      // Reports.timeEntriesByUser({
-      //   user_id: user.id,
-      //   from: moment().subtract(14, 'd').format('YYYYMMDD'),
-      //   to: moment().format('YYYYMMDD'),
-      // }, (err, userEntries) => {
-      //   if (err) {
-      //     reject(JSON.stringify(err))
-      //   } else {
-      //     resolve({ user, entries: userEntries })
-      //   }
-      // })
     })
-
-    // return new Promise((resolve, reject) => {
-    //   const Reports = harvest.Reports
-    //   Reports.timeEntriesByUser({
-    //     user_id: userId,
-    //     from: moment().startOf('week').format('YYYYMMDD'),
-    //     to: moment().format('YYYYMMDD'),
-    //   }, (err, users) => {
-    //     if (err) {
-    //       reject(JSON.stringify(err))
-    //     } else {
-    //       resolve(users)
-    //     }
-    //   })
-    // })
   }
 
   currentTimings() {
