@@ -1,40 +1,40 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { storeServerPlaylist, startSlideshow, numberOfSlideshowPosts } from 'store/actions'
+import { pullInitalPlaylist, startSlideshow, numberOfSlideshowPosts } from 'store/actions'
 import { Showcase, SplashScreen } from 'components'
 
 class ShowcaseContainer extends Component {
   componentWillMount() {
-    fetch('/public/user-data/showcase-media.json', {
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(response => response.json())
-      .catch(err => console.log('showcase fetch err: ', err))
-      .then(data => {
-        this.props.thisShouldActuallyBeASagaButWhatever(data.playlist.filter(item => item.hidden === false))
-        this.props.startShowcaseSlideshow(this.props.playlist.length)
-      })
+    this.props.fetchInitalPlaylist()
   }
 
   componentWillReceiveProps(nextProps) {
-    if ((nextProps.playlist.length !== this.props.playlist.length) && (nextProps.slideshow.status !== 'ready' && nextProps.slideshow.status !== 'override')) {
-      nextProps.numberOfSlideshowPosts(nextProps.playlist.length)
+    const { playlist, slideshow } = nextProps
+
+    if ((playlist.length !== this.props.playlist.length) && (slideshow.status !== 'waiting' && slideshow.status !== 'override')) {
+      console.log('new playlist max number')
+      nextProps.numberOfSlideshowPosts(playlist.length)
+    }
+
+    if (playlist.length > 0 && slideshow.status === 'waiting') {
+      console.log('startShowcaseSlideshow')
+      this.props.startShowcaseSlideshow(this.props.playlist.length)
     }
   }
 
   render() {
     const { status, playlist, slideshow } = this.props
 
-    const isEmpty = playlist.length === 0
+    // console.log("slideshow.status !== 'ready'", slideshow.status !== 'ready')
+    const readyToGo = (playlist.length > 0) && (slideshow.status !== 'waiting') 
+    // console.log('readyToGo', readyToGo)
 
     if (status === 'failed') {
       return (
         <span>{status}</span>
       )
-    } else if (!isEmpty) {
+    } else if (readyToGo) {
       return (
         <Showcase
           url={playlist[slideshow.current].url}
@@ -42,6 +42,7 @@ class ShowcaseContainer extends Component {
           serviceName={playlist[slideshow.current].serviceName}
           mediaType={playlist[slideshow.current].type}
           itemId={playlist[slideshow.current].id}
+          slideshowState={slideshow.status}
         />
       )
     }
@@ -59,14 +60,14 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  thisShouldActuallyBeASagaButWhatever: (playlist) => dispatch(storeServerPlaylist(playlist)),
+  fetchInitalPlaylist: () => dispatch(pullInitalPlaylist()),
   startShowcaseSlideshow: (max) => dispatch(startSlideshow('SHOWCASE', max)),
   numberOfSlideshowPosts: (max) => dispatch(numberOfSlideshowPosts('SHOWCASE', max)),
 })
 
 ShowcaseContainer.propTypes = {
   socketConnected: PropTypes.bool,
-  thisShouldActuallyBeASagaButWhatever: PropTypes.func,
+  fetchInitalPlaylist: PropTypes.func,
   numberOfSlideshowPosts: PropTypes.func,
   startShowcaseSlideshow: PropTypes.func,
   slideshow: PropTypes.object,

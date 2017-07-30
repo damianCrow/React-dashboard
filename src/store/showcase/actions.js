@@ -5,6 +5,10 @@ export const SOCKET_ADMIN_EMIT_PLAYLIST_RECEIVED = 'SOCKET_ADMIN_EMIT_PLAYLIST_R
 export const SHOWCASE_NEW_POSTS = 'SHOWCASE_NEW_POSTS'
 export const SHOWCASE_NEW_POSTS_ERROR = 'SHOWCASE_NEW_POSTS_ERROR'
 
+export const SHOWCASE_FETCH_PLAYLIST = 'SHOWCASE_FETCH_PLAYLIST'
+export const SHOWCASE_RECIEVE_PLAYLIST = 'SHOWCASE_RECIEVE_PLAYLIST'
+export const SHOWCASE_FETCH_PLAYLIST_ERROR = 'SHOWCASE_FETCH_PLAYLIST_ERROR'
+
 export const storeServerPlaylist = (playlist) => ({
   type: SHOWCASE_NEW_POSTS,
   playlist,
@@ -15,7 +19,18 @@ export const updateCountdown = (newTime) => ({
   payload: newTime,
 })
 
-export const newShowcasePostsError = (err) => ({
-  type: SHOWCASE_NEW_POSTS_ERROR,
+export const errorFetchingInitalPlaylist = err => ({
+  type: SHOWCASE_FETCH_PLAYLIST_ERROR,
   message: err,
 })
+
+export const pullInitalPlaylist = () => ({
+  type: SHOWCASE_FETCH_PLAYLIST,
+})
+
+export const recieveInitalPlaylist = playlist => ({
+  type: SHOWCASE_RECIEVE_PLAYLIST,
+  fetching: false,
+  playlist,
+})
+

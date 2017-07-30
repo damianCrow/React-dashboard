@@ -1,7 +1,7 @@
 export const initialState = {
   current: 0,
   max: 1,
-  status: 'ready',
+  status: 'waiting',
 }
 
 // export const getInstagramData = (state = initialState) => state.instagram || []

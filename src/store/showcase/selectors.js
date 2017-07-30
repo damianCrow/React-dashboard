@@ -1,7 +1,9 @@
 export const initialState = {
   fetching: false,
   playlist: [],
-  countDown: 'Loading...',
 }
 
-export const getInstagramData = (state = initialState) => state.instagram || []
+export const currentShowcaseSlideshow = (state = initialState) => {
+  console.log('state', state)
+  return state.showcase.slideshow.current || 0
+}

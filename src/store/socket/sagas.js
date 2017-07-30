@@ -5,11 +5,13 @@ import shortid from 'shortid'
 
 import * as actions from './actions'
 
-// import { getSocketConnection } from './selectors'
+import { isSocketRequested } from './selectors'
 
 const socket = io()
+let socketRequestedCheck = isSocketRequested
 
 function connect() {
+  socketRequestedCheck = true
   if (socket.connected) {
     return socket
   }
@@ -102,16 +104,29 @@ export function* processListenChannel(socket) {
 // This 💩 here, requests 💩 from the node server and gives back some results 👍📊
 function* requestChannel() {
   yield takeEvery(actions.SOCKET_DATA_REQUEST, function* logger(action) {
-    const socket = yield call(connect)
-    yield put(actions.socketConnectSuccess(socket.connected))
+    if(!socket.connected) {
+      const socket = yield call(connect)
+    }
+    if(!socketRequestedCheck) {
+      yield put(actions.socketConnectSuccess(socket.connected))
+    }
     yield call(processServerRequestChannel, socket, action)
   })
 }
 
+function* connectSockets() {
+
+}
+
 // This 💩 listens for 💩 from the node server
 function* listenChannel() {
-  const socket = yield call(connect)
-  yield put(actions.socketConnectSuccess(socket.connected))
+  if(!socket.connected) {
+    const socket = yield call(connect)
+    if(!socketRequestedCheck) {
+      yield put(actions.socketConnectSuccess(socket.connected))
+    }
+  }
+
   yield call(processListenChannel, socket)
 }
 

@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import styled, { css } from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
-import { pauseServiceSlideshow } from 'store/actions'
+import { pauseServiceSlideshow, resumeServiceSlideshow } from 'store/actions'
 import { FadingTransitionWrapper, ImageFeature, YouTubeVideo, VimeoVideo } from 'components'
 
 const styles = ({ ...props }) => css`
@@ -30,16 +30,20 @@ const TransitionWrapper = styled(TransitionGroup)`${styles}`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const Showcase = ({ children, ...props, /*media,*/ mediaType, itemId, url, serviceId, serviceName }) => {
+const Showcase = ({ children, ...props, slideshowState, mediaType, itemId, url, serviceId, serviceName }) => {
   // console.log('Instagram comp posts: ', posts)
   // console.log('INSTAGRAM COMP mediaType', mediaType)
   // console.log('INSTAGRAM COMP posts', posts)
   // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
   let showcaseItem = null
   if (mediaType === 'Image') {
+    if(slideshowState === 'paused') {
+      props.resumeServiceSlideshow()
+    }
     showcaseItem = <ImageFeature currentImage={url} thumbnail={url} />
   } else if (mediaType === 'Video' && serviceName === 'youtube') {
-    props.pauseShowcaseSlideshow()
+    console.log('pauseShowcaseSlideshow')
+    // props.pauseShowcaseSlideshow()
     showcaseItem = <YouTubeVideo serviceId={serviceId} />
   } else if (mediaType === 'Video' && serviceName === 'vimeo') {
     props.pauseShowcaseSlideshow()
@@ -69,11 +73,13 @@ Showcase.propTypes = {
   mediaType: PropTypes.string,
   pauseShowcaseSlideshow: PropTypes.func.isRequired,
   serviceName: PropTypes.string,
+  slideshowState: PropTypes.string,
 }
 
 
 const mapDispatchToProps = (dispatch) => ({
   pauseShowcaseSlideshow: () => dispatch(pauseServiceSlideshow('SHOWCASE')),
+  resumeServiceSlideshow: () => dispatch(resumeServiceSlideshow('SHOWCASE', 15000)), 
 })
 
 

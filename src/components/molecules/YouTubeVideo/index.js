@@ -49,15 +49,34 @@ class YouTubeVideo extends Component {
     super()
     // TODO: Is this needed?
     this.onVideoEnd = this.onVideoEnd.bind(this)
+    this.state = {
+      finishing: false,
+    }
   }
 
   componentDidMount() {
-    // this.props.pauseInstaSlideshow()
+    this.props.pauseInstaSlideshow()
   }
 
   onVideoEnd() {
-    this.props.resumeInstaSlideshow()
+    console.log('youtube onVideoEnd, this.state.finishing: ', this.state.finishing)
+    if(!this.state.finishing) {
+      this.setState({
+        finishing: true,
+      })
+      this.props.resumeInstaSlideshow()
+    }
   }
+
+  // componentWillUnmount() {
+  //   console.log('youtube componentWillUnmount, this.state.finishing: ', this.state.finishing)
+  //   if(!this.state.finishing) {
+  //     this.setState({
+  //       finishing: true,
+  //     })
+  //     this.props.resumeInstaSlideshow()
+  //   }
+  // }
 
   /**
    * Handles the event when the video is ready to play
