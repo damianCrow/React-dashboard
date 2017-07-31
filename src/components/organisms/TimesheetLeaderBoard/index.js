@@ -189,7 +189,7 @@ class TimesheetLeaderBoard extends Component {
   // }
 
   componentDidMount() {
-    const timePeriods = ['Today', 'ThisWeek', 'LastWeek']
+    const timePeriods = ['lastWorkDay', 'ThisWeek', 'LastWeek']
     const that = this
     let count = 1
     setInterval(() => {
@@ -226,42 +226,34 @@ class TimesheetLeaderBoard extends Component {
     let startMonth
     let endMonth
     let sortByThis
-    let displayTimePeriod
-    let startDay
-    let endDay
 
     switch (this.props.sortTimePeriod) {
-      case 'Today':
+      case 'lastWorkDay':
         sortByThis = 'lastWorkDay'
-        displayTimePeriod = 'Today'
         break
       case 'ThisWeek':
         sortByThis = 'thisWorkWeek'
-        displayTimePeriod = 'thisWeek'
         break
       case 'LastWeek':
         sortByThis = 'lastWorkWeek'
-        displayTimePeriod = 'lastWeek'
         break
       default: null
     }
 
-    if (displayTimePeriod !== 'Today') {
-      startDay = moment(users[0].timeSpans[displayTimePeriod].start).format('DD')
-      endDay = `-${moment(users[0].timeSpans[displayTimePeriod].end).format('DD')}`
+    const startDay = moment(users[0].timeSpans[sortByThis].start).format('DD')
+    let endDay = `-${moment(users[0].timeSpans[sortByThis].end).format('DD')}`
 
-      if (moment.monthsShort()[moment(users[0].timeSpans[displayTimePeriod].start).month()] === moment.monthsShort()[moment(users[0].timeSpans[displayTimePeriod].end).month()]) {
-        startMonth = moment.monthsShort()[moment(users[0].timeSpans[displayTimePeriod].start).month()]
-        endMonth = ''
-      } else {
-        startMonth = moment.monthsShort()[moment(users[0].timeSpans[displayTimePeriod].start).month()]
-        endMonth = ` - ${moment.monthsShort()[moment(users[0].timeSpans[displayTimePeriod].end).month()]}`
-      }
-    } else {
-      startDay = '-'
-      endDay = '-'
+    if (moment.monthsShort()[moment(users[0].timeSpans[sortByThis].start).month()] === moment.monthsShort()[moment(users[0].timeSpans[sortByThis].end).month()]) {
+      startMonth = moment.monthsShort()[moment(users[0].timeSpans[sortByThis].start).month()]
       endMonth = ''
-      startMonth = 'Today'
+    } else {
+      startMonth = moment.monthsShort()[moment(users[0].timeSpans[sortByThis].start).month()]
+      endMonth = ` - ${moment.monthsShort()[moment(users[0].timeSpans[sortByThis].end).month()]}`
+    }
+
+    if (sortByThis === 'lastWorkDay') {
+      endMonth = ''
+      endDay = ''
     }
 
     users.sort
