@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { fonts } from 'components/globals'
 import { sortBy } from 'store/actions'
-
+import Shuffle from 'react-shuffle'
 import { ProfileImage, RadarChart, Users, UserCircle } from 'components'
 
 
@@ -27,7 +27,16 @@ const HarvestWrapper = styled.div`
   justify-content: flex-start;
   font-family: Helvetica Neue, Helvetica, Roboto, sans-serif;
 `
-
+const HarvestShuffle = styled(Shuffle)`
+  max-width: 100%;
+  height: 100%;
+  position: absolute !important;
+  left: 12.5%;
+  & > * {
+    display: flex;
+    max-width: 100%;
+  }
+`
 const HarvestEntry = styled.figure`
   display: flex;
   flex-direction: column;
@@ -37,7 +46,14 @@ const HarvestEntry = styled.figure`
   text-align: center;
   height: 100%;
   position: relative;
-
+`
+const ShadingWrapper = styled.div`
+  width: 12.5%;
+  height: 100%;
+  display: flex;
+  flex: 0 0 12.5%;
+  position: relative;
+  transition: all 0.25s ease-out;
   &:nth-child(3n+0) {
     background-color: rgba(0, 0, 0, 0.07);
   }
@@ -53,9 +69,17 @@ const HarvestEntry = styled.figure`
     background-image: url(/public/crown.png);
     position: absolute;
     background-repeat: no-repeat;
-    background-position: 64% 5%;
+    background-position: 64% 4%;
     z-index: 2;
   }
+
+  &.hidden {
+    opacity: 0;
+  }
+
+  &.showing {
+    opacity: 1;
+  }  
 `
 const HarvestPanel = styled(HarvestEntry)`
   background-color: #f66822;
@@ -82,7 +106,16 @@ const HarvestHours = styled.figcaption`
   color: white;
   margin: .5rem auto;
   font-size: 1.5rem;
+  transition: all 0.25s ease-out;
   transform: translateY(35px);
+
+  &.hidden {
+    opacity: 0;
+  }
+
+  &.showing {
+    opacity: 1;
+  }  
 `
 
 const HoursAbrv = styled.abbr`
@@ -148,24 +181,46 @@ class TimesheetLeaderBoard extends Component {
     //   .attr('height', height)
   }
 
+  // constructor(props) {
+  //   super(props)
+  //   this.state = {
+  //     hideClass: 'showing',
+  //   }
+  // }
+
   componentDidMount() {
     const timePeriods = ['Today', 'ThisWeek', 'LastWeek']
-    const updateTimePeriod = this.props.sortBy
+    const that = this
     let count = 1
     setInterval(() => {
-      updateTimePeriod(timePeriods[count])
+      that.props.sortBy(timePeriods[count])
       if (count === 2) {
         count = 0
       } else {
         count += 1
       }
+
+      that.toggleHidenClass()
+
+      setTimeout(() => {
+        that.toggleHidenClass()
+      }, 1900)
     }, 30000)
   }
 
-  // console.log('Instagram comp posts: ', posts)
-  // console.log('INSTAGRAM COMP mediaType', mediaType)
-  // console.log('MEETINGS COMP posts', posts)
-  // console.log('INSTAGRAM COMP THUMBNAIL: ', posts.images.thumbnail.url)
+  toggleHidenClass() {
+    const showHidElementsArray = document.querySelectorAll('.showHide')
+    showHidElementsArray.forEach((item) => {
+      if (item.classList.contains('hidden')) {
+        item.classList.remove('hidden')
+        item.classList.add('showing')
+      } else {
+        item.classList.remove('showing')
+        item.classList.add('hidden')
+      }
+    })
+  }
+
   render() {
     const { users } = this.props
     let startMonth
@@ -222,15 +277,25 @@ class TimesheetLeaderBoard extends Component {
             { `${startDay}${endDay}` }
           </DateText>
         </HarvestPanel>
-        {(users.sort((a, b) => b.totalHours[sortByThis] - a.totalHours[sortByThis])).map((user) => (
-          <HarvestEntry key={user.id}>
-            <UserCircle email={user.email} />
-            <HarvestHours>
-              {user.totalHours[sortByThis]}
-              <HoursAbrv title="hours">hrs</HoursAbrv>
-            </HarvestHours>
-          </HarvestEntry>
-        ))}
+        <ShadingWrapper className={'showHide'} />
+        <ShadingWrapper className={'showHide'} />
+        <ShadingWrapper className={'showHide'} />
+        <ShadingWrapper className={'showHide'} />
+        <ShadingWrapper className={'showHide'} />
+        <ShadingWrapper className={'showHide'} />
+        <ShadingWrapper className={'showHide'} />
+        <ShadingWrapper className={'showHide'} />
+        <HarvestShuffle fade scale duration={2000}>
+          {(users.sort((a, b) => b.totalHours[sortByThis] - a.totalHours[sortByThis])).map((user) => (
+            <HarvestEntry key={user.id}>
+              <UserCircle email={user.email} />
+              <HarvestHours className={'showHide'}>
+                {user.totalHours[sortByThis]}
+                <HoursAbrv title="hours">hrs</HoursAbrv>
+              </HarvestHours>
+            </HarvestEntry>
+          ))}
+        </HarvestShuffle>
       </HarvestWrapper>
 
     )
@@ -255,6 +320,8 @@ TimesheetLeaderBoard.propTypes = {
   status: PropTypes.string,
   message: PropTypes.string,
   sortTimePeriod: PropTypes.string,
+  sortBy: PropTypes.func,
+  hideClass: PropTypes.string,
 }
 
 TimesheetLeaderBoard.defaultProps = {
