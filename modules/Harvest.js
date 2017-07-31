@@ -251,8 +251,8 @@ class HarvestTimesheets {
   }
 
   currentTimings() {
-    const startOfTheWeek = moment().startOf('isoWeek')
-    const startOfLastWeek = moment().startOf('isoWeek').subtract(7, 'days')
+    const startOfTheWeek = moment().startOf('isoWeek').subtract(1, 'days')
+    const startOfLastWeek = moment().startOf('isoWeek').subtract(8, 'days')
 
     function weekDates(startDate, endDate) {
       const dates = []
@@ -279,8 +279,8 @@ class HarvestTimesheets {
       }
     }
     // TODO: Later check that there are at least two entires for this.
-    const thisWorkWeekDays = weekDates(startOfTheWeek.clone(), startOfTheWeek.clone().add(4, 'days'))
-    const lastWorkWeekDays = weekDates(startOfLastWeek.clone(), startOfLastWeek.clone().add(4, 'days'))
+    const thisWorkWeekDays = weekDates(startOfTheWeek.clone(), startOfTheWeek.clone().add(5, 'days'))
+    const lastWorkWeekDays = weekDates(startOfLastWeek.clone(), startOfLastWeek.clone().add(5, 'days'))
 
     return {
       lastWorkDay: workDay(true).format('YYYY-MM-DD'),
@@ -322,11 +322,15 @@ class HarvestTimesheets {
           lastWorkWeek: lastWorkWeek(user.entries),
         },
         timeSpans: {
-          lastWeek: {
+          lastWorkDay: {
+            start: this.currentTimings().lastWorkDay,
+            end: this.currentTimings().lastWorkDay,
+          },
+          lastWorkWeek: {
             start: this.currentTimings().lastWorkWeekDays[0],
             end: this.currentTimings().lastWorkWeekDays[this.currentTimings().lastWorkWeekDays.length - 1],
           },
-          thisWeek: {
+          thisWorkWeek: {
             start: this.currentTimings().thisWorkWeekDays[0],
             end: this.currentTimings().thisWorkWeekDays[this.currentTimings().thisWorkWeekDays.length - 1],
           },

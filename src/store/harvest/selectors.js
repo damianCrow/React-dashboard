@@ -1,7 +1,7 @@
 export const statusInitialState = {
   message: '',
   status: '',
-  sortBy: 'Today',
+  sortBy: 'lastWorkDay',
 }
 
 export const dataInitialState = {
