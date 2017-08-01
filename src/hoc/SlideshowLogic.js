@@ -8,7 +8,11 @@ function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true) {
   class SlideshowLogicWrapper extends Component {
     componentDidMount() {
       if (timeoutOrNot) {
+        // This will clear the last timeout as well as set a new timeout.
         this.props.startTimeoutUntilNextSlide()
+      } else {
+        // This will clear the last timeout.
+        this.props.clearTimeoutForNextSlide()
       }
     }
 

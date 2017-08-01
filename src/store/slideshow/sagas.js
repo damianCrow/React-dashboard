@@ -8,13 +8,17 @@ function* componentTimeout(action, delayTime = 15000) {
   yield put(actions.nextComponentSlideshow(service))
 }
 
-function* cancelTimeout(task) {
-  yield cancel(task)
-}
+// function* cancelTimeout(task) {
+//   yield cancel(task)
+//   yield fork(startComponentTimeout, action)
+// }
 
 function* startComponentTimeout(action) {
   const currentTimeout = yield takeLatest(actions.startComponentTimeout(action.service).type, componentTimeout)
-  yield takeLatest(actions.clearComponentTimeout(action.service).type, cancelTimeout, currentTimeout)
+  yield takeLatest(actions.clearComponentTimeout(action.service).type, function* logger() {
+    yield cancel(currentTimeout)
+    yield fork(startComponentTimeout, action)
+  })
 }
 
 function* beginSlides(action) {
