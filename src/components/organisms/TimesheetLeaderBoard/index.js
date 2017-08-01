@@ -241,7 +241,7 @@ class TimesheetLeaderBoard extends Component {
     }
 
     const startDay = moment(users[0].timeSpans[sortByThis].start).format('DD')
-    let endDay = `-${moment(users[0].timeSpans[sortByThis].end).format('DD')}`
+    let endDay = ` - ${moment(users[0].timeSpans[sortByThis].end).format('DD')}`
 
     if (moment.monthsShort()[moment(users[0].timeSpans[sortByThis].start).month()] === moment.monthsShort()[moment(users[0].timeSpans[sortByThis].end).month()]) {
       startMonth = moment.monthsShort()[moment(users[0].timeSpans[sortByThis].start).month()]

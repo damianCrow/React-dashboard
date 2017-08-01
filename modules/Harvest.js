@@ -261,7 +261,7 @@ class HarvestTimesheets {
       return dates
     }
 
-    const workDay = (last) => {
+    const workDay = () => {
       switch (moment().day()) {
         // If it is Monday (1),Saturday(6), or Sunday (0), Get the previous Friday (5)
         // and ensure we are on the previous week
@@ -271,7 +271,7 @@ class HarvestTimesheets {
           return moment().subtract(6, 'days').day(5)
         // If it any other weekend, just return the previous day
         default:
-          return moment().day(((last) ? -1 : 0))
+          return moment().subtract(1, 'days')
       }
     }
     // TODO: Later check that there are at least two entires for this.
@@ -279,7 +279,7 @@ class HarvestTimesheets {
     const lastWorkWeekDays = weekDates(startOfLastWeek.clone(), startOfLastWeek.clone().add(5, 'days'))
 
     return {
-      lastWorkDay: workDay(true).format('YYYY-MM-DD'),
+      lastWorkDay: workDay().format('YYYY-MM-DD'),
       thisWorkWeekDays,
       lastWorkWeekDays,
     }
