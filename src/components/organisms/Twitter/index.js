@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 import styled, { css } from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
@@ -8,6 +8,7 @@ import moment from 'moment-timezone'
 import { fonts, compHeader } from 'components/globals'
 
 import { FadingTransitionWrapper, Icon, Tweet, MediaBluredBack, Ticker, MetaTags } from 'components'
+
 
 const TransitionWrapper = styled(TransitionGroup)`
   color: black;

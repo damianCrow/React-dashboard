@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { socketDataRequest, startSlideshow } from 'store/actions'
+import { socketDataRequest, startSlideshowLogic } from 'store/actions'
 
 import { Twitter, Auth, SplashScreen } from 'components'
 
@@ -9,13 +9,16 @@ class TwitterContainer extends Component {
 
   componentDidMount() {
     this.props.serviceRequest()
-    this.props.startInstaSlideshow(20)
   }
 
   componentWillReceiveProps(nextProps) {
-    // Try and move this logic back to the HOC container
-    const { posts, startInstaSlideshow, slideshow } = nextProps
+    const { posts, slideshow } = nextProps
 
+    if ((this.props.status !== nextProps.status) && nextProps.status === 'success') {
+      nextProps.startSlideshowLogic(nextProps.posts.length)
+    }
+
+    // TODO: This is a mess? Some needs to be in the reducer?
     if (posts.length > 0) {
       if (['retweeted_status'].every(prop => prop in posts[slideshow.current])) {
         this.setState({
@@ -26,31 +29,15 @@ class TwitterContainer extends Component {
           post: posts[slideshow.current],
         })
       }
-
-      if (slideshow.status === 'ready') {
-        startInstaSlideshow(20)
-      }
     }
   }
 
   render() {
-    const { status, message, posts, slideshow } = this.props
-    // console.log('twitter status', status)
+    const { posts, slideshow } = this.props
 
     const isEmpty = posts.length === 0
 
-    if (status === 'failed') {
-      return (
-        <span>{status}</span>
-      )
-    // } else if (status === 'auth-failed') {
-    //   return (
-    //     <Auth
-    //       icon="twitter"
-    //       service="Twitter"
-    //     />
-    //   )
-    } else if (!isEmpty) {
+    if (!isEmpty && slideshow.status === 'ready') {
       return (
         <Twitter
           post={this.state.post}
@@ -73,13 +60,12 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   serviceRequest: () => dispatch(socketDataRequest({ service: 'TWITTER', serverAction: 'pull', request: 'tweets' })),
-  startInstaSlideshow: (max) => dispatch(startSlideshow('twitter', max)),
+  startSlideshowLogic: (max) => dispatch(startSlideshowLogic('TWITTER', max)),
 })
 
 TwitterContainer.propTypes = {
-  socketConnected: PropTypes.bool,
   serviceRequest: PropTypes.func,
-  startInstaSlideshow: PropTypes.func,
+  startSlideshowLogic: PropTypes.func,
   slideshow: PropTypes.object,
   posts: PropTypes.array,
   status: PropTypes.string,

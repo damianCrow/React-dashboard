@@ -28,10 +28,10 @@ const FeatureList = ({ ...props }) => {
           <SonosInfo />
         </Feature>
         <Feature square>
-          {/* <Twitter />*/}
+          <Twitter />
         </Feature>
         <Feature square>
-          {/* <Instagram /> */}
+          <Instagram />
         </Feature>
       </GridRow>
       <GridRow>
@@ -45,13 +45,14 @@ const FeatureList = ({ ...props }) => {
         </Feature>
       </GridRow>
       <GridRow>
-        <Feature>
-          {/* <Showcase /> */}
-        </Feature>
+        <Feature />
+      </GridRow>
+      <GridRow>
+        <Feature style={{ paddingTop: '52%' }} />
       </GridRow>
       <GridRow>
         <Feature madWide>
-          {/* <Harvest /> */}
+          <Harvest />
         </Feature>
       </GridRow>
     </Grid>

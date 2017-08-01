@@ -15,12 +15,12 @@ export const slideshowState = (service = '') => {
         return {
           ...state,
           max: action.max - 1,
+          status: 'ready',
         }
 
       case `${service}_${SLIDESHOW_RESUME}`:
         return {
           ...state,
-          status: 'playing',
           delay: action.delay,
         }
 

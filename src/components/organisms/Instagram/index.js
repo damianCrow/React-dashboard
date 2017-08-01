@@ -18,12 +18,6 @@ const TransitionWrapper = styled(TransitionGroup)`
   height: 100%;
 `
 
-const IconStyles = css`
-  z-index: 59;
-  padding: .25rem;
-  flex: 0 0 auto;
-`
-
 const InstagramWrapper = styled.section`
   color: white;
   display: flex;
@@ -38,24 +32,6 @@ const InstagramWrapper = styled.section`
   font-family: ${fonts.primary};
   width: 100%;
 `
-
-const footerStyles = ({ ...props }) => css`
-  background-color: rgba(0,0,0,.5);
-  display: flex;
-  width: 100%;
-  overflow: hidden;
-  flex: 0 0 3rem;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  flex-direction: row;
-`
-
-// const PlaybackIcon = styled.Icon`
-//   display: absolute;
-// `
-
-// const StyledIcon = styled(Icon)`${iconStyles}`
 
 const Instagram = ({ children, ...props, posts, mediaType, slideShowKey }) => {
   let currentPost

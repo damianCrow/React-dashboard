@@ -18,8 +18,8 @@ function* startComponentTimeout(action) {
 }
 
 function* beginSlides(action) {
-  yield put(actions.slideshowMeta(action.service, action.max))
   yield fork(startComponentTimeout, action)
+  yield put(actions.slideshowMeta(action.service, action.max))
 }
 
 export default function* () {

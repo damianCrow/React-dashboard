@@ -31,12 +31,6 @@ export const startComponentTimeout = service => ({
   service,
 })
 
-// export const resumeServiceSlideshow = (service, delay = 0) => ({
-//   type: `${service.toUpperCase()}_${SLIDESHOW_RESUME}`,
-//   service,
-//   delay,
-// })
-
 export const nextComponentSlideshow = service => ({
   type: `${service.toUpperCase()}_${SLIDESHOW_NEXT}`,
   service,

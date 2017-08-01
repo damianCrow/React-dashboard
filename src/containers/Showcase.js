@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 import { SplashScreen, FadingTransitionWrapper, ShowcaseImage, YouTubeVideo, VimeoVideo } from 'components'
 
-import { pullInitalPlaylist, startSlideshowLogic, numberOfSlideshowPosts } from 'store/actions'
+import { pullInitalPlaylist, startSlideshowLogic } from 'store/actions'
 
 const styles = css`
   color: black;
@@ -66,14 +66,12 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   fetchInitalPlaylist: () => dispatch(pullInitalPlaylist()),
-  startSlideshowLogic: (max) => dispatch(startSlideshowLogic('SHOWCASE', max)),
-  numberOfSlideshowPosts: (max) => dispatch(numberOfSlideshowPosts('SHOWCASE', max)),
+  startSlideshowLogic: max => dispatch(startSlideshowLogic('SHOWCASE', max)),
 })
 
 ShowcaseContainer.propTypes = {
   socketConnected: PropTypes.bool,
   fetchInitalPlaylist: PropTypes.func,
-  numberOfSlideshowPosts: PropTypes.func,
   startSlideshowLogic: PropTypes.func,
   slideshow: PropTypes.object,
   playlist: PropTypes.array,
