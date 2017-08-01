@@ -1,49 +1,54 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import styled, { css } from 'styled-components'
+
 import { connect } from 'react-redux'
-import { pullInitalPlaylist, startSlideshow, numberOfSlideshowPosts } from 'store/actions'
-import { Showcase, SplashScreen } from 'components'
+import TransitionGroup from 'react-transition-group/TransitionGroup'
+import { SplashScreen, FadingTransitionWrapper, ShowcaseImage, YouTubeVideo, VimeoVideo } from 'components'
+
+import { pullInitalPlaylist, startSlideshowLogic, numberOfSlideshowPosts } from 'store/actions'
+
+const styles = css`
+  color: black;
+  display: block;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  text-align: left;
+  top: 0;
+  width: 100%;
+`
+const TransitionWrapper = styled(TransitionGroup)`${styles}`
 
 class ShowcaseContainer extends Component {
   componentWillMount() {
     this.props.fetchInitalPlaylist()
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { playlist, slideshow } = nextProps
-
-    if ((playlist.length !== this.props.playlist.length) && (slideshow.status !== 'waiting' && slideshow.status !== 'override')) {
-      console.log('new playlist max number')
-      nextProps.numberOfSlideshowPosts(playlist.length)
-    }
-
-    if (playlist.length > 0 && slideshow.status === 'waiting') {
-      console.log('startShowcaseSlideshow')
-      this.props.startShowcaseSlideshow(this.props.playlist.length)
-    }
-  }
-
+  // TODO: Tidy this up, use a switch statement?
   render() {
-    const { status, playlist, slideshow } = this.props
+    const readyToGo = (this.props.playlist.length > 0)
+    if (readyToGo) {
+      const { id, serviceId, serviceName, type, url } = this.props.playlist[this.props.slideshow.current]
+      let showcaseItem = null
+      if (type === 'Image') {
+        showcaseItem = <ShowcaseImage currentImage={url} thumbnail={url} />
+      } else if (type === 'Video' && serviceName === 'youtube') {
+        showcaseItem = <YouTubeVideo serviceId={serviceId} />
+      } else if (type === 'Video' && serviceName === 'vimeo') {
+        showcaseItem = <VimeoVideo url={url} serviceId={serviceId} />
+      }
 
-    // console.log("slideshow.status !== 'ready'", slideshow.status !== 'ready')
-    const readyToGo = (playlist.length > 0) && (slideshow.status !== 'waiting') 
-    // console.log('readyToGo', readyToGo)
-
-    if (status === 'failed') {
       return (
-        <span>{status}</span>
-      )
-    } else if (readyToGo) {
-      return (
-        <Showcase
-          url={playlist[slideshow.current].url}
-          serviceId={playlist[slideshow.current].serviceId}
-          serviceName={playlist[slideshow.current].serviceName}
-          mediaType={playlist[slideshow.current].type}
-          itemId={playlist[slideshow.current].id}
-          slideshowState={slideshow.status}
-        />
+        <TransitionWrapper>
+          <FadingTransitionWrapper
+            key={id}
+          >
+            {showcaseItem}
+          </FadingTransitionWrapper>
+        </TransitionWrapper>
       )
     }
     return (
@@ -61,7 +66,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   fetchInitalPlaylist: () => dispatch(pullInitalPlaylist()),
-  startShowcaseSlideshow: (max) => dispatch(startSlideshow('SHOWCASE', max)),
+  startSlideshowLogic: (max) => dispatch(startSlideshowLogic('SHOWCASE', max)),
   numberOfSlideshowPosts: (max) => dispatch(numberOfSlideshowPosts('SHOWCASE', max)),
 })
 
@@ -69,7 +74,7 @@ ShowcaseContainer.propTypes = {
   socketConnected: PropTypes.bool,
   fetchInitalPlaylist: PropTypes.func,
   numberOfSlideshowPosts: PropTypes.func,
-  startShowcaseSlideshow: PropTypes.func,
+  startSlideshowLogic: PropTypes.func,
   slideshow: PropTypes.object,
   playlist: PropTypes.array,
   status: PropTypes.string,

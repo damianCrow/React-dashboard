@@ -1,29 +1,29 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { startTimeoutSlideshow, clearTimeoutSlideshow, nextSlide } from 'store/actions'
+import { startComponentTimeout, clearComponentTimeout, nextComponentSlideshow } from 'store/actions'
 
 
-function SlideshowLogic(ConnectedComp) {
+function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true) {
   class SlideshowLogicWrapper extends Component {
 
     componentDidMount() {
-      if (this.prop.timeout) {
+      if (timeoutOrNot) {
         this.props.startTimeoutUntilNextSlide()
       }
     }
 
     // This will typically fire when the current slide has been replaced.
-    componentWillUnMount() {
-      if (this.prop.timeout) {
-        this.props.clearTimeoutForNextSlide()
-      }
-    }
+    // componentWillUnmount() {
+    //   if (timeoutOrNot) {
+    //     this.props.clearTimeoutForNextSlide()
+    //   }
+    // }
 
     // This will typically fire on video end.
-    requestNextSlide() {
-      this.props.nextSlide()
-    }
+    // requestNextSlide() {
+    //   this.props.nextSlide()
+    // }
 
     render() {
       return (
@@ -34,27 +34,30 @@ function SlideshowLogic(ConnectedComp) {
   }
 
   // Listen and capture any changes made as a result of the the actions below.
-  const mapStateToProps = (state) => ({
-    socketConnected: state.socket.connected,
-  })
+  // const mapStateToProps = state => ({
+  //   max: state[service].slideshow.max,
+  // })
 
-  const mapDispatchToProps = (dispatch) => ({
-    startTimeoutUntilNextSlide: () => dispatch(startTimeoutSlideshow(service)),
-    clearTimeoutForNextSlide: () => dispatch(clearTimeoutSlideshow(service)),
-    nextSlide: () => dispatch(nextSlide(service)),
+  const mapDispatchToProps = dispatch => ({
+    // startNewSlideshow: () => dispatch(startSlideshow(service)),
+    startTimeoutUntilNextSlide: () => dispatch(startComponentTimeout(service)),
+    clearTimeoutForNextSlide: () => dispatch(clearComponentTimeout(service)),
+    nextComponent: () => dispatch(nextComponentSlideshow(service)),
   })
 
   SlideshowLogicWrapper.propTypes = {
-    startTimeout: PropTypes.func,
-    clearTimeout: PropTypes.func,
+    startTimeoutUntilNextSlide: PropTypes.func,
+    clearTimeoutForNextSlide: PropTypes.func,
     nextSlide: PropTypes.func,
+    compsInSlideshow: PropTypes.number,
+    // max: PropTypes.number.isRequired,
   }
 
-  SlideshowLogicWrapper.defaultProps = {
-    timeout: false,
-  }
+  // SlideshowLogicWrapper.defaultProps = {
+  //   timeout: false,
+  // }
 
-  return connect(mapStateToProps, mapDispatchToProps)(SlideshowLogicWrapper)
+  return connect(null, mapDispatchToProps)(SlideshowLogicWrapper)
 }
 
 export default SlideshowLogic

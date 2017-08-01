@@ -1,57 +1,55 @@
 export const SLIDESHOW_START = 'SLIDESHOW_START'
+export const SLIDESHOW_COMPONENT_TIMEOUT = 'SLIDESHOW_COMPONENT_TIMEOUT'
 export const SLIDESHOW_RESUME = 'SLIDESHOW_RESUME'
-export const SLIDESHOW_INCREMENT = 'SLIDESHOW_INCREMENT'
-export const SLIDESHOW_PAUSE = 'SLIDESHOW_PAUSE'
+export const SLIDESHOW_NEXT = 'SLIDESHOW_NEXT'
+export const SLIDESHOW_CLEAR_TIME = 'SLIDESHOW_CLEAR_TIME'
 export const SLIDESHOW_RESTART = 'SLIDESHOW_RESTART'
 export const SLIDESHOW_EDIT = 'SLIDESHOW_EDIT'
+export const SLIDESHOW_META = 'SLIDESHOW_META'
 
-export const incrementSlideshow = (service) => ({
-  type: SLIDESHOW_INCREMENT,
-  service,
-})
+// export const nextComponent = (service) => ({
+//   type: SLIDESHOW_INCREMENT,
+//   service,
+// })
 
-export const startSlideshow = (service, max) => ({
+// For the sake of the sagas, passes the service name and inital length.
+export const startSlideshowLogic = (service, max) => ({
   type: SLIDESHOW_START,
   service,
   max,
 })
 
-export const restartSlideshow = (service) => ({
-  type: SLIDESHOW_RESTART,
-  service,
-})
-
-export const startServiceSlideshow = (service, max) => ({
-  type: `${service.toUpperCase()}_${SLIDESHOW_START}`,
+// Fired by sagas only for the sake of the reducer.
+export const slideshowMeta = (service, max) => ({
+  type: `${service.toUpperCase()}_${SLIDESHOW_META}`,
   service,
   max,
 })
 
-export const resumeServiceSlideshow = (service, delay = 0) => ({
-  type: `${service.toUpperCase()}_${SLIDESHOW_RESUME}`,
-  service,
-  delay,
-})
-
-export const incrementServiceSlideshow = (service) => ({
-  type: `${service.toUpperCase()}_${SLIDESHOW_INCREMENT}`,
+export const startComponentTimeout = service => ({
+  type: `${service.toUpperCase()}_${SLIDESHOW_COMPONENT_TIMEOUT}`,
   service,
 })
 
-export const restartServiceSlideshow = (service) => ({
+// export const resumeServiceSlideshow = (service, delay = 0) => ({
+//   type: `${service.toUpperCase()}_${SLIDESHOW_RESUME}`,
+//   service,
+//   delay,
+// })
+
+export const nextComponentSlideshow = service => ({
+  type: `${service.toUpperCase()}_${SLIDESHOW_NEXT}`,
+  service,
+})
+
+export const restartSlideshow = (service) => ({
   type: `${service.toUpperCase()}_${SLIDESHOW_RESTART}`,
   service,
 })
 
-export const pauseServiceSlideshow = (service) => ({
-  type: `${service.toUpperCase()}_${SLIDESHOW_PAUSE}`,
+export const clearComponentTimeout = service => ({
+  type: `${service.toUpperCase()}_${SLIDESHOW_CLEAR_TIME}`,
   service,
-})
-
-export const numberOfSlideshowPosts = (service, max) => ({
-  type: `${service.toUpperCase()}_${SLIDESHOW_EDIT}`,
-  service,
-  max,
 })
 
 // export const newInstagramPostsError = (err) => ({
