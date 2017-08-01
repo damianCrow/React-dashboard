@@ -80,7 +80,9 @@ class HarvestTimesheets {
   }
 
   checkAccessTokenExpiration(resolveAuth, rejectAuth, tokenDetails) {
-    if (`${tokenDetails.expires_in}00000000` > new Date().getTime()) {
+    // console.log('tokenDetails.expires_at', tokenDetails.expires_at)
+    // console.log('new Date().getTime()', new Date().getTime())
+    if (tokenDetails.expires_at > new Date().getTime()) {
       // Token still fine, send it back
       resolveAuth(tokenDetails.access_token)
     } else {
@@ -203,7 +205,9 @@ class HarvestTimesheets {
    */
   storeToken(token) {
     console.log('--STORE TOKEN RUNNING--')
-    fs.writeFile(TOKEN_PATH, JSON.stringify(token))
+    const tokenWithExpiresAt = token
+    tokenWithExpiresAt.expires_at = new Date().getTime() + (token.expires_in * 1000)
+    fs.writeFile(TOKEN_PATH, JSON.stringify(tokenWithExpiresAt))
     console.log(`Token stored to ${TOKEN_PATH} 💾`)
   }
 
