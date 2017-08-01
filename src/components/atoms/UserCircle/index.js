@@ -40,7 +40,6 @@ class UserCircle extends Component {
 
   componentDidMount() {
     // console.log('componentDidMount props', this.props)
-    this.props.serviceRequest([this.props.email])
   }
 
   componentWillReceiveProps(nextProps) {
@@ -49,6 +48,11 @@ class UserCircle extends Component {
   }
 
   render() {
+
+    if (this.props.name.fullName === '?' || '' || undefined) {
+      this.props.serviceRequest([this.props.email])
+    }
+
     const { image, name } = this.props
     return (
       <Circle image={image}>
