@@ -31,7 +31,6 @@ const InstagramVideo = ({ currentVideo, nextComponent }) => {
         autoPlay="true"
         muted
         onEnded={() => {
-          console.log('ended')
           nextComponent()
         }}
       />
