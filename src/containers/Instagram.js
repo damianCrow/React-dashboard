@@ -1,57 +1,87 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import styled from 'styled-components'
+
 import { connect } from 'react-redux'
-import { startSlideshow, pauseServiceSlideshow, socketDataRequest, numberOfSlideshowPosts } from 'store/actions'
-import { Instagram, InstagramAuth, SplashScreen } from 'components'
+import { fonts } from 'components/globals'
+// import { startSlideshow, pauseServiceSlideshow, socketDataRequest, numberOfSlideshowPosts } from 'store/actions'
+// import { Instagram, SplashScreen } from 'components'
+import { startSlideshowLogic, socketDataRequest } from 'store/actions'
+import TransitionGroup from 'react-transition-group/TransitionGroup'
+import { FadingTransitionWrapper, InstagramFrame, MediaBluredBack, SplashScreen } from 'components'
+
+
+const TransitionWrapper = styled(TransitionGroup)`
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+`
+
+const InstagramWrapper = styled.section`
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  text-align: left;
+  top: 0;
+  font-family: ${fonts.primary};
+  width: 100%;
+`
 
 class InstagramContainer extends Component {
+
   componentDidMount() {
     this.props.serviceRequest()
   }
 
   componentWillReceiveProps(nextProps) {
-    // Try and move this logic back to the HOC container
-    const { numberOfSlideshowPosts, posts, startInstaSlideshow, slideshow, pauseInstaSlideshow } = nextProps
-
-    const isEmpty = posts.length === 0
-
-    if (posts.length !== this.props.posts.length && slideshow.status !== 'ready') {
-      numberOfSlideshowPosts(this.props.posts.length)
-    }
-    if (!isEmpty && slideshow.status === 'ready') {
-      startInstaSlideshow(posts.length)
-    }
-
-    if (this.props.slideshow.current !== slideshow.current) {
-      if (!isEmpty) {
-        if (posts[slideshow.current].type === 'video' && slideshow.status === 'playing') {
-          pauseInstaSlideshow()
-        }
-      }
+    if ((this.props.status !== nextProps.status) && nextProps.status === 'success') {
+      nextProps.startSlideshowLogic(nextProps.posts.length)
     }
   }
 
   render() {
-    const { status, message, posts, slideshow } = this.props
+    // const { status, message, posts, slideshow } = this.props
 
-    const isEmpty = posts.length === 0
+    const isEmpty = this.props.posts.length === 0
 
-    if (status === 'failed') {
+    if (!isEmpty && this.props.slideshow.status === 'ready') {
+      const post = this.props.posts[this.props.slideshow.current]
+      const { id, type } = post
+
+      // return (
+      //   <Instagram
+      //     mediaType={posts[slideshow.current].type}
+      //     posts={posts[slideshow.current]}
+      //     slideShowKey={posts[slideshow.current].id}
+      //   />
+      // )
+
+      let backgroundMedia
+      if (type === 'image' || type === 'carousel') {
+        backgroundMedia = (<MediaBluredBack media={post.images.thumbnail.url} type="image" />)
+      } else if (type === 'video') {
+        backgroundMedia = (<MediaBluredBack media={post.videos.low_bandwidth.url} type="video" />)
+      }
+
       return (
-        <span>{status}</span>
-      )
-    // } else if (status === 'auth-failed') {
-    //   return (
-    //     <InstagramAuth message={message} />
-    //   )
-    } else if (!isEmpty) {
-      return (
-        <Instagram
-          mediaType={posts[slideshow.current].type}
-          posts={posts[slideshow.current]}
-          slideShowKey={posts[slideshow.current].id}
-          // isFetching={isFetching}
-        />
+        <InstagramWrapper>
+          <TransitionWrapper>
+            <FadingTransitionWrapper key={id}>
+              {backgroundMedia}
+            </FadingTransitionWrapper>
+          </TransitionWrapper>
+          <InstagramFrame post={post} slideShowKey={id} mediaType={type} />
+        </InstagramWrapper>
       )
     }
     return (
@@ -61,24 +91,20 @@ class InstagramContainer extends Component {
 }
 
 // Listen and capture any changes made as a result of the the actions below.
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   posts: state.instagram.data.posts,
   status: state.instagram.data.status,
   slideshow: state.instagram.slideshow,
 })
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   serviceRequest: () => dispatch(socketDataRequest({ service: 'INSTAGRAM', serverAction: 'pull', request: 'posts' })),
-  startInstaSlideshow: (max) => dispatch(startSlideshow('instagram', max)),
-  numberOfSlideshowPosts: (max) => dispatch(numberOfSlideshowPosts('instagram', max)),
-  pauseInstaSlideshow: () => dispatch(pauseServiceSlideshow('instagram')),
+  startSlideshowLogic: max => dispatch(startSlideshowLogic('INSTAGRAM', max)),
 })
 
 InstagramContainer.propTypes = {
   serviceRequest: PropTypes.func,
-  numberOfSlideshowPosts: PropTypes.func,
-  startInstaSlideshow: PropTypes.func,
-  pauseInstaSlideshow: PropTypes.func,
+  startSlideshowLogic: PropTypes.func,
   slideshow: PropTypes.object,
   posts: PropTypes.array,
   status: PropTypes.string,

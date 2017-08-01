@@ -24,12 +24,6 @@ function showcaseReducerWrapper() {
           playlist: action.playlist,
           fetching: false,
         }
-      case UPDATE_COUNTDOWN:
-        // console.log('new countdown', action.payload)
-        return {
-          ...state,
-          countDown: action.payload,
-        }
       default:
         return state
     }

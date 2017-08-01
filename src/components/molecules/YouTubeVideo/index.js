@@ -1,13 +1,12 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
+// import { connect } from 'react-redux'
 
 import styled, { css } from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
-import { resumeServiceSlideshow, pauseServiceSlideshow } from 'store/actions'
-
-
+// import { resumeServiceSlideshow, pauseServiceSlideshow } from 'store/actions'
+import { SlideshowLogic } from 'hoc'
 import YouTube from 'react-youtube'
 
 const styles = css`
@@ -40,9 +39,9 @@ const youTubeOpts = {
 
 class YouTubeVideo extends Component {
   static propTypes = {
-    serviceId: PropTypes.string,
-    resumeInstaSlideshow: PropTypes.func.isRequired,
-    pauseInstaSlideshow: PropTypes.func.isRequired,
+    serviceId: PropTypes.string.isRequired,
+    nextComponent: PropTypes.func,
+    // pauseInstaSlideshow: PropTypes.func.isRequired,
   }
 
   constructor() {
@@ -54,18 +53,16 @@ class YouTubeVideo extends Component {
     }
   }
 
-  componentDidMount() {
-    this.props.pauseInstaSlideshow()
-  }
-
   onVideoEnd() {
     console.log('youtube onVideoEnd, this.state.finishing: ', this.state.finishing)
-    if(!this.state.finishing) {
-      this.setState({
-        finishing: true,
-      })
-      this.props.resumeInstaSlideshow()
-    }
+    // Passed by HOC
+    this.props.nextComponent()
+    // if(!this.state.finishing) {
+    //   this.setState({
+    //     finishing: true,
+    //   })
+    //   this.props.resumeInstaSlideshow()
+    // }
   }
 
   // componentWillUnmount() {
@@ -103,10 +100,11 @@ class YouTubeVideo extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  resumeInstaSlideshow: () => dispatch(resumeServiceSlideshow('showcase')),
-  pauseInstaSlideshow: () => dispatch(pauseServiceSlideshow('showcase')),
-})
+// const mapDispatchToProps = (dispatch) => ({
+//   resumeInstaSlideshow: () => dispatch(resumeServiceSlideshow('showcase')),
+//   pauseInstaSlideshow: () => dispatch(pauseServiceSlideshow('showcase')),
+// })
 
 
-export default connect(null, mapDispatchToProps)(YouTubeVideo)
+// export default connect(null, mapDispatchToProps)(YouTubeVideo)
+export default SlideshowLogic(YouTubeVideo, 'showcase', false)

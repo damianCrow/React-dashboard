@@ -5,27 +5,21 @@ import * as actions from './actions'
 
 // TODO: Move this whole thing to the container.
 function* checkOverride(action) {
+  yield put(slideshowActions.slideshowMeta('showcase', action.payload.playlist.length))
   if (action.payload.overideQueue) {
-    yield put(slideshowActions.restartServiceSlideshow('SHOWCASE'))
-    yield put(slideshowActions.pauseServiceSlideshow('SHOWCASE'))
-    console.log('checkOverride action.payload = ', action.payload.playlist[0].type)
-    if (action.payload.playlist[0].type !== 'Video') {
-      yield put(slideshowActions.resumeServiceSlideshow('SHOWCASE', 15000))
-    }
+    yield put(slideshowActions.restartSlideshow('showcase'))
   }
-  // if(action.payload.playlist[0].type !== 'Image') {
-  //   yield put(slideshowActions.resumeServiceSlideshow('SHOWCASE', 15000))
-  //   yield fork(runCarousel, action)
-  // }
 }
 
 function* pullInitalPlaylist() {
   try {
     // Tell redux-saga to call fetch with the specified options
     const response = yield call(fetch, '/public/user-data/showcase-media.json', { method: 'GET' })
-    const playlist = yield response.json()
+    const reponse = yield response.json()
+    const playlist = reponse.playlist.filter(item => !item.hidden)
     // Tell redux-saga to dispatch the recieveInitalPlaylist action
-    yield put(actions.recieveInitalPlaylist(playlist.playlist))
+    yield put(slideshowActions.startSlideshowLogic('SHOWCASE', playlist.length))
+    yield put(actions.recieveInitalPlaylist(playlist))
   } catch (err) {
     // You get it
     yield put(actions.errorFetchingInitalPlaylist(err))

@@ -45,9 +45,10 @@ const FeatureList = ({ ...props }) => {
         </Feature>
       </GridRow>
       <GridRow>
-        <Feature style={{paddingTop: 52+ '%'}}>
-      
-        </Feature>
+        <Feature />
+      </GridRow>
+      <GridRow>
+        <Feature style={{ paddingTop: '52%' }} />
       </GridRow>
       <GridRow>
         <Feature madWide>

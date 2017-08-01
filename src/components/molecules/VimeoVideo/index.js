@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 
 import styled, { css } from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
-import { resumeServiceSlideshow, pauseServiceSlideshow } from 'store/actions'
+import { SlideshowLogic } from 'hoc'
 
 // import Vimeo from '@vimeo/player'
 
@@ -40,14 +39,7 @@ class VimeoVideo extends Component {
   static propTypes = {
     url: PropTypes.string,
     serviceId: PropTypes.string,
-    resumeInstaSlideshow: PropTypes.func.isRequired,
-    pauseInstaSlideshow: PropTypes.func.isRequired,
-  }
-
-  constructor() {
-    super()
-    // this.onVideoEnd = this.onVideoEnd.bind(this)
-    // console.log('vimeo video constructor')
+    nextComponent: PropTypes.func,
   }
 
   componentDidMount() {
@@ -59,7 +51,7 @@ class VimeoVideo extends Component {
     player.setVolume(0)
 
     player.on('ended', () => {
-      this.props.resumeInstaSlideshow()
+      this.props.nextComponent()
     })
   }
 
@@ -88,10 +80,5 @@ class VimeoVideo extends Component {
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  resumeInstaSlideshow: () => dispatch(resumeServiceSlideshow('showcase')),
-  pauseInstaSlideshow: () => dispatch(pauseServiceSlideshow('showcase')),
-})
 
-
-export default connect(null, mapDispatchToProps)(VimeoVideo)
+export default SlideshowLogic(VimeoVideo, 'showcase', false)

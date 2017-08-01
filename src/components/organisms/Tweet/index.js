@@ -1,12 +1,11 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import styled from 'styled-components'
-import ReactDOM from 'react-dom'
 
 import { fonts } from 'components/globals'
+import { SlideshowLogic } from 'hoc'
 
-import theaterJS from 'theaterjs/dist/theater.js'
-import { TweenMax } from 'gsap'
+import theaterJS from 'theaterjs/dist/theater'
 
 const TweetAndBack = styled.div`
   position: absolute;
@@ -49,14 +48,18 @@ class Tweet extends Component {
         const actor = this.theater.getCurrentActor()
         actor.$element.classList.remove('is-typing')
       })
+
+    this.state = {
+      removeing: false,
+    }
   }
 
   componentDidMount() {
     const { allTweetDetails } = this.props
 
-    this._tweetText.id = `tweet-${allTweetDetails.id_str}`
+    this.tweetText.id = `tweet-${allTweetDetails.id_str}`
 
-    this._tweetText.setAttribute('id', `tweet-${allTweetDetails.id_str}`)
+    this.tweetText.setAttribute('id', `tweet-${allTweetDetails.id_str}`)
 
     this.tweetId = `tweet-${allTweetDetails.id_str}`
 
@@ -64,49 +67,47 @@ class Tweet extends Component {
       .addActor(this.tweetId)
 
     this.startTyping()
-
-  }
-
-  // componentWillAppear (callback) {
-  //   callback()
-  //   console.log('will appear')
-  // }
-
-  componentWillEnter(callback) {
-    // const el = ReactDOM.findDOMNode(this)
-    // TweenMax.fromTo(el, 1, {opacity: 0}, {opacity: 1, onComplete: callback})
   }
 
   componentWillUnmount() {
-    // const el = ReactDOM.findDOMNode(this)
-    this.removeType()
-    // TweenMax.fromTo(el, 1, {opacity: 1}, {opacity: 0, onComplete: callback})
+    if (!this.state.removeing) {
+      this.removeType()
+    }
   }
 
-  startTyping(callback) {
+  startTyping() {
     const { allTweetDetails } = this.props
     this.theater
-      .addScene(3500)
+      .addScene(500)
       .addScene(`${this.tweetId}:${stripLinks(allTweetDetails.text)}`, 100)
-      .addScene((done) => {
+      .addScene(done => {
         done()
+        setTimeout(() => {
+          if (!this.state.removeing) {
+            this.removeType()
+          }
+        }, 8500)
       })
   }
 
-  removeType(callback) {
+  removeType() {
+    this.setState({
+      removeing: true,
+    })
+
     this.theater
       .addScene(`${this.tweetId}: `, 50)
-      .addScene((done) => {
+      .addScene(done => {
         done()
+        this.props.nextComponent()
       })
   }
 
   render() {
-    const { allTweetDetails } = this.props
     return (
       <TweetAndBack>
         <TweetWrapper>
-          <span ref={(el) => { this._tweetText = el }} />
+          <span ref={(el) => { this.tweetText = el }} />
         </TweetWrapper>
       </TweetAndBack>
     )
@@ -115,7 +116,8 @@ class Tweet extends Component {
 
 Tweet.propTypes = {
   allTweetDetails: PropTypes.object,
+  nextComponent: PropTypes.func.isRequired,
 }
 
-export default Tweet
+export default SlideshowLogic(Tweet, 'twitter', false)
 

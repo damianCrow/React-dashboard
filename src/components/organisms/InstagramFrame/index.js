@@ -3,12 +3,8 @@ import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import styled, { css } from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
-import { incrementServiceSlideshow } from 'store/actions'
 
-
-import { fonts, compHeader } from 'components/globals'
-
-import { FadingTransitionWrapper, ImageFeature, InstagramVideo, Icon, MetaTags, Ticker } from 'components'
+import { FadingTransitionWrapper, InstagramImage, InstagramVideo, MetaTags, Ticker } from 'components'
 
 const TransitionWrapper = styled(TransitionGroup)`
   color: black;
@@ -61,24 +57,20 @@ const HeaderLevel = styled.div`
   z-index: 1;
 `
 
-const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey, resumeAutoSlides }) => {
+const InstagramFrame = ({ post, mediaType, slideShowKey }) => {
   const metaTags = [
-    { icon: 'heart', metaInfo: posts.likes.count },
-    { icon: 'comment', metaInfo: posts.comments.count },
+    { icon: 'heart', metaInfo: post.likes.count },
+    { icon: 'comment', metaInfo: post.comments.count },
   ]
 
   let currentPost
   if (mediaType === 'image' || mediaType === 'carousel') {
-    currentPost = (
-      <ImageFeature
-        currentImage={posts.images.standard_resolution.url}
-      />
-    )
+    currentPost = (<InstagramImage currentImage={post.images.standard_resolution.url} />)
   } else if (mediaType === 'video') {
     currentPost = (
       <InstagramVideo
         // resumeAutoSlides={resumeAutoSlides}
-        currentVideo={posts.videos.standard_resolution.url}
+        currentVideo={post.videos.standard_resolution.url}
       />
     )
   }
@@ -87,13 +79,13 @@ const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey, re
     <Frame>
       { /* <Header>
         <StyledIcon icon="instagram" size={35} />
-        <InstagramCaption>{posts.caption.text}</InstagramCaption>
+        <InstagramCaption>{post.caption.text}</InstagramCaption>
         <MetaTags tags={metaTags} />
       </Header>*/ }
       <Ticker icon="instagram" slideShowKey={slideShowKey}>
         <HeaderLevel>
-          {posts.location &&
-          <InstagramCaption>{posts.location.name}</InstagramCaption>}
+          {post.location &&
+          <InstagramCaption>{post.location.name}</InstagramCaption>}
         </HeaderLevel>
         <HeaderLevel>
           <MetaTags tags={metaTags} />
@@ -112,10 +104,9 @@ const InstagramFrame = ({ children, ...props, posts, mediaType, slideShowKey, re
 
 InstagramFrame.propTypes = {
   children: PropTypes.any,
-  posts: PropTypes.object.isRequired,
+  post: PropTypes.object.isRequired,
   slideShowKey: PropTypes.string.isRequired,
   mediaType: PropTypes.string,
-  resumeAutoSlides: PropTypes.object,
 }
 
 export default InstagramFrame
