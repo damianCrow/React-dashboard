@@ -18,7 +18,7 @@ class Google {
   constructor(app, socket) {
     this.app = app
     this.socket = socket
-    this.credentials = {}
+    this.config = {}
 
     this.init()
   }
@@ -30,7 +30,7 @@ class Google {
     // Setup and load the class with the already known credentials,
     // then make sure the external auth url is correct.
     this.grabLocalCredentials()
-      .then(() => this.setupExternalAuthUrl())
+      .then(() => this.loadUpOauthClient())
   }
 
   setupLocalAuthPaths() {
@@ -63,7 +63,7 @@ class Google {
         if (err) {
           reject(`Error loading client secret file: '${err}`)
         }
-        this.credentials = JSON.parse(content).installed
+        this.config = JSON.parse(content).installed
         resolve()
       })
     })
@@ -74,8 +74,11 @@ class Google {
       // Load client secrets from a local file.
       this.checkStoredAccessToken()
         .then(token => {
-          this.oauth2Client.credentials = token
-          resolve(this.oauth2Client)
+          this.oauth2Client.setCredentials(token)
+          this.checkAccessTokenExpiration(token)
+            .then(() => {
+              resolve(this.oauth2Client)
+            })
         })
         .catch(err => {
           // It ends here, the user needs to authenticate.
@@ -84,33 +87,6 @@ class Google {
         })
     })
   }
-
-  // checkAuth() {
-  //   return new Promise((resolve, reject) => {
-  //     // console.log('Google checkAuth')
-  //     // console.log('GoogleCalendar this: ', this)
-  //     // Load client secrets from a local file.
-  //     fs.readFile(CLIENT_DETAILS,
-  //       (err, content) => {
-  //         if (err) {
-  //           reject(`Error loading client secret file: ${err}`)
-  //         }
-  //         // Authorize a client with the loaded credentials, then call the
-  //         // Google Calendar API.
-  //         const CREDENTIALS = JSON.parse(content)
-  //         // console.log('CREDENTIALS', JSON.parse(content))
-
-  //         this.authorize(CREDENTIALS)
-  //           .then((oauth2Client) => {
-  //             resolve(oauth2Client)
-  //           })
-  //           .catch((error) => {
-  //             console.log(error)
-  //           })
-  //       }
-  //     )
-  //   })
-  // }
 
   /**
    * Create an OAuth2 client with the given credentials, and then execute the
@@ -129,131 +105,50 @@ class Google {
           // this.setupAccessForNewToken()
           reject(err)
         } else {
+          const tokenToPass = JSON.parse(token)
+          resolve(tokenToPass)
           // We have a processed token stored, first check if it's expired.
-          this.checkAccessTokenExpiration(resolve, reject, JSON.parse(token))
+          // this.checkAccessTokenExpiration(resolve, reject, JSON.parse(token))
         }
       })
     })
   }
 
-  checkAccessTokenExpiration(resolveAuth, rejectAuth, tokenDetails) {
-    // console.log('tokenDetails.expires_at', tokenDetails.expires_at)
-    // console.log('new Date().getTime()', new Date().getTime())
-    if (tokenDetails.expiry_date > new Date().getTime()) {
-      // Token still fine, send it back
-      resolveAuth(tokenDetails)
-    } else {
-      // Token expired
-      console.log('token expired, get new token using refresh token')
-      // Get a new token using the refresh token
-      this.getNewToken(tokenDetails.refresh_token, 'refresh')
-        .then(tokenDetails => {
-          this.storeToken(tokenDetails)
-          resolveAuth(tokenDetails)
-        })
-        .catch(error => {
-          console.log(error)
-          rejectAuth(error)
-        })
-    }
+  checkAccessTokenExpiration(tokenDetails) {
+    console.log('tokenDetails.expiry_date', tokenDetails.expiry_date)
+    console.log('new Date().getTime()', new Date().getTime())
+    return new Promise((resolve, reject) => {
+      if (tokenDetails.expiry_date > new Date().getTime()) {
+        // Token still fine, send it back
+        resolve()
+      } else {
+        // Token expired
+        console.log('token expired, get new token using refresh token')
+        // Get a new token using the refresh token
+        this.getNewToken(tokenDetails.refresh_token, 'refresh')
+          .then(tokenDetails => {
+            this.storeToken(tokenDetails)
+            resolve(tokenDetails)
+          })
+          .catch(error => {
+            console.log('checkAccessTokenExpiration error: ', error)
+            reject(error)
+          })
+      }
+    })
   }
 
-  setupExternalAuthUrl() {
-    console.log('setupExternalAuthUrl')
+  loadUpOauthClient() {
     this.auth = new googleAuth()
-    this.oauth2Client = new this.auth.OAuth2(this.credentials.client_id, this.credentials.client_secret, this.credentials.redirect_uris)
+    this.oauth2Client = new this.auth.OAuth2(this.config.client_id, this.config.client_secret, this.config.redirect_uris)
+    console.log('setupExternalAuthUrl')
     this.authUrl = this.oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: SCOPES,
     })
-    // this.authUrl = `${HARVEST_HOST}/oauth2/authorize?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
+    // this.authUrl = `${HARVEST_HOST}/oauth2/authorize?client_id=${this.config.client_id}&redirect_uri=${this.config.redirect_uri}&state=optional-csrf-token&response_type=code`
     console.log('this.authUrl', this.authUrl)
   }
-
-  /**
-   * Create an OAuth2 client with the given credentials, and then execute the
-   * given callback function.
-   *
-   * @param {Object} credentials The authorization client credentials.
-   * @param {function} callback The callback to call with the authorized client.
-   */
-  // authorize(credentials) {
-  //   const clientSecret = credentials.installed.client_secret
-  //   const clientId = credentials.installed.client_id
-  //   const redirectUrl = 'http://localhost:3000/handle_calendar_auth'
-
-  //   console.log('clientId', clientId)
-  //   console.log('clientSecret', clientSecret)
-  //   console.log('redirectUrl', redirectUrl)
-
-  //   const auth = new googleAuth()
-  //   const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl)
-
-  //   return new Promise((resolve, reject) => {
-  //     // console.log('autherorize credentials', credentials)
-  //     // Check if we have previously stored a token.
-  //     fs.readFile(TOKEN_PATH, (err, token) => {
-  //       if (err) {
-  //         // No token stored, so get a new one.
-
-  //         // Setup to catch authorize user in the consuctor
-  //         this.setupForNewToken(oauth2Client)
-  //         reject(err)
-
-  //         // this.getNewToken(oauth2Client)
-  //         // .then((oauth2Client, token) => {
-  //         //   this.storeToken(token)
-  //         //   resolve(oauth2Client)
-  //         // })
-  //         // .catch(error => {
-  //         //   reject(error)
-  //         // })
-  //       } else {
-  //         // We have a processed token stored and ready to go, use it.
-  //         oauth2Client.credentials = JSON.parse(token)
-  //         resolve(oauth2Client)
-  //       }
-  //     })
-  //   })
-  // }
-
-  // setupForNewToken(oauth2Client) {
-  //   console.log('setupForNewToken')
-  //   const authUrl = oauth2Client.generateAuthUrl({
-  //     access_type: 'offline',
-  //     scope: SCOPES,
-  //   })
-
-  //   console.log('Authorize this app by visiting this url: ', authUrl)
-
-  //   // Dispatch a frontend action to push the auth link!!!!!!!!!
-  //   this.socket.emit('action', {
-  //     type: 'NEED_TO_AUTH_CALENDAR',
-  //     data: { status: 'auth-failed' },
-  //   })
-
-  //   console.log('just before express route')
-  //   this.app.get('/authorize_calendar', (req, res) => {
-  //     console.log('autherise calendar')
-  //     // This will redirect back to our setup '/handle_calendar_auth' with the code
-  //     res.redirect(authUrl)
-  //   })
-
-
-  //   this.app.get('/handle_calendar_auth', (req, res) => {
-  //     console.log('handle_calendar_auth')
-  //     const authCode = req.query.code
-  //     // This needs to go back to autherise and fire our request with sucess
-  //     this.getNewToken(oauth2Client, authCode)
-  //       .then((token) => {
-  //         this.storeToken(token)
-  //         res.redirect('/')
-  //       })
-  //       .catch(error => {
-  //         console.log(error)
-  //       })
-  //   })
-  // }
 
   /**
    * Get and store new token after prompting for user authorization, and then
@@ -269,16 +164,30 @@ class Google {
     // console.log('getNewToken. oauth2Client: ', oauth2Client)
     return new Promise((resolve, reject) => {
       // PULL NEW CODE FROM URL PARAM
-      this.oauth2Client.getToken(code, (err, token) => {
-        if (err) {
-          console.log('Error while trying to retrieve access token', err)
-          // const reason = new Error({ status: 'error', data: err })
-          reject(err) // reject
-        } else {
-          resolve(token) // fulfilled
-        }
-        // callback(oauth2Client);
-      })
+      if (requstType === 'refresh') {
+        console.log('getting refresh token')
+        console.log('this.oauth2Client', this.oauth2Client)
+        this.oauth2Client.refreshAccessToken((err, tokens) => {
+          // your access_token is now refreshed and stored in oauth2Client
+          // store these new tokens in a safe place (e.g. database)
+          if (err) {
+            reject(err) // reject
+          } else {
+            resolve(tokens)
+          }
+        })
+      } else {
+        this.oauth2Client.getToken(code, (err, token) => {
+          if (err) {
+            console.log('Error while trying to retrieve access token', err)
+            // const reason = new Error({ status: 'error', data: err })
+            reject(err) // reject
+          } else {
+            resolve(token) // fulfilled
+          }
+          // callback(oauth2Client);
+        })
+      }
     })
   }
 
