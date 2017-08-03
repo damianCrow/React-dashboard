@@ -21,11 +21,11 @@ const PlayerContainer = styled.div`
 
 // const StyledIcon = styled(Icon)`${iconStyles}`
 
-const SonosPlayer = ({ previousTrack, playerState, speakers, featuredSpeaker, children, ...props }) => {
+const SonosPlayer = ({ previousTrack, playerState, speakers, featuredSpeaker, playerCount }) => {
   return (
     <PlayerContainer>
-      <SonosGroupInfo speakers={speakers} featuredSpeaker={featuredSpeaker} />
-      <SonosTrack trackInfo={playerState} previousTrack={previousTrack} />
+      <SonosGroupInfo speakers={speakers} featuredSpeaker={featuredSpeaker} playerCount={playerCount} />
+      <SonosTrack trackInfo={playerState} previousTrack={previousTrack} playerCount={playerCount} />
     </PlayerContainer>
   )
 }
@@ -36,6 +36,7 @@ SonosPlayer.propTypes = {
   playerState: PropTypes.object,
   featuredSpeaker: PropTypes.string,
   previousTrack: PropTypes.object,
+  playerCount: PropTypes.number,
 }
 
 SonosPlayer.defaultProps = {

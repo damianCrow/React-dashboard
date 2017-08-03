@@ -8,7 +8,7 @@ import { fonts } from 'components/globals'
 
 const SonosContainerStyled = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: ${props => props.flexDirection};
   height: 100%;
   background: black;
   left: 0;
@@ -18,9 +18,9 @@ const SonosContainerStyled = styled.div`
   font-family: ${fonts.primary};
 `
 
-const SonosContainer = ({ children, ...props, isFetching }) => {
+const SonosContainer = ({ children, ...props }) => {
   return (
-    <SonosContainerStyled>
+    <SonosContainerStyled flexDirection={children.length === 1 ? 'row' : 'column'}>
       {children}
     </SonosContainerStyled>
   )
