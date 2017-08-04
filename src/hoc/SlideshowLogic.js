@@ -7,6 +7,17 @@ import { startComponentTimeout, clearComponentTimeout, nextComponentSlideshow } 
 function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true) {
   class SlideshowLogicWrapper extends Component {
     componentDidMount() {
+      this.startOrClear()
+    }
+
+    // This is experimental, mostly for the countdown module, might break showcase adding / removing.
+    componentWillReceiveProps(nextProps) {
+      if (nextProps.slideshowCurrent !== this.props.slideshowCurrent) {
+        this.startOrClear()
+      }
+    }
+
+    startOrClear() {
       if (timeoutOrNot) {
         // This will clear the last timeout as well as set a new timeout.
         this.props.startTimeoutUntilNextSlide()
@@ -23,6 +34,11 @@ function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true) {
     }
   }
 
+  const mapStateToProps = state => ({
+    slideshowStatus: state[service].slideshow.status,
+    slideshowCurrent: state[service].slideshow.current,
+  })
+
   const mapDispatchToProps = dispatch => ({
     startTimeoutUntilNextSlide: () => dispatch(startComponentTimeout(service)),
     clearTimeoutForNextSlide: () => dispatch(clearComponentTimeout(service)),
@@ -34,9 +50,11 @@ function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true) {
     clearTimeoutForNextSlide: PropTypes.func,
     nextSlide: PropTypes.func,
     compsInSlideshow: PropTypes.number,
+    slideshowStatus: PropTypes.string,
+    slideshowCurrent: PropTypes.number,
   }
 
-  return connect(null, mapDispatchToProps)(SlideshowLogicWrapper)
+  return connect(mapStateToProps, mapDispatchToProps)(SlideshowLogicWrapper)
 }
 
 export default SlideshowLogic

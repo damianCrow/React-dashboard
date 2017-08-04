@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Feature, Countdown } from 'components'
-import { SonosInfo, Twitter, Instagram, GoogleCalendar, Harvest, Showcase } from 'containers'
+import { Feature } from 'components'
+import { SonosInfo, Twitter, Instagram, Countdown, Harvest, Showcase } from 'containers'
 
 const Grid = styled.div`
   display: block;

@@ -58,19 +58,11 @@ class InstagramContainer extends Component {
       const post = this.props.posts[this.props.slideshow.current]
       const { id, type } = post
 
-      // return (
-      //   <Instagram
-      //     mediaType={posts[slideshow.current].type}
-      //     posts={posts[slideshow.current]}
-      //     slideShowKey={posts[slideshow.current].id}
-      //   />
-      // )
-
       let backgroundMedia
       if (type === 'image' || type === 'carousel') {
-        backgroundMedia = (<MediaBluredBack media={post.images.thumbnail.url} type="image" />)
+        backgroundMedia = <MediaBluredBack media={post.images.thumbnail.url} type="image" />
       } else if (type === 'video') {
-        backgroundMedia = (<MediaBluredBack media={post.videos.low_bandwidth.url} type="video" />)
+        backgroundMedia = <MediaBluredBack media={post.videos.low_bandwidth.url} type="video" />
       }
 
       return (
