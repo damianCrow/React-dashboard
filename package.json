@@ -102,7 +102,7 @@
     "redux-saga": "^0.15.3",
     "restler": "^3.4.0",
     "shortid": "^2.2.8",
-    "sine-waves": "git://github.com/isuttell/sine-waves.git",
+    "sine-waves": "^0.3.0",
     "socket.io": "^2.0.1",
     "sonos-discovery": "git://github.com/jishi/node-sonos-discovery.git",
     "styled-components": "^2.0.0",

@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Component } from 'react'
 import styled, { css } from 'styled-components'
 import { fonts } from 'components/globals'
 import startsWith from 'lodash/startsWith'
 
-import { WaveAnimation } from 'components'
+import { WaveAnimation, TruncatedScroller } from 'components'
 
-const styles = ({ ...props, trackInfo }) => css`
+const styles = () => css`
   color: white;
   display: flex;
   flex-direction: column;
@@ -58,16 +58,48 @@ const TrackInfo = styled.div`
   padding: 2rem 0;
 `
 
-const Artist = styled.span`
+const Track = styled(TruncatedScroller)`
   display: block;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   text-align: center;
+  width: 95%;
+  &.two_groups {
+    font-size: 1rem;
+    position: absolute;
+    top: 30px;
+    left: 47%;
+    width: 49%;
+    text-align: left;
+  }
+  &.three_groups {
+    font-size: 1rem;
+    position: absolute;
+    top: 75px;
+    left: 40%;
+    text-align: left;
+    width: 55%;
+  }
 `
-const Track = styled.span`
+const Artist = styled(TruncatedScroller)`
   display: block;
   font-size: 1rem;
   font-style: bold;
   text-align: center;
+  &.two_groups {
+    position: absolute;
+    top: 50px;
+    left: 47%;
+    text-align: left;
+    font-size: 0.85rem;
+  }
+  &.three_groups {
+    position: absolute;
+    top: 95px;
+    left: 40%;
+    text-align: left;
+    font-size: 0.75rem;
+    width: 55%;
+  }
 `
 
 const AlbumArtContainer = styled.div`
@@ -85,8 +117,7 @@ const AlbumArtNext = styled.img`
   right: 0;
   height: auto;
   width: 40%;
-  transform: translateY(-50%);
-  // box-shadow: 5px 5px 25px 3px #333;
+  transform: translateY(-22%);
   filter: drop-shadow(0px 0px 2px rgba(0,0,0,0.5));
 `
 const AlbumArtCurrent = styled(AlbumArtNext)`
@@ -94,10 +125,34 @@ const AlbumArtCurrent = styled(AlbumArtNext)`
   width: 50%;
   left: 25%;
   z-index: 2;
+  &.two_groups {
+    width: 40%;
+    left: 1%;
+    top: 25px;
+    transform: translateY(0);
+  }
+  &.three_groups {
+    width: 30%;
+    left: 2%;
+    top: 25px;
+    transform: translateY(0);
+  }
 `
 
 const AlbumArtPrevious = styled(AlbumArtNext)`
   left: 0;
+`
+const PausedIndicator = styled.span`
+  position: absolute;
+  bottom: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  &.two_groups {
+    left: 47%;
+  }
+  &.three_groups {
+    left: 40%;
+  }
 `
 const handleSrcError = (e) => {
   const image = e.target
@@ -111,48 +166,85 @@ const handleSrcError = (e) => {
   }
 }
 
-const SonosTrack = ({ ...props, trackInfo, previousTrack }) => {
-  const playbackState = trackInfo.playbackState
-  const currentTrack = trackInfo.currentTrack
-  return (
-    <SonosCurrentTrackWrapper {...props}>
-      <SonosCurrentTrack>
-        <AlbumArtContainer>
-          <AlbumArtPrevious
-            src={previousTrack.absoluteAlbumArtUri}
-            onError={(e) => { handleSrcError(e) }}
-          />
-          <AlbumArtCurrent
-            src={trackInfo.currentTrack.absoluteAlbumArtUri}
-            onError={(e) => { handleSrcError(e) }}
-          />
-          <AlbumArtNext
-            src={trackInfo.nextTrack.absoluteAlbumArtUri}
-            onError={(e) => { handleSrcError(e) }}
-          />
-        </AlbumArtContainer>
-        <TrackInfo>
-          <Track>
-            {startsWith(trackInfo.currentTrack.title, 'x-sonosapi-stream') ? '' : trackInfo.currentTrack.title}
-          </Track>
-          <Artist>
-            {currentTrack.artist}
-          </Artist>
-          {playbackState === 'PAUSED_PLAYBACK' &&
-            // <PlaybackIcon />
-            <span>PAUSED</span>
-          }
-          <WaveAnimation />
-        </TrackInfo>
-      </SonosCurrentTrack>
-    </SonosCurrentTrackWrapper>
-  )
+class SonosTrack extends Component {
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props !== nextProps) {
+      this.forceUpdate()
+    }
+  }
+
+  render() {
+    const { trackInfo, previousTrack, playerCount } = this.props
+    const playbackState = trackInfo.playbackState
+    const currentTrack = trackInfo.currentTrack
+    if (playerCount === 1) {
+      return (
+        <SonosCurrentTrackWrapper>
+          <SonosCurrentTrack>
+            <AlbumArtContainer>
+              <AlbumArtPrevious
+                src={previousTrack.absoluteAlbumArtUri}
+                onError={(e) => { handleSrcError(e) }}
+              />
+              <AlbumArtCurrent
+                src={trackInfo.currentTrack.absoluteAlbumArtUri}
+                onError={(e) => { handleSrcError(e) }}
+              />
+              <AlbumArtNext
+                src={trackInfo.nextTrack.absoluteAlbumArtUri}
+                onError={(e) => { handleSrcError(e) }}
+              />
+            </AlbumArtContainer>
+            <TrackInfo>
+              <Track>
+                {currentTrack.title}
+              </Track>
+              <Artist>
+                {currentTrack.artist}
+              </Artist>
+              {playbackState === 'PAUSED_PLAYBACK' &&
+                <PausedIndicator className={(playerCount === 2 ? 'two_groups' : 'three_groups')}>PAUSED</PausedIndicator>
+              }
+              <WaveAnimation />
+            </TrackInfo>
+          </SonosCurrentTrack>
+        </SonosCurrentTrackWrapper>
+      )
+    }
+    return (
+      <SonosCurrentTrackWrapper>
+        <SonosCurrentTrack>
+          <AlbumArtContainer>
+            <AlbumArtCurrent
+              src={trackInfo.currentTrack.absoluteAlbumArtUri}
+              onError={(e) => { handleSrcError(e) }}
+              className={(playerCount === 2 ? 'two_groups' : 'three_groups')}
+            />
+          </AlbumArtContainer>
+          <TrackInfo>
+            <Track className={(playerCount === 2 ? 'two_groups' : 'three_groups')}>
+              {startsWith(trackInfo.currentTrack.title, 'x-sonosapi-stream') ? <i>Radio Stream</i> : trackInfo.currentTrack.title}
+            </Track>
+            <Artist className={(playerCount === 2 ? 'two_groups' : 'three_groups')}>
+              {currentTrack.artist}
+            </Artist>
+            {playbackState === 'PAUSED_PLAYBACK' &&
+              <PausedIndicator className={(playerCount === 2 ? 'two_groups' : 'three_groups')}>PAUSED</PausedIndicator>
+            }
+            <WaveAnimation />
+          </TrackInfo>
+        </SonosCurrentTrack>
+      </SonosCurrentTrackWrapper>
+    )
+  }
 }
 
 SonosTrack.propTypes = {
   children: PropTypes.any,
   trackInfo: PropTypes.object,
   previousTrack: PropTypes.object,
+  playerCount: PropTypes.number,
 }
 
 export default SonosTrack
