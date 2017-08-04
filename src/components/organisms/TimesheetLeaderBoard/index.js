@@ -277,7 +277,7 @@ class TimesheetLeaderBoard extends Component {
         <ShadingWrapper className={'showHide'} />
         <ShadingWrapper className={'showHide'} />
         <ShadingWrapper className={'showHide'} />
-        <HarvestShuffle fade scale duration={2000}>
+        <HarvestShuffle fade={true} scale={true} duration={2000}>
           {(users.sort((a, b) => b.totalHours[sortByThis] - a.totalHours[sortByThis])).map((user) => (
             <HarvestEntry key={user.id}>
               <UserCircle email={user.email} />
