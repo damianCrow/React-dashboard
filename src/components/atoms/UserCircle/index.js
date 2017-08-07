@@ -19,6 +19,13 @@ const Circle = styled.div`
   ${props => props.image && `background: url('${props.image}') center / cover;`}
   background-clip: padding-box;
   padding: 2px;
+
+  &.small {
+    width: 42px;
+    height: 42px;
+    transform: translateY(0);
+    margin-left: 15px;
+  }
 `
 
 const Initals = styled.abbr`
@@ -38,6 +45,10 @@ const Initals = styled.abbr`
 
 class UserCircle extends Component {
 
+  constructor(props) {
+    super(props)
+  }
+
   componentDidMount() {
     // console.log('componentDidMount props', this.props)
   }
@@ -53,9 +64,9 @@ class UserCircle extends Component {
       this.props.serviceRequest([this.props.email])
     }
 
-    const { image, name } = this.props
+    const { className, image, name } = this.props
     return (
-      <Circle image={image}>
+      <Circle className={className} image={image}>
         {image.length === 0 &&
           <Initals title={name.fullName}>
             {name.initals}

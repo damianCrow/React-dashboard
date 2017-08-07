@@ -1,5 +1,7 @@
 export const initialState = {
-  instagram: []
+  message: '',
+  status: '',
+  data: [],
 }
 
 export const getInstagramData = (state = initialState) => state.instagram || []

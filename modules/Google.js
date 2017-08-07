@@ -2,16 +2,13 @@ const fs = require('fs')
 const google = require('googleapis')
 const googleAuth = require('google-auth-library')
 
-// Modify this for this:
-// https://developers.google.com/admin-sdk/directory/v1/guides/manage-users#retrieve_users_non_admin
+const CRED_DIR = './.credentials/google/'
+const HOST = 'https://www.googleapis.com'
+const TOKEN_PATH = `${CRED_DIR}google_token.json`
+const CLIENT_DETAILS = `${CRED_DIR}config.json`
 
-// If modifying these scopes, delete your previously saved credentials
-// at ~/.credentials/calendar-nodejs-quickstart.json
+const SCOPES = [`${HOST}/auth/admin.directory.user.readonly`, `${HOST}/auth/calendar.readonly`]
 
-// TODO: Make this open to other Google modules (calendar etc)
-const SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
-const TOKEN_DIR = './.credentials/google/'
-const TOKEN_PATH = `${TOKEN_DIR}token.json`
 
 // Example 1: Creating a new class (declaration-form)
 // ===============================================================
@@ -21,55 +18,73 @@ class Google {
   constructor(app, socket) {
     this.app = app
     this.socket = socket
+    this.config = {}
+
+    this.init()
   }
 
-  // request(newRequest) {
-  //   console.log('google newRequest: ', newRequest)
-  //   return new Promise((resolve, reject) => {
-  //     this[newRequest]()
-  //       .then(data => resolve(data))
-  //       .catch(err => reject(err))
-  //   })
-  // }
+  init() {
+    // This needs to be done first, before any async.
+    this.setupLocalAuthPaths()
 
-  handleRequests(request, payloadPackage) {
-    this.checkAuth().then((auth) => {
-      // this.socket.emit('successful.create-request.GOOGLE')
-      // console.log('google handleRequests: request = ', request)
-      switch (request) {
-        case 'GET_USERS':
-          this.getUsers(auth, payloadPackage)
-          break
-        default:
-          break
-      }
+    // Setup and load the class with the already known credentials,
+    // then make sure the external auth url is correct.
+    this.grabLocalCredentials()
+      .then(() => this.loadUpOauthClient())
+  }
+
+  setupLocalAuthPaths() {
+    // Send the user to authUrl and grab the access code passed as a get parameter
+    this.app.get('/authorize_calendar', (req, res) => {
+      // This will ultimately redirect back to our setup '/harvest_auth' with the code
+      res.redirect(this.authUrl)
+    })
+
+    this.app.get('/calendar_auth', (req, res) => {
+      const accessCode = req.query.code
+      console.log('harvest auth accessCode = ', accessCode)
+      // This needs to go back to autherise and fire our request with sucess
+      // oauth2Client, authCode
+      // this.getNewToken(accessCode, 'access')
+      this.getNewToken(accessCode, 'access')
+        .then(tokenDetails => {
+          this.storeToken(tokenDetails)
+          res.redirect('/')
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    })
+  }
+
+  grabLocalCredentials() {
+    return new Promise((resolve, reject) => {
+      fs.readFile(CLIENT_DETAILS, (err, content) => {
+        if (err) {
+          reject(`Error loading client secret file: '${err}`)
+        }
+        this.config = JSON.parse(content).installed
+        resolve()
+      })
     })
   }
 
   checkAuth() {
     return new Promise((resolve, reject) => {
-      // console.log('Google checkAuth')
-      // console.log('GoogleCalendar this: ', this)
       // Load client secrets from a local file.
-      fs.readFile('./.credentials/google/client_secret.json',
-        (err, content) => {
-          if (err) {
-            reject(`Error loading client secret file: ${err}`)
-          }
-          // Authorize a client with the loaded credentials, then call the
-          // Google Calendar API.
-          const CREDENTIALS = JSON.parse(content)
-          // console.log('CREDENTIALS', JSON.parse(content))
-
-          this.authorize(CREDENTIALS)
-            .then((oauth2Client) => {
-              resolve(oauth2Client)
+      this.checkStoredAccessToken()
+        .then(token => {
+          this.oauth2Client.setCredentials(token)
+          this.checkAccessTokenExpiration(token)
+            .then(() => {
+              resolve(this.oauth2Client)
             })
-            .catch((error) => {
-              console.log(error)
-            })
-        }
-      )
+        })
+        .catch(err => {
+          // It ends here, the user needs to authenticate.
+          reject(err)
+          console.log(`User needs to authenticate Google, error report: ${err} `)
+        })
     })
   }
 
@@ -80,78 +95,59 @@ class Google {
    * @param {Object} credentials The authorization client credentials.
    * @param {function} callback The callback to call with the authorized client.
    */
-  authorize(credentials) {
-    const clientSecret = credentials.installed.client_secret
-    const clientId = credentials.installed.client_id
-    const redirectUrl = 'http://localhost:3000/handle_calendar_auth'
-
-    const auth = new googleAuth()
-    const oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl)
-
+  checkStoredAccessToken() {
     return new Promise((resolve, reject) => {
-      // console.log('autherorize credentials', credentials)
       // Check if we have previously stored a token.
       fs.readFile(TOKEN_PATH, (err, token) => {
         if (err) {
           // No token stored, so get a new one.
-
           // Setup to catch authorize user in the consuctor
-          this.setupForNewToken(oauth2Client)
+          // this.setupAccessForNewToken()
           reject(err)
-
-          // this.getNewToken(oauth2Client)
-          // .then((oauth2Client, token) => {
-          //   this.storeToken(token)
-          //   resolve(oauth2Client)
-          // })
-          // .catch(error => {
-          //   reject(error)
-          // })
         } else {
-          // We have a processed token stored and ready to go, use it.
-          oauth2Client.credentials = JSON.parse(token)
-          resolve(oauth2Client)
+          const tokenToPass = JSON.parse(token)
+          resolve(tokenToPass)
+          // We have a processed token stored, first check if it's expired.
+          // this.checkAccessTokenExpiration(resolve, reject, JSON.parse(token))
         }
       })
     })
   }
 
-  setupForNewToken(oauth2Client) {
-    console.log('setupForNewToken')
-    const authUrl = oauth2Client.generateAuthUrl({
+  checkAccessTokenExpiration(tokenDetails) {
+    console.log('tokenDetails.expiry_date', tokenDetails.expiry_date)
+    console.log('new Date().getTime()', new Date().getTime())
+    return new Promise((resolve, reject) => {
+      if (tokenDetails.expiry_date > new Date().getTime()) {
+        // Token still fine, send it back
+        resolve()
+      } else {
+        // Token expired
+        console.log('token expired, get new token using refresh token')
+        // Get a new token using the refresh token
+        this.getNewToken(tokenDetails.refresh_token, 'refresh')
+          .then(tokenDetails => {
+            this.storeToken(tokenDetails)
+            resolve(tokenDetails)
+          })
+          .catch(error => {
+            console.log('checkAccessTokenExpiration error: ', error)
+            reject(error)
+          })
+      }
+    })
+  }
+
+  loadUpOauthClient() {
+    this.auth = new googleAuth()
+    this.oauth2Client = new this.auth.OAuth2(this.config.client_id, this.config.client_secret, this.config.redirect_uris)
+    console.log('setupExternalAuthUrl')
+    this.authUrl = this.oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: SCOPES,
     })
-
-    console.log('Authorize this app by visiting this url: ', authUrl)
-
-    // Dispatch a frontend action to push the auth link!!!!!!!!!
-    this.socket.emit('action', {
-      type: 'NEED_TO_AUTH_CALENDAR',
-      data: { status: 'auth-failed' },
-    })
-
-    console.log('just before express route')
-    this.app.get('/authorize_calendar', (req, res) => {
-      console.log('autherise calendar')
-      // This will redirect back to our setup '/handle_calendar_auth' with the code
-      res.redirect(authUrl)
-    })
-
-
-    this.app.get('/handle_calendar_auth', (req, res) => {
-      console.log('handle_calendar_auth')
-      const authCode = req.query.code
-      // This needs to go back to autherise and fire our request with sucess
-      this.getNewToken(oauth2Client, authCode)
-        .then((token) => {
-          this.storeToken(token)
-          res.redirect('/')
-        })
-        .catch(error => {
-          console.log(error)
-        })
-    })
+    // this.authUrl = `${HARVEST_HOST}/oauth2/authorize?client_id=${this.config.client_id}&redirect_uri=${this.config.redirect_uri}&state=optional-csrf-token&response_type=code`
+    console.log('this.authUrl', this.authUrl)
   }
 
   /**
@@ -162,22 +158,36 @@ class Google {
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewToken(oauth2Client, authCode) {
+  getNewToken(code, requstType) {
     console.log('--GET NEW TOKEN--')
+    console.log('code', code)
     // console.log('getNewToken. oauth2Client: ', oauth2Client)
     return new Promise((resolve, reject) => {
       // PULL NEW CODE FROM URL PARAM
-      oauth2Client.getToken(authCode, (err, token) => {
-        if (err) {
-          console.log('Error while trying to retrieve access token', err)
-          const reason = new Error({ status: 'error', data: err })
-          reject(reason) // reject
-        } else {
-          oauth2Client.credentials = token
-          resolve(token) // fulfilled
-        }
-        // callback(oauth2Client);
-      })
+      if (requstType === 'refresh') {
+        console.log('getting refresh token')
+        console.log('this.oauth2Client', this.oauth2Client)
+        this.oauth2Client.refreshAccessToken((err, tokens) => {
+          // your access_token is now refreshed and stored in oauth2Client
+          // store these new tokens in a safe place (e.g. database)
+          if (err) {
+            reject(err) // reject
+          } else {
+            resolve(tokens)
+          }
+        })
+      } else {
+        this.oauth2Client.getToken(code, (err, token) => {
+          if (err) {
+            console.log('Error while trying to retrieve access token', err)
+            // const reason = new Error({ status: 'error', data: err })
+            reject(err) // reject
+          } else {
+            resolve(token) // fulfilled
+          }
+          // callback(oauth2Client);
+        })
+      }
     })
   }
 
@@ -188,14 +198,6 @@ class Google {
    */
   storeToken(token) {
     console.log('--STORE TOKEN RUNNING--')
-    try {
-      fs.mkdirSync(TOKEN_DIR)
-    } catch (err) {
-      if (err.code !== 'EEXIST') {
-        throw err
-      }
-    }
-
     fs.writeFile(TOKEN_PATH, JSON.stringify(token))
     console.log(`Token stored to ${TOKEN_PATH} 💾`)
   }
@@ -207,7 +209,7 @@ class Google {
    */
   getUsers(users) {
     return new Promise((resolve, reject) => {
-      this.checkAuth().then((auth) => {
+      this.checkAuth().then(auth => {
         const service = google.admin('directory_v1')
         // console.log('google getUsers users: ', users)
         // WEBHOOK CHANNEL PULL RESOURCES
@@ -296,6 +298,70 @@ class Google {
           resolve({ image: `${imageLocation}${response.id}.jpg`, status: 'good' })
         }
         // console.log('response', response)
+      })
+    })
+  }
+
+  calendar() {
+    // WEBHOOK CHANNEL PULL RESOURCES - THIS NEEDS HTTPS TO FUNCTION
+    // http://stackoverflow.com/questions/38447589/synchronize-resources-with-google-calendar-for-node-js
+    // http://stackoverflow.com/questions/35048160/googleapi-nodejs-calendar-events-watch-gets-error-push-webhookurlnothttps-or-pu
+    // http://stackoverflow.com/questions/35434828/google-api-calendar-watch-doesnt-work-but-channel-is-created
+    return new Promise((resolve, reject) => {
+      this.checkAuth().then(auth => {
+        const calendar = google.calendar('v3')
+        calendar.events.list({
+          auth,
+          calendarId: 'interstateteam.com_qondup0hrj9n1n52e5r1plr1kk@group.calendar.google.com',
+          timeMin: (new Date()).toISOString(),
+          maxResults: 10,
+          singleEvents: true,
+          orderBy: 'startTime',
+        }, (err, response) => {
+          if (err) {
+            console.log(`The API returned an error: ${err}`)
+            reject(err)
+          } else {
+            const events = response.items
+            if (events.length === 0) {
+              reject('No events were found!')
+            } else {
+              resolve(events)
+            }
+          }
+        })
+      }).catch(error => {
+        console.log('error', error)
+      })
+    })
+  }
+
+  outOfOfficeCalendar() {
+    return new Promise((resolve, reject) => {
+      this.checkAuth().then(auth => {
+        const calendar = google.calendar('v3')
+        calendar.events.list({
+          auth,
+          calendarId: 'interstateteam.com_d8s8ru8nrc3ifri2vb0o6jesvc@group.calendar.google.com',
+          timeMin: (new Date()).toISOString(),
+          maxResults: 10,
+          singleEvents: true,
+          orderBy: 'startTime',
+        }, (err, response) => {
+          if (err) {
+            console.log(`outOfOfficeCalendarError: ${err}`)
+            reject(err)
+          } else {
+            const events = response.items
+            if (events.length === 0) {
+              reject('No events were found!')
+            } else {
+              resolve(events)
+            }
+          }
+        })
+      }).catch(error => {
+        console.log('outOfOfficeCalendarError', error)
       })
     })
   }
