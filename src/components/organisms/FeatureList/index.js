@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Feature, Countdown } from 'components'
-import { SonosInfo, Twitter, Instagram, Calendar, Harvest, Showcase } from 'containers'
+import { Feature } from 'components'
+import { SonosInfo, Twitter, Instagram, Countdown, Harvest, Showcase } from 'containers'
 
 const Grid = styled.div`
   display: block;
@@ -48,9 +48,7 @@ const FeatureList = ({ ...props }) => {
         <Feature />
       </GridRow>
       <GridRow>
-        <Feature style={{ paddingTop: '52%' }}>
-          <Calendar />
-        </Feature>
+        <Feature style={{ paddingTop: '52%' }} />
       </GridRow>
       <GridRow>
         <Feature madWide>

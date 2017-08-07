@@ -21,7 +21,7 @@ class WeatherIcon extends Component {
       case '01d':
         return <SunIcon color="white" />
       case '01n':
-        return <MoonIcon color="white"/>
+        return <MoonIcon color="white" />
       case '02d':
       case '02n':
       case '03d':
@@ -55,11 +55,11 @@ class WeatherIcon extends Component {
 }
 
 // Listen and capture any changes made as a result of the the actions below.
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   iconCode: state.weather.data.weather[0].icon,
 })
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   fetchWeather: () => dispatch(fetchWeather()),
 })
 
