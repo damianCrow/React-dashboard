@@ -38,8 +38,10 @@ const SpeakerInfo = styled.div`
 
 const SonosGroupInfo = ({ featuredSpeaker, playerCount }) => {
 
-  if (featuredSpeaker.split('/')[0].match('Studio') && featuredSpeaker.split('/')[1].match('Studio')) {
-    featuredSpeaker = 'Studio'
+  if (featuredSpeaker.split('/').length > 1) {
+    if (featuredSpeaker.split('/')[0].match('Studio') && featuredSpeaker.split('/')[1].match('Studio')) {
+      featuredSpeaker = 'Studio'
+    }
   }
 
   let groupClass

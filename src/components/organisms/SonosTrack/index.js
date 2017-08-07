@@ -117,7 +117,7 @@ const AlbumArtNext = styled.img`
   right: 0;
   height: auto;
   width: 40%;
-  transform: translateY(-22%);
+  transform: translateY(-15%);
   filter: drop-shadow(0px 0px 2px rgba(0,0,0,0.5));
 `
 const AlbumArtCurrent = styled(AlbumArtNext)`
@@ -125,6 +125,7 @@ const AlbumArtCurrent = styled(AlbumArtNext)`
   width: 50%;
   left: 25%;
   z-index: 2;
+  transform: translateY(-22%);
   &.two_groups {
     width: 40%;
     left: 1%;

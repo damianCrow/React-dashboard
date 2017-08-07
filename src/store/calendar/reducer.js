@@ -1,100 +1,46 @@
 import { combineReducers } from 'redux'
+import { initialState } from './selectors'
+
 import {
-  INVALIDATE_CALENDAR,
-  REQUEST_CALENDAR,
-  RECEIVE_CALENDAR_POSTS,
-  RECEIVE_CALENDAR_POSTS_ERROR,
-  NEED_TO_AUTH_CALENDAR,
-  UPDATE_CALENDAR_SLIDESHOW
-} from '../actions'
+  SOCKET_GOOGLE_PULL_OUTOFOFFICECALENDAR_SUCCESS,
+  SOCKET_GOOGLE_PULL_CALENDAR_SUCCESS,
+} from './actions'
 
-const posts = (state = {
-  didInvalidate: false,
-  isFetching: false,
-  allPosts: [],
-  message: '',
-  slideShow: {currentPost: {}, currentInt: 0, mediaType: ''},
-  status: ''
-}, action) => {
-  switch (action.type) {
-    case INVALIDATE_CALENDAR:
-      return {
-        ...state,
-        didInvalidate: true
-      }
-    case REQUEST_CALENDAR:
-      return {
-        ...state,
-        isFetching: true,
-        didInvalidate: false
-      }
-    case RECEIVE_CALENDAR_POSTS_ERROR:
-      return {
-        ...state,
-        isFetching: false,
-        didInvalidate: false,
-        status: action.data.status,
-        message: action.data.err,
-        lastUpdated: action.receivedAt
-      }
-    case RECEIVE_CALENDAR_POSTS:
-      return {
-        ...state,
-        isFetching: false,
-        didInvalidate: false,
-        allPosts: action.data,
-        lastUpdated: action.receivedAt
-      }
-    case NEED_TO_AUTH_CALENDAR:
-      return {
-        ...state,
-        status: action.data.status,
-        lastUpdated: action.receivedAt
-      }
-    case UPDATE_CALENDAR_SLIDESHOW:
-      return {
-        ...state,
-        slideShow: {
-          currentPost: action.slideShow.currentPost,
-          currentInt: action.slideShow.currentInt,
-          mediaType: action.slideShow.mediaType
+function meetingsCalendarReducer() {
+  return (state = initialState, action) => {
+    switch (action.type) {
+
+      case SOCKET_GOOGLE_PULL_CALENDAR_SUCCESS:
+        return {
+          ...state,
+          data: action.payload,
+          status: 'success',
         }
-      }
-    default:
-      return state
+
+      default:
+        return state
+    }
   }
 }
 
-// const sonosInfoStream = (state = { }, action) => {
-//   switch (action.type) {
-//     case MESSAGE:
-//       return Object.assign({}, {
-//         message: action.data
-//       })
-//     default:
-//       return state
-//   }
-// }
+function outOfOfficeCalendarReducer() {
+  return (state = initialState, action) => {
+    switch (action.type) {
 
-const calendarProcess = (state = { }, action) => {
-  switch (action.type) {
-    case INVALIDATE_CALENDAR:
-    case REQUEST_CALENDAR:
-    case RECEIVE_CALENDAR_POSTS_ERROR:
-    case RECEIVE_CALENDAR_POSTS:
-    case NEED_TO_AUTH_CALENDAR:
-    case UPDATE_CALENDAR_SLIDESHOW:
-      return {
-        ...state,
-        calendarDetails: posts(state.calendarDetails, action)
-      }
-    default:
-      return state
+      case SOCKET_GOOGLE_PULL_OUTOFOFFICECALENDAR_SUCCESS:
+        return {
+          ...state,
+          data: action.payload,
+          status: 'success',
+        }
+
+      default:
+        return state
+    }
   }
 }
 
-const rootReducer = combineReducers({
-  calendarProcess
+export default combineReducers({
+  meetings: meetingsCalendarReducer(),
+  outOfOffice: outOfOfficeCalendarReducer(),
 })
-
-export default rootReducer

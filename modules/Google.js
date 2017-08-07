@@ -309,7 +309,6 @@ class Google {
     // http://stackoverflow.com/questions/35434828/google-api-calendar-watch-doesnt-work-but-channel-is-created
     return new Promise((resolve, reject) => {
       this.checkAuth().then(auth => {
-        console.log('calendar auth', auth)
         const calendar = google.calendar('v3')
         calendar.events.list({
           auth,
@@ -323,25 +322,46 @@ class Google {
             console.log(`The API returned an error: ${err}`)
             reject(err)
           } else {
-            console.log('response', response)
             const events = response.items
-            resolve(events)
-
             if (events.length === 0) {
-              console.log('No upcoming events found.')
+              reject('No events were found!')
             } else {
-              console.log('Upcoming 10 events:')
-              for (let i = 0; i < events.length; i += 1) {
-                const event = events[i]
-                const start = event.start.dateTime || event.start.date
-                console.log('%s - %s', start, event.summary)
-              }
+              resolve(events)
             }
           }
-
         })
       }).catch(error => {
         console.log('error', error)
+      })
+    })
+  }
+
+  outOfOfficeCalendar() {
+    return new Promise((resolve, reject) => {
+      this.checkAuth().then(auth => {
+        const calendar = google.calendar('v3')
+        calendar.events.list({
+          auth,
+          calendarId: 'interstateteam.com_d8s8ru8nrc3ifri2vb0o6jesvc@group.calendar.google.com',
+          timeMin: (new Date()).toISOString(),
+          maxResults: 10,
+          singleEvents: true,
+          orderBy: 'startTime',
+        }, (err, response) => {
+          if (err) {
+            console.log(`outOfOfficeCalendarError: ${err}`)
+            reject(err)
+          } else {
+            const events = response.items
+            if (events.length === 0) {
+              reject('No events were found!')
+            } else {
+              resolve(events)
+            }
+          }
+        })
+      }).catch(error => {
+        console.log('outOfOfficeCalendarError', error)
       })
     })
   }
