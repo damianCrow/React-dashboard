@@ -4,15 +4,15 @@ import PropTypes from 'prop-types'
 import { startComponentTimeout, clearComponentTimeout, nextComponentSlideshow } from 'store/actions'
 
 
-function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true) {
+function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true, propBased = false) {
   class SlideshowLogicWrapper extends Component {
     componentDidMount() {
       this.startOrClear()
     }
 
-    // This is experimental, mostly for the countdown module, might break showcase adding / removing.
+    // If this slideshow element is not a refreshing component, base the logic on the changing prop.
     componentWillReceiveProps(nextProps) {
-      if (nextProps.slideshowCurrent !== this.props.slideshowCurrent) {
+      if (propBased && (nextProps.slideshowCurrent !== this.props.slideshowCurrent)) {
         this.startOrClear()
       }
     }

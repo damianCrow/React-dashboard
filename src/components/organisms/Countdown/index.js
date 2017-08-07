@@ -135,4 +135,4 @@ Countdown.propTypes = {
   countdownFigure: PropTypes.string,
 }
 
-export default SlideshowLogic(Countdown, 'countdown')
+export default SlideshowLogic(Countdown, 'countdown', true, true)
