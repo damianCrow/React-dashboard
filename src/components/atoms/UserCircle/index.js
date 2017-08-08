@@ -47,10 +47,30 @@ class UserCircle extends Component {
 
   constructor(props) {
     super(props)
+    this.state = {
+      name: {
+        givenName: '',
+        familyName: '',
+        fullName: '',
+        initals: '',
+      },
+      image: '',
+      email: '',
+      className: this.props.className,
+    }
   }
 
   componentDidMount() {
-    // console.log('componentDidMount props', this.props)
+    fetch('public/none-google-users.json').then(response => {
+      return response.json()
+    }).then(noneGoogleUsersObj => {
+      const releventUser = noneGoogleUsersObj.filter(user => user.email === this.props.email)
+      if (releventUser.length > 0) {
+        this.setState(...releventUser)
+      } else {
+        this.props.serviceRequest([this.props.email])
+      }
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -59,12 +79,8 @@ class UserCircle extends Component {
   }
 
   render() {
+    const { className, image, name } = (this.state.email.length > 0) ? this.state : this.props
 
-    if (this.props.name.fullName === '?' || '' || undefined) {
-      this.props.serviceRequest([this.props.email])
-    }
-
-    const { className, image, name } = this.props
     return (
       <Circle className={className} image={image}>
         {image.length === 0 &&
@@ -76,16 +92,6 @@ class UserCircle extends Component {
     )
   }
 }
-
-// UserCircle.propTypes = {
-//   image: PropTypes.string,
-//   initals: PropTypes.string,
-//   name: PropTypes.string,
-// }
-
-// UserCircle.defaultProps = {
-//   palette: 'primary',
-// }
 
 // Listen and capture any changes made as a result of the the actions below.
 const mapStateToProps = (state, ownProps) => {
@@ -109,6 +115,7 @@ UserCircle.propTypes = {
   }),
   email: PropTypes.string,
   image: PropTypes.string,
+  className: PropTypes.string,
 }
 
 UserCircle.defaultProps = {

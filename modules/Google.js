@@ -303,66 +303,51 @@ class Google {
   }
 
   calendar() {
-    // WEBHOOK CHANNEL PULL RESOURCES - THIS NEEDS HTTPS TO FUNCTION
-    // http://stackoverflow.com/questions/38447589/synchronize-resources-with-google-calendar-for-node-js
-    // http://stackoverflow.com/questions/35048160/googleapi-nodejs-calendar-events-watch-gets-error-push-webhookurlnothttps-or-pu
-    // http://stackoverflow.com/questions/35434828/google-api-calendar-watch-doesnt-work-but-channel-is-created
+    const calendarId = 'interstateteam.com_qondup0hrj9n1n52e5r1plr1kk@group.calendar.google.com'
     return new Promise((resolve, reject) => {
-      this.checkAuth().then(auth => {
-        const calendar = google.calendar('v3')
-        calendar.events.list({
-          auth,
-          calendarId: 'interstateteam.com_qondup0hrj9n1n52e5r1plr1kk@group.calendar.google.com',
-          timeMin: (new Date()).toISOString(),
-          maxResults: 10,
-          singleEvents: true,
-          orderBy: 'startTime',
-        }, (err, response) => {
-          if (err) {
-            console.log(`The API returned an error: ${err}`)
-            reject(err)
-          } else {
-            const events = response.items
-            if (events.length === 0) {
-              reject('No events were found!')
-            } else {
-              resolve(events)
-            }
-          }
-        })
-      }).catch(error => {
-        console.log('error', error)
-      })
+      this.ftechCalendarInfo(calendarId, resolve, reject)
     })
   }
 
   outOfOfficeCalendar() {
+    const calendarId = 'interstateteam.com_d8s8ru8nrc3ifri2vb0o6jesvc@group.calendar.google.com'
     return new Promise((resolve, reject) => {
-      this.checkAuth().then(auth => {
-        const calendar = google.calendar('v3')
-        calendar.events.list({
-          auth,
-          calendarId: 'interstateteam.com_d8s8ru8nrc3ifri2vb0o6jesvc@group.calendar.google.com',
-          timeMin: (new Date()).toISOString(),
-          maxResults: 10,
-          singleEvents: true,
-          orderBy: 'startTime',
-        }, (err, response) => {
-          if (err) {
-            console.log(`outOfOfficeCalendarError: ${err}`)
-            reject(err)
+      this.ftechCalendarInfo(calendarId, resolve, reject)
+    })
+  }
+
+  inOfficeCalendar() {
+    const calendarId = 'interstateteam.com_fp9tqps7m6m0fo54eo89s9dabo@group.calendar.google.com'
+    return new Promise((resolve, reject) => {
+      this.ftechCalendarInfo(calendarId, resolve, reject)
+    })
+  }
+
+  ftechCalendarInfo(calendarId, resolve, reject) {
+    this.checkAuth().then(auth => {
+      const calendar = google.calendar('v3')
+      calendar.events.list({
+        auth,
+        calendarId,
+        timeMin: (new Date()).toISOString(),
+        maxResults: 10,
+        singleEvents: true,
+        orderBy: 'startTime',
+      }, (err, response) => {
+        if (err) {
+          console.log(`CalendarError: ${err}`)
+          reject(err)
+        } else {
+          const events = response.items
+          if (events.length === 0) {
+            reject('No events were found!')
           } else {
-            const events = response.items
-            if (events.length === 0) {
-              reject('No events were found!')
-            } else {
-              resolve(events)
-            }
+            resolve(events)
           }
-        })
-      }).catch(error => {
-        console.log('outOfOfficeCalendarError', error)
+        }
       })
+    }).catch(error => {
+      console.log('CalendarError', error)
     })
   }
 }
