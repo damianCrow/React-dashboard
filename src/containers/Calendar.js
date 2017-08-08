@@ -57,7 +57,7 @@ class CalendarContainer extends Component {
               rowTitle={'Out Of Office'}
               rowSubTitle={'Holidays, Sickness & Meetings'}
               colorCode={'#ffd200'}
-              opacity={0.25}>
+              opacity={0.4}>
               {outAvatarArray}
             </CalendarRow>
             <CalendarRow
@@ -65,7 +65,7 @@ class CalendarContainer extends Component {
               rowTitle={'Creative Resources'}
               rowSubTitle={'Freelancers & Interns'}
               colorCode={'#ffd200'}
-              opacity={0.25}>
+              opacity={0.4}>
               {inAvatarArray}
             </CalendarRow>
           </div>
@@ -91,15 +91,15 @@ class CalendarContainer extends Component {
             if (moment().format('DD MM YYYY') === moment(meeting.start.dateTime).format('DD MM YYYY')) {
               rowDate = 'Today'
               colorCode = '#ffd200'
-              opa = 0.15
+              opa = 0.3
             } else if (moment().format('DD MM YYYY') === moment(meeting.start.dateTime).subtract(1, 'days').format('DD MM YYYY')) {
               rowDate = 'Tomorrow'
               colorCode = '#41adaa'
-              opa = 0.075
+              opa = 0.2
             } else {
               rowDate = moment(meeting.start.dateTime).format('dddd')
               colorCode = '#41adaa'
-              opa = 0.02
+              opa = 0.1
             }
             return (
               <CalendarRow
