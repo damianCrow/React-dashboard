@@ -17,59 +17,72 @@ class CalendarContainer extends Component {
   componentDidMount() {
     this.props.serviceRequest('calendar')
     this.props.serviceRequest('outOfOfficeCalendar')
+    this.props.serviceRequest('inOfficeCalendar')
   }
 
   componentWillReceiveProps(nextProps) {
     // console.log('google calendar nextProps', nextProps)
   }
 
+  getAvatars(arrayToPopulate, arrayToMap) {
+    arrayToMap.map((item, idx) => {
+      const startDate = moment(item.start.date)
+      const endDate = moment(item.end.date)
+
+      if (moment().isBetween(startDate, endDate)) {
+        if (item.attendees && item.attendees[0].email) {
+          arrayToPopulate.push(<UserCircle className={'small'} key={idx} email={item.attendees[0].email} />)
+        }
+      }
+      return null
+    })
+  }
 
   render() {
     // const { posts, status, message } = this.props
 
     // <Auth message={message} icon="harvest" service="Harvest" authLink="/authorize_harvest" />
     // <Meetings posts={allPosts} />
-    const avatarArray = []
+    const outAvatarArray = []
+    const inAvatarArray = []
+    this.getAvatars(outAvatarArray, this.props.outOfOffice)
+    this.getAvatars(inAvatarArray, this.props.inOffice)
+
     return (
       <CalendarWrapper>
-
-        { this.props.outOfOffice.map((oOo, ix) => {
-          const startDate = moment(oOo.start.date)
-          const endDate = moment(oOo.end.date)
-
-          if (moment().isBetween(startDate, endDate)) {
-            if (oOo.attendees && oOo.attendees[0].email) {
-              avatarArray.push(<UserCircle className={'small'} key={ix} email={oOo.attendees[0].email} />)
-            } else {
-              // avatarArray.push(<UserCircle className={'small'} key={ix} email={} />)
-            }
-          }
-          return null
-        })
-        }
-        <CalendarRow
-          rowDay={'Today'}
-          rowTitle={'Out Of Office'}
-          rowSubTitle={'Holidays, Sickness & Meetings'}
-          colorCode={'#ffd200'}
-          opacity={0.25}>
-          {avatarArray}
-        </CalendarRow>
-        <CalendarRow
-          rowDay={'Today'}
-          rowTitle={'In The Office'}
-          rowSubTitle={'Freelancers & Interns'}
-          colorCode={'#ffd200'}
-          opacity={0.25}>
-        </CalendarRow>
+        {inAvatarArray.length > 0 && outAvatarArray.length > 0 ? (
+          <div>
+            <CalendarRow
+              rowDay={'Today'}
+              rowTitle={'Out Of Office'}
+              rowSubTitle={'Holidays, Sickness & Meetings'}
+              colorCode={'#ffd200'}
+              opacity={0.25}>
+              {outAvatarArray}
+            </CalendarRow>
+            <CalendarRow
+              rowDay={'Today'}
+              rowTitle={'Creative Resources'}
+              rowSubTitle={'Freelancers & Interns'}
+              colorCode={'#ffd200'}
+              opacity={0.25}>
+              {inAvatarArray}
+            </CalendarRow>
+          </div>
+        ) : (null)}
 
         { this.props.meetings.map((meeting, idx) => {
           let rowDate
           let colorCode
           let location
           let opa
+          let numberOfMeetingRows = 5
 
-          if (idx < 5) {
+          if (inAvatarArray.length < 1 && outAvatarArray.length < 1) {
+            numberOfMeetingRows = 7
+          }
+
+          if (idx < numberOfMeetingRows) {
             if (!meeting.location) {
               location = 'At Interstate Creative Partners'
             } else {
@@ -112,6 +125,7 @@ const mapStateToProps = state => ({
   status: state.calendar.status,
   message: state.calendar.message,
   outOfOffice: state.calendar.outOfOffice.data,
+  inOffice: state.calendar.inOffice.data,
   meetings: state.calendar.meetings.data,
 })
 
@@ -125,6 +139,7 @@ CalendarContainer.propTypes = {
   message: PropTypes.string,
   meetings: PropTypes.array,
   outOfOffice: PropTypes.array,
+  inOffice: PropTypes.array,
 }
 
 CalendarContainer.defaultProps = {

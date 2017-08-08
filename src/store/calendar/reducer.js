@@ -4,6 +4,7 @@ import { initialState } from './selectors'
 import {
   SOCKET_GOOGLE_PULL_OUTOFOFFICECALENDAR_SUCCESS,
   SOCKET_GOOGLE_PULL_CALENDAR_SUCCESS,
+  SOCKET_GOOGLE_PULL_INOFFICECALENDAR_SUCCESS,
 } from './actions'
 
 function meetingsCalendarReducer() {
@@ -40,7 +41,25 @@ function outOfOfficeCalendarReducer() {
   }
 }
 
+function inOfficeCalendarReducer() {
+  return (state = initialState, action) => {
+    switch (action.type) {
+
+      case SOCKET_GOOGLE_PULL_INOFFICECALENDAR_SUCCESS:
+        return {
+          ...state,
+          data: action.payload,
+          status: 'success',
+        }
+
+      default:
+        return state
+    }
+  }
+}
+
 export default combineReducers({
   meetings: meetingsCalendarReducer(),
   outOfOffice: outOfOfficeCalendarReducer(),
+  inOffice: inOfficeCalendarReducer(),
 })
