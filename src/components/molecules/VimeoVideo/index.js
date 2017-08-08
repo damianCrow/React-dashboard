@@ -48,7 +48,7 @@ class VimeoVideo extends Component {
     const player = new VimeoPlayer(this.vimeoIframe, {
       byline: false,
     })
-    player.setVolume(0)
+    // player.setVolume(0)
 
     player.on('ended', () => {
       this.props.nextComponent()

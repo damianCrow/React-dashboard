@@ -81,7 +81,7 @@ class YouTubeVideo extends Component {
    * @returns {void}
    */
   handleVideoReady(event) {
-    event.target.mute()
+    // event.target.mute()
     // this.props.pauseInstaSlideshow()
   }
 
