@@ -13,6 +13,14 @@ const Wrapper = styled.div`
   padding: 0 15px;
   font-family: Gotham,Helvetica Neue,Helvetica,Roboto,sans-serif;
 `
+const Shade = styled.div`
+  position: absolute;
+  width: calc(100% + 30px);
+  left: -15px;
+  height: 100%;
+  background-color: #000;
+  opacity: ${props => props.opacity ? props.opacity : 0};
+`
 const Day = styled(Heading)`
   color: ${props => props.color ? props.color : '#000'};  
   text-align: left;
@@ -73,6 +81,7 @@ class CalendarRow extends Component {
   render() {
     return (
       <Wrapper innerRef={(wrapper) => { this.wrapper = wrapper }} >
+        <Shade opacity={this.props.opacity} />
         <LeftColumn>
           <Day color={this.props.colorCode} level={4}>{this.props.rowDay}</Day>
           { /* <Wink fillColor={'#ffd200'} icon="interwink" height={20} />*/ }

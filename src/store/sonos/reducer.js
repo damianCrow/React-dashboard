@@ -125,8 +125,7 @@ export default (state = initialState, action) => {
     case SOCKET_SONOS_EMIT_TOPOLOGY_RECEIVED:
       return {
         ...state,
-        speakers: mergeTop(action.topology, state.speakers, 'uuid'),
-        speakerZones: action.topology,
+        speakerZones: action.payload,
       }
 
     default:

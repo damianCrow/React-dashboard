@@ -32,10 +32,16 @@ class CalendarContainer extends Component {
     const avatarArray = []
     return (
       <CalendarWrapper>
+
         { this.props.outOfOffice.map((oOo, ix) => {
-          if (moment(oOo.start.date).format('DD MM YYYY') === moment().format('DD MM YYYY')) {
+          const startDate = moment(oOo.start.date)
+          const endDate = moment(oOo.end.date)
+
+          if (moment().isBetween(startDate, endDate)) {
             if (oOo.attendees && oOo.attendees[0].email) {
               avatarArray.push(<UserCircle className={'small'} key={ix} email={oOo.attendees[0].email} />)
+            } else {
+              // avatarArray.push(<UserCircle className={'small'} key={ix} email={} />)
             }
           }
           return null
@@ -45,21 +51,23 @@ class CalendarContainer extends Component {
           rowDay={'Today'}
           rowTitle={'Out Of Office'}
           rowSubTitle={'Holidays, Sickness & Meetings'}
-          colorCode={'#ffd200'}>
+          colorCode={'#ffd200'}
+          opacity={0.25}>
           {avatarArray}
         </CalendarRow>
         <CalendarRow
           rowDay={'Today'}
           rowTitle={'In The Office'}
           rowSubTitle={'Freelancers & Interns'}
-          colorCode={'#ffd200'}>
-          {avatarArray}
+          colorCode={'#ffd200'}
+          opacity={0.25}>
         </CalendarRow>
 
         { this.props.meetings.map((meeting, idx) => {
           let rowDate
           let colorCode
           let location
+          let opa
 
           if (idx < 5) {
             if (!meeting.location) {
@@ -70,12 +78,15 @@ class CalendarContainer extends Component {
             if (moment().format('DD MM YYYY') === moment(meeting.start.dateTime).format('DD MM YYYY')) {
               rowDate = 'Today'
               colorCode = '#ffd200'
+              opa = 0.15
             } else if (moment().format('DD MM YYYY') === moment(meeting.start.dateTime).subtract(1, 'days').format('DD MM YYYY')) {
               rowDate = 'Tomorrow'
               colorCode = '#41adaa'
+              opa = 0.075
             } else {
               rowDate = moment(meeting.start.dateTime).format('dddd')
               colorCode = '#41adaa'
+              opa = 0.02
             }
             return (
               <CalendarRow
@@ -83,7 +94,8 @@ class CalendarContainer extends Component {
                 rowDay={rowDate}
                 rowTitle={meeting.summary}
                 rowSubTitle={location}
-                colorCode={colorCode}>
+                colorCode={colorCode}
+                opacity={opa}>
                 {`${moment(meeting.start.dateTime).format('HH:mm')} to ${moment(meeting.end.dateTime).format('HH:mm')}`}
               </CalendarRow>
             )
