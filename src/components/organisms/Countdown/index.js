@@ -32,8 +32,6 @@ const TransitionWrapper = styled(TransitionGroup)`
 const TimeLeft = styled(Heading)`
   color: #ffffff;
   font-weight: 600;
-  transform: translate(0, 0);
-  left: 0;
   margin: 0 auto;
   line-height: 81px;
 `
@@ -52,23 +50,18 @@ const EventIcon = styled(Icon)`
   position: relative;
 `
 const EventDate = styled(Heading)`
-  float: left;
   color: #ffffff;
   font-weight: 100;
   line-height: 81px;
   margin: 0;
-  transform: translate(0, 0);
-  left: 15px;
 `
 const EventTitle = styled(Heading)`
-  float: left;
   color: #ffffff;
   font-weight: 600;
   line-height: 81px;
   margin: 0;
-  left: 30px;
-  transform: translate(0, 0);
   text-align: left;
+  margin: 0 .15rem;
 `
 
 const EventDetails = styled.div`
@@ -118,7 +111,7 @@ class Countdown extends Component {
             <FadeLeftRightTransitionWrapper key={event.id}>
               <CenterStyles>
                 <EventIcon icon={event.eventIconName} fillColor={'#ffffff'} height={60} />
-                <EventDate level={5}>{`${moment(event.startDateTime, 'DD-MM-YYYY HH:mm:ss').format('Do MMMM')} :`}</EventDate>
+                <EventDate level={5}>{`${moment(event.startDateTime, 'DD-MM-YYYY HH:mm:ss').format('Do MMMM')}: `}</EventDate>
                 <EventTitle level={5}>{event.eventTitle}</EventTitle>
               </CenterStyles>
             </FadeLeftRightTransitionWrapper>

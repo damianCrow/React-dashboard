@@ -5,8 +5,9 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { fonts } from 'components/globals'
 import { sortBy } from 'store/actions'
-import Shuffle from 'react-shuffle'
-import { ProfileImage, RadarChart, Users, UserCircle } from 'components'
+// import Shuffle from 'react-shuffle'
+import { Motion, spring } from 'react-motion'
+import { UserCircle } from 'components'
 
 
 // import styled, { css } from 'styled-components'
@@ -27,11 +28,12 @@ const HarvestWrapper = styled.div`
   justify-content: flex-start;
   font-family: Helvetica Neue, Helvetica, Roboto, sans-serif;
 `
-const HarvestShuffle = styled(Shuffle)`
-  max-width: 100%;
+const HarvestShuffle = styled.div`
   height: 100%;
-  position: absolute !important;
-  left: 12.5%;
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
   & > * {
     display: flex;
     max-width: 100%;
@@ -41,11 +43,14 @@ const HarvestEntry = styled.figure`
   display: flex;
   flex-direction: column;
   flex: 0 0 12.5%;
+  box-sizing: content-box;
   align-items: center;
   margin: 0;
   text-align: center;
   height: 100%;
-  position: relative;
+  width: 12.5%;
+  position: absolute;
+  left: 0;
 `
 const ShadingWrapper = styled.div`
   width: 12.5%;
@@ -62,7 +67,7 @@ const ShadingWrapper = styled.div`
     background-color: rgba(0, 0, 0, 0.125);
   }
 
-  &:nth-child(2):after {
+  &:first-child:after {
     content: '';
     width: 100%;
     height: 100%;
@@ -205,7 +210,7 @@ class TimesheetLeaderBoard extends Component {
       setTimeout(() => {
         that.toggleHidenClass()
       }, 1900)
-    }, 30000)
+    }, 10000)
   }
 
   toggleHidenClass() {
@@ -269,23 +274,25 @@ class TimesheetLeaderBoard extends Component {
             { `${startDay}${endDay}` }
           </DateText>
         </HarvestPanel>
-        <ShadingWrapper className={'showHide'} />
-        <ShadingWrapper className={'showHide'} />
-        <ShadingWrapper className={'showHide'} />
-        <ShadingWrapper className={'showHide'} />
-        <ShadingWrapper className={'showHide'} />
-        <ShadingWrapper className={'showHide'} />
-        <ShadingWrapper className={'showHide'} />
-        <ShadingWrapper className={'showHide'} />
-        <HarvestShuffle fade={true} scale={true} duration={2000}>
-          {(users.sort((a, b) => b.totalHours[sortByThis] - a.totalHours[sortByThis])).map((user) => (
-            <HarvestEntry key={user.id}>
-              <UserCircle email={user.email} />
-              <HarvestHours className={'showHide'}>
-                {user.totalHours[sortByThis]}
-                <HoursAbrv title="hours">hrs</HoursAbrv>
-              </HarvestHours>
-            </HarvestEntry>
+        <HarvestShuffle>
+          <ShadingWrapper className={'showHide'} />
+          <ShadingWrapper className={'showHide'} />
+          <ShadingWrapper className={'showHide'} />
+          <ShadingWrapper className={'showHide'} />
+          <ShadingWrapper className={'showHide'} />
+          <ShadingWrapper className={'showHide'} />
+          <ShadingWrapper className={'showHide'} />
+          <ShadingWrapper className={'showHide'} />
+          {(users.sort((a, b) => b.totalHours[sortByThis] - a.totalHours[sortByThis])).map((user, i) => (
+            <Motion key={user.id} style={{ x: spring((i * 118.3), { stiffness: 100, damping: 26 }) }}>{val => (// array index correlates to 'top'
+              <HarvestEntry style={{ position: 'absolute', transform: `translate3d(${val.x}px, 0, 0)` }} key={user.id}>
+                <UserCircle email={user.email} />
+                <HarvestHours className={'showHide'}>
+                  {user.totalHours[sortByThis]}
+                  <HoursAbrv title="hours">hrs</HoursAbrv>
+                </HarvestHours>
+              </HarvestEntry>
+            )}</Motion>
           ))}
         </HarvestShuffle>
       </HarvestWrapper>

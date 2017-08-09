@@ -35,7 +35,7 @@ const FadeLeftRightTransitionWrapper = ({ children: child, ...props }) => (
       TweenLite.fromTo(node, 2, { opacity: 0, x: '-100%' }, { opacity: 1, x: '0%' })
     }}
     onExit={node => {
-      TweenLite.to(node, 2, { opacity: 0, x: '100%' })
+      TweenLite.to(node, 2, { opacity: 0, x: '-100%' })
     }}
     // addEndListener={(node, done) => {
     //   // use the css transitionend event to mark the finish of a transition

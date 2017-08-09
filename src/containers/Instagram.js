@@ -8,7 +8,7 @@ import { fonts } from 'components/globals'
 // import { Instagram, SplashScreen } from 'components'
 import { startSlideshowLogic, socketDataRequest } from 'store/actions'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
-import { FadingTransitionWrapper, InstagramFrame, MediaBluredBack, SplashScreen } from 'components'
+import { FadingTransitionWrapper, InstagramFrame, MediaBluredBack, SplashScreen, Icon } from 'components'
 
 
 const TransitionWrapper = styled(TransitionGroup)`
@@ -35,6 +35,16 @@ const InstagramWrapper = styled.section`
   top: 0;
   font-family: ${fonts.primary};
   width: 100%;
+`
+
+const StyledIcon = styled(Icon)`
+  z-index: 59;
+  padding: .25rem;
+  flex: 0 0 auto;
+  opacity: .5;
+  position: absolute;
+  left: 0.25rem;
+  bottom: 0.5rem;
 `
 
 class InstagramContainer extends Component {
@@ -67,6 +77,7 @@ class InstagramContainer extends Component {
 
       return (
         <InstagramWrapper>
+          <StyledIcon icon={'instagram'} height={35} />
           <TransitionWrapper>
             <FadingTransitionWrapper key={id}>
               {backgroundMedia}

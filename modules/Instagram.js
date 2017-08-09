@@ -238,9 +238,11 @@ class Instagram {
     if (!this.refreshInterval) {
       this.refreshInterval = setInterval(() => {
         this.posts()
-          .then(posts => {
-            this.sockets.emit('SOCKET_DATA_EMIT', { service: 'INSTAGRAM', description: 'POSTS', payload: posts })
-          })
+          .then(posts => this.sockets.emit('SOCKET_DATA_EMIT', {
+            service: 'INSTAGRAM',
+            description: 'POSTS',
+            payload: posts,
+          }))
       }, 900000)
     }
     // 900000 = 15 minutes
