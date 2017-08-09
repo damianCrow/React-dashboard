@@ -1,16 +1,14 @@
 const fs = require('fs')
-const moment = require('moment')
-const sumBy = require('lodash/sumBy')
 const request = require('request-promise')
 
 // https://www.instagram.com/psysize/
-// const INSTAGRAM_USER_ID = '30605504'
+const INSTAGRAM_USER_ID = '30605504'
 
 // https://www.instagram.com/interstateteam/
 // const INSTAGRAM_USER_ID = '494086480'
 
 // https://www.instagram.com/simoninterstate/
-const INSTAGRAM_USER_ID = '5846525555'
+// const INSTAGRAM_USER_ID = '5846525555'
 
 const CRED_DIR = './.credentials/instagram/'
 const HOST_URL = 'https://api.instagram.com'
@@ -21,9 +19,9 @@ const CLIENT_DETAILS = `${CRED_DIR}config.json`
 // A base class is defined using the new reserved 'class' keyword
 class Instagram {
 
-  constructor(app, socket) {
+  constructor(app, sockets) {
     this.app = app
-    this.socket = socket
+    this.sockets = sockets
     this.credentials = {}
 
     this.init()
@@ -55,10 +53,8 @@ class Instagram {
     return new Promise((resolve, reject) => {
       // Load client secrets from a local file.
       this.checkStoredAccessToken()
-        .then((token) => {
-          resolve(token)
-        })
-        .catch((error) => {
+        .then(token => resolve(token))
+        .catch(error => {
           // It ends here, the user needs to authenticate.
           console.log(`User needs to authenticate Instagram, error report: ${error} `)
         })
@@ -82,8 +78,9 @@ class Instagram {
           // this.setupAccessForNewToken()
           reject(err)
         } else {
-          // We have a processed token stored, first check if it's expired.
-          this.checkAccessTokenExpiration(resolve, reject, JSON.parse(token))
+          // We have a processed token stored, instagram doesn't have an expire date so return the access token.
+          resolve(JSON.parse(token).access_token)
+          // this.checkAccessTokenExpiration(resolve, reject, JSON.parse(token))
         }
       })
     })
@@ -187,7 +184,6 @@ class Instagram {
   instagramRequest(instagramRequest, accessToken) {
     return new Promise((resolve, reject) => {
       const options = {
-        // uri: `https://${this.credentials.subdomain}.instagramapp.com/account/who_am_i?access_token=${accessToken}`,
         uri: `${HOST_URL}/${instagramRequest}`,
         qs: {
           access_token: accessToken, // -> uri + '?access_token=xxxxx%20xxxxx'
@@ -218,53 +214,36 @@ class Instagram {
     console.log(`Token stored to ${TOKEN_PATH} 💾`)
   }
 
-  // posts() {
-  //   // console.log('instagram grabPosts: ')
-  //   return new Promise((resolve, reject) => {
-  //     this.checkAuth().then(instagram => {
-  //       // console.log('auth cool, now pulling in grabposts')
-  //       this.instagram.user_media_recent(INSTAGRAM_USER_ID, (err, posts, pagination, remaining, limit) => {
-  //         if (err) {
-  //           reject(err)
-  //           // this.socket.emit('instagram-new-posts-error', { err })
-  //         } else {
-  //           resolve(posts)
-  //           // this.socket.emit('instagram-new-posts', { posts })
-  //         }
-  //       })
-  //     }).catch((error) => {
-  //       reject(error)
-  //     })
-  //   })
-  // }
-
   posts() {
     return new Promise((resolve, reject) => {
-      this.checkAuth().then((accessToken) => {
-        this.getUserPosts(accessToken)
-          .then(posts => resolve(posts))
-          .catch(error => console.log(error))
-      }).catch((error) => {
+      this.checkAuth().then(accessToken => {
+        this.instagramRequest('v1/users/self/media/recent/', accessToken)
+          .then(posts => {
+            this.refreshPosts()
+            resolve(posts.data)
+          })
+          .catch(err => {
+            console.log('err', err)
+            reject(err)
+          })
+      }).catch(error => {
         console.log('error', error)
         reject({ message: 'auth-failed' })
       })
     })
   }
 
-  getUserPosts(accessToken) {
-    return new Promise((resolve, reject) => {
-      this.instagramRequest('v1/users/self/media/recent/', accessToken)
-        .then(users => resolve(users))
-        .catch(err => reject(err))
-    })
-  }
-
-  getUserTime(accessToken, user) {
-    return new Promise((resolve, reject) => {
-      this.instagramRequest(`/people/${user.id}/entries?from=${moment().subtract(14, 'd').format('YYYYMMDD')}&to=${moment().format('YYYYMMDD')}`, accessToken)
-        .then(entries => resolve({ user, entries }))
-        .catch(err => reject(err))
-    })
+  refreshPosts() {
+    // console.log('refreshPosts timeout this.refreshInterval: ', this.refreshInterval)
+    if (!this.refreshInterval) {
+      this.refreshInterval = setInterval(() => {
+        this.posts()
+          .then(posts => {
+            this.sockets.emit('SOCKET_DATA_EMIT', { service: 'INSTAGRAM', description: 'POSTS', payload: posts })
+          })
+      }, 900000)
+    }
+    // 900000 = 15 minutes
   }
 
 

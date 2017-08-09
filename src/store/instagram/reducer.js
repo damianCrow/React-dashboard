@@ -4,6 +4,7 @@ import { slideshowState } from '../slideshow/reducer'
 
 import {
   SOCKET_INSTAGRAM_PULL_POSTS_SUCCESS,
+  SOCKET_INSTAGRAM_EMIT_POSTS_RECEIVED,
 } from './actions'
 
 function instagramReducerWrapper() {
@@ -17,11 +18,12 @@ function instagramReducerWrapper() {
           status: 'success',
         }
 
-      // case INSTAGRAM_NEW_POSTS_ERROR:
-      //   return {
-      //     ...state,
-      //     message: action.message,
-      //   }
+      case SOCKET_INSTAGRAM_EMIT_POSTS_RECEIVED:
+        return {
+          ...state,
+          posts: action.payload,
+          status: 'success',
+        }
 
       // case INSTAGRAM_UNAUTHORIZED:
       //   return {

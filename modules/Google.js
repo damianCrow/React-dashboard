@@ -115,8 +115,6 @@ class Google {
   }
 
   checkAccessTokenExpiration(tokenDetails) {
-    console.log('tokenDetails.expiry_date', tokenDetails.expiry_date)
-    console.log('new Date().getTime()', new Date().getTime())
     return new Promise((resolve, reject) => {
       if (tokenDetails.expiry_date > new Date().getTime()) {
         // Token still fine, send it back
