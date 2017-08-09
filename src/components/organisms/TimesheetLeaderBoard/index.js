@@ -134,6 +134,11 @@ const DateText = styled(HarvestHours)`
   top: 75px;
   position: absolute;
 `
+const TimePeriodText = styled(MonthText)`
+  top: 65px;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+`
 
 // const Spider = styled.div`
 //   flex: 1 1 50%;
@@ -226,16 +231,20 @@ class TimesheetLeaderBoard extends Component {
     let startMonth
     let endMonth
     let sortByThis
+    let timePeriodText
 
     switch (this.props.sortTimePeriod) {
       case 'lastWorkDay':
+        timePeriodText = 'last Work Day'
         sortByThis = 'lastWorkDay'
         break
       case 'ThisWeek':
         sortByThis = 'thisWorkWeek'
+        timePeriodText = 'this Week'
         break
       case 'LastWeek':
         sortByThis = 'lastWorkWeek'
+        timePeriodText = 'last Week'
         break
       default: null
     }
@@ -261,7 +270,10 @@ class TimesheetLeaderBoard extends Component {
     return (
       <HarvestWrapper>
         <HarvestPanel>
-          <HarvestPanelImage />
+          { /* <HarvestPanelImage /> */}
+          <TimePeriodText>
+            {timePeriodText}
+          </TimePeriodText>
           <MonthText>
             { `${startMonth}${endMonth}` }
           </MonthText>

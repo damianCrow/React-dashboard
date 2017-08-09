@@ -1,62 +1,63 @@
 const fs = require('fs')
-const instagram = require('instagram-node').instagram()
-
-// If modifying these scopes, delete your previously saved credentials
-// at ~/.credentials/calendar-nodejs-quickstart.json
-const SCOPES = ['likes', 'follower_list', 'basic', 'public_content']
-const CRED_DIR = './.credentials/instagram/'
-const STORED_CREDENTIALS = `${CRED_DIR}credentials.json`
-const STORED_TOKEN = `${CRED_DIR}token.json`
+const request = require('request-promise')
 
 // https://www.instagram.com/psysize/
-// const INSTAGRAM_USER_ID = '30605504'
+const INSTAGRAM_USER_ID = '30605504'
 
 // https://www.instagram.com/interstateteam/
-const INSTAGRAM_USER_ID = '494086480'
+// const INSTAGRAM_USER_ID = '494086480'
 
-// Example 1: Creating a new class (declaration-form)
-// ===============================================================
+// https://www.instagram.com/simoninterstate/
+// const INSTAGRAM_USER_ID = '5846525555'
+
+const CRED_DIR = './.credentials/instagram/'
+const HOST_URL = 'https://api.instagram.com'
+const TOKEN_PATH = `${CRED_DIR}instagram_token.json`
+const CLIENT_DETAILS = `${CRED_DIR}config.json`
+
 
 // A base class is defined using the new reserved 'class' keyword
 class Instagram {
 
-  constructor(app, socket, port) {
+  constructor(app, sockets) {
     this.app = app
-    this.socket = socket
-    this.port = port
+    this.sockets = sockets
+    this.credentials = {}
+
+    this.init()
   }
 
-  request(newRequest) {
-    console.log('instagram newRequest: ', newRequest)
+  init() {
+    // This needs to be done first, before any async.
+    this.setupLocalAuthPaths()
+
+    // Setup and load the class with the already known credentials,
+    // then make sure the external auth url is correct.
+    this.grabLocalCredentials()
+      .then(() => this.setupExternalAuthUrl())
+  }
+
+  grabLocalCredentials() {
     return new Promise((resolve, reject) => {
-      this[newRequest]()
-        .then((data) => {
-          resolve(data)
-        })
+      fs.readFile(CLIENT_DETAILS, (err, content) => {
+        if (err) {
+          reject(`Error loading client secret file: '${err}`)
+        }
+        this.credentials = JSON.parse(content)
+        resolve()
+      })
     })
   }
 
   checkAuth() {
     return new Promise((resolve, reject) => {
-      // console.log('GoogleCalendar this: ', this)
       // Load client secrets from a local file.
-      fs.readFile(STORED_CREDENTIALS, (err, content) => {
-        if (err) {
-          reject(`Error loading client secret file: ${err}`)
-        }
-        // Authorize a client with the loaded credentials, then call the
-        // Instagram API.
-        const CREDENTIALS = JSON.parse(content)
-        // console.log('CREDENTIALS', JSON.parse(content))
-
-        this.authorize(CREDENTIALS)
-          .then((instagram) => {
-            resolve(instagram)
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      })
+      this.checkStoredAccessToken()
+        .then(token => resolve(token))
+        .catch(error => {
+          // It ends here, the user needs to authenticate.
+          console.log(`User needs to authenticate Instagram, error report: ${error} `)
+        })
     })
   }
 
@@ -67,58 +68,66 @@ class Instagram {
    * @param {Object} credentials The authorization client credentials.
    * @param {function} callback The callback to call with the authorized client.
    */
-  authorize(credentials) {
-    instagram.use({
-      client_id: credentials.client_id,
-      client_secret: credentials.client_secret,
-    })
-
+  checkStoredAccessToken() {
     return new Promise((resolve, reject) => {
       // Check if we have previously stored a token.
-      fs.readFile(STORED_TOKEN, (err, token) => {
+      fs.readFile(TOKEN_PATH, (err, token) => {
         if (err) {
           // No token stored, so get a new one.
           // Setup to catch authorize user in the consuctor
-          this.setupForNewToken(instagram)
+          // this.setupAccessForNewToken()
           reject(err)
         } else {
-          // We have a processed token stored and ready to go, use it.
-          instagram.use({ access_token: JSON.parse(token) })
-          resolve(instagram)
+          // We have a processed token stored, instagram doesn't have an expire date so return the access token.
+          resolve(JSON.parse(token).access_token)
+          // this.checkAccessTokenExpiration(resolve, reject, JSON.parse(token))
         }
       })
     })
   }
 
-  setupForNewToken(instagram) {
-    const REDIRECT_URL = `http://localhost:${this.port}/handle_instagram_auth`
+  checkAccessTokenExpiration(resolveAuth, rejectAuth, tokenDetails) {
+    // console.log('tokenDetails.expires_at', tokenDetails.expires_at)
+    // console.log('new Date().getTime()', new Date().getTime())
+    if (tokenDetails.expires_at > new Date().getTime()) {
+      // Token still fine, send it back
+      resolveAuth(tokenDetails.access_token)
+    } else {
+      // Token expired
+      console.log('token expired, get new token using refresh token')
+      // Get a new token using the refresh token
+      this.getNewToken(tokenDetails.refresh_token, 'refresh')
+        .then(tokenDetails => {
+          this.storeToken(tokenDetails)
+          resolveAuth(tokenDetails.access_token)
+        })
+        .catch(error => {
+          console.log(error)
+          rejectAuth(error)
+        })
+    }
+  }
 
-    const authUrl = instagram.get_authorization_url(REDIRECT_URL, {
-      scope: SCOPES,
-      state: 'a state',
-    })
+  setupExternalAuthUrl() {
+    console.log('setupExternalAuthUrl')
+    this.authUrl = `${HOST_URL}/oauth/authorize/?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
+    console.log('this.authUrl', this.authUrl)
+  }
 
-    console.log('Authorize this app by visiting this url: ', authUrl)
-
-    // // Dispatch a frontend action to push the auth link!!!!!!!!!
-    // this.socket.emit('action', {type: 'NEED_TO_AUTH_INSTAGRAM',
-    //   data: {status: 'auth-failed'}}
-    // )
-
-    this.socket.emit('unsuccessful.create-request.INSTAGRAM')
-
-
+  setupLocalAuthPaths() {
+    // Send the user to authUrl and grab the access code passed as a get parameter
     this.app.get('/authorize_instagram', (req, res) => {
-      // This will redirect back to our setup '/handle_calendar_auth' with the code
-      res.redirect(authUrl)
+      // This will ultimately redirect back to our setup '/instagram_auth' with the code
+      res.redirect(this.authUrl)
     })
 
-    this.app.get('/handle_instagram_auth', (req, res) => {
-      const authCode = req.query.code
+    this.app.get('/instagram_auth', (req, res) => {
+      const accessCode = req.query.code
+      console.log('instagram auth accessCode = ', accessCode)
       // This needs to go back to autherise and fire our request with sucess
-      this.getNewToken(instagram, authCode, REDIRECT_URL)
-        .then((token) => {
-          this.storeToken(token)
+      this.getNewToken(accessCode, 'access')
+        .then(tokenDetails => {
+          this.storeToken(tokenDetails)
           res.redirect('/')
         })
         .catch(error => {
@@ -128,28 +137,67 @@ class Instagram {
   }
 
   /**
-   * Get and store new token after prompting for user authorization, and then
-   * execute the given callback with the authorized OAuth2 client.
+   * Get a new token with either a refresh token or access code.
    *
    * @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
    * @param {getEventsCallback} callback The callback to call with the authorized
    *     client.
    */
-  getNewToken(instagram, authCode, redirectUrl) {
-    console.log('--GET NEW TOKEN--')
-    // console.log('getNewToken. oauth2Client: ', oauth2Client)
+  getNewToken(code, requstType) {
     return new Promise((resolve, reject) => {
-      // PULL NEW CODE FROM URL PARAM
-      // Not sure why redirectUrl is needed, but docs say so.
-      instagram.authorize_user(authCode, redirectUrl, (err, result) => {
-        if (err) {
-          console.log(err.body)
-          reject(err.body)
-        } else {
-          console.log(`Yay! Access token is ${result.access_token}`)
-          resolve(result.access_token) // fulfilled
-        }
-      })
+      console.log(`--GET NEW INSTAGRAM ACCESS TOKEN WITH ${requstType} CODE (getNewToken)--`)
+
+      const extraOptions = {
+        refresh: {
+          grant_type: 'refresh_token',
+          refresh_token: code,
+        },
+        access: {
+          code,
+          redirect_uri: this.credentials.redirect_uri,
+          grant_type: 'authorization_code',
+        },
+      }
+
+      const options = {
+        method: 'POST',
+        uri: `${HOST_URL}/oauth/access_token`,
+        form: Object.assign({
+          client_id: this.credentials.client_id,
+          client_secret: this.credentials.client_secret,
+        }, extraOptions[requstType]),
+        json: true, // Automatically stringifies the body to JSON
+      }
+
+      request(options)
+        .then(response => resolve(response))
+        .catch(err => reject(err))
+    })
+  }
+
+  testoAuth(accessToken) {
+    this.instagramRequest('/account/who_am_i', accessToken)
+      .then(response => console.log(response))
+      .catch(err => console.log(err))
+  }
+
+  instagramRequest(instagramRequest, accessToken) {
+    return new Promise((resolve, reject) => {
+      const options = {
+        uri: `${HOST_URL}/${instagramRequest}`,
+        qs: {
+          access_token: accessToken, // -> uri + '?access_token=xxxxx%20xxxxx'
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        json: true, // Automatically parses the JSON string in the response
+      }
+
+      request(options)
+        .then(response => resolve(response))
+        .catch(err => reject(err))
     })
   }
 
@@ -160,42 +208,44 @@ class Instagram {
    */
   storeToken(token) {
     console.log('--STORE TOKEN RUNNING--')
-    try {
-      fs.mkdirSync(CRED_DIR)
-    } catch (err) {
-      if (err.code !== 'EEXIST') {
-        throw err
-      }
-    }
-    console.log('NEW TOKEN JSON: ', JSON.stringify(token))
-    fs.writeFile(STORED_TOKEN, JSON.stringify(token))
-    console.log(`Token stored to ${STORED_TOKEN} 💾`)
+    const tokenWithExpiresAt = token
+    tokenWithExpiresAt.expires_at = new Date().getTime() + (token.expires_in * 1000)
+    fs.writeFile(TOKEN_PATH, JSON.stringify(tokenWithExpiresAt))
+    console.log(`Token stored to ${TOKEN_PATH} 💾`)
   }
 
-  /**
-   * Lists the next 10 events on the user's primary calendar.
-   *
-   * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
-   */
   posts() {
-    // console.log('instagram grabPosts: ')
     return new Promise((resolve, reject) => {
-      this.checkAuth().then(instagram => {
-        // console.log('auth cool, now pulling in grabposts')
-        instagram.user_media_recent(INSTAGRAM_USER_ID, (err, posts, pagination, remaining, limit) => {
-          if (err) {
+      this.checkAuth().then(accessToken => {
+        this.instagramRequest('v1/users/self/media/recent/', accessToken)
+          .then(posts => {
+            this.refreshPosts()
+            resolve(posts.data)
+          })
+          .catch(err => {
+            console.log('err', err)
             reject(err)
-            // this.socket.emit('instagram-new-posts-error', { err })
-          } else {
-            resolve(posts)
-            // this.socket.emit('instagram-new-posts', { posts })
-          }
-        })
-      }).catch((error) => {
-        reject(error)
+          })
+      }).catch(error => {
+        console.log('error', error)
+        reject({ message: 'auth-failed' })
       })
     })
   }
+
+  refreshPosts() {
+    // console.log('refreshPosts timeout this.refreshInterval: ', this.refreshInterval)
+    if (!this.refreshInterval) {
+      this.refreshInterval = setInterval(() => {
+        this.posts()
+          .then(posts => {
+            this.sockets.emit('SOCKET_DATA_EMIT', { service: 'INSTAGRAM', description: 'POSTS', payload: posts })
+          })
+      }, 900000)
+    }
+    // 900000 = 15 minutes
+  }
+
 
 }
 
