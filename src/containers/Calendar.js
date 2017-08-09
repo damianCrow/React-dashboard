@@ -21,7 +21,9 @@ class CalendarContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // console.log('google calendar nextProps', nextProps)
+    if (nextProps.meetings[0] && this.props.meetings.length === 0) {
+      this.startLoop(nextProps.meetings[0])
+    }
   }
 
   getAvatars(arrayToPopulate, arrayToMap) {
@@ -38,11 +40,38 @@ class CalendarContainer extends Component {
     })
   }
 
-  render() {
-    // const { posts, status, message } = this.props
+  isMeetingCurrent(meetingObj) {
+    const element = document.getElementById(`${meetingObj.id}`)
 
-    // <Auth message={message} icon="harvest" service="Harvest" authLink="/authorize_harvest" />
-    // <Meetings posts={allPosts} />
+    if (moment().isBetween(meetingObj.start.dateTime, meetingObj.end.dateTime)) {
+      element.classList.add('pulsate')
+    }
+    if (moment().isAfter(meetingObj.end.dateTime)) {
+      element.style.left = '-1130px'
+      setTimeout(() => {
+        this.props.serviceRequest('calendar')
+      }, 2000)
+    }
+  }
+
+  stopLoop() {
+    window.cancelAnimationFrame(this.hilightCurrentMeeting)
+  }
+
+  loop(meetingObj) {
+    if (document.getElementById(`${meetingObj.id}`)) {
+      this.isMeetingCurrent(meetingObj)
+      this.hilightCurrentMeeting = window.requestAnimationFrame(this.loop.bind(this, meetingObj))
+    }
+  }
+
+  startLoop(meetingObj) {
+    if (!this.hilightCurrentMeeting) {
+      this.hilightCurrentMeeting = window.requestAnimationFrame(this.loop.bind(this, meetingObj))
+    }
+  }
+
+  render() {
     const outAvatarArray = []
     const inAvatarArray = []
     this.getAvatars(outAvatarArray, this.props.outOfOffice)
@@ -57,7 +86,7 @@ class CalendarContainer extends Component {
               rowTitle={'Out Of Office'}
               rowSubTitle={'Holidays, Sickness & Meetings'}
               colorCode={'#ffd200'}
-              opacity={0.25}>
+              opacity={0.4}>
               {outAvatarArray}
             </CalendarRow>
             <CalendarRow
@@ -65,7 +94,7 @@ class CalendarContainer extends Component {
               rowTitle={'Creative Resources'}
               rowSubTitle={'Freelancers & Interns'}
               colorCode={'#ffd200'}
-              opacity={0.25}>
+              opacity={0.4}>
               {inAvatarArray}
             </CalendarRow>
           </div>
@@ -91,18 +120,19 @@ class CalendarContainer extends Component {
             if (moment().format('DD MM YYYY') === moment(meeting.start.dateTime).format('DD MM YYYY')) {
               rowDate = 'Today'
               colorCode = '#ffd200'
-              opa = 0.15
+              opa = 0.3
             } else if (moment().format('DD MM YYYY') === moment(meeting.start.dateTime).subtract(1, 'days').format('DD MM YYYY')) {
               rowDate = 'Tomorrow'
               colorCode = '#41adaa'
-              opa = 0.075
+              opa = 0.2
             } else {
               rowDate = moment(meeting.start.dateTime).format('dddd')
               colorCode = '#41adaa'
-              opa = 0.02
+              opa = 0.1
             }
             return (
               <CalendarRow
+                id={meeting.id}
                 key={idx}
                 rowDay={rowDate}
                 rowTitle={meeting.summary}

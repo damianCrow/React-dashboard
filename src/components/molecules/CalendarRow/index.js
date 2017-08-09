@@ -1,10 +1,19 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import styled from 'styled-components'
-import moment from 'moment'
+import styled, { keyframes } from 'styled-components'
 import { connect } from 'react-redux'
 import { Heading, Icon, TruncatedScroller } from 'components'
 
+const Pulsate = keyframes`
+  0% {
+    color: #ffd200;
+    opacity: 1;
+  }
+  100% {
+    color: #ffd200;
+    opacity: 0.4;
+  }
+`
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
@@ -12,6 +21,12 @@ const Wrapper = styled.div`
   display: flex;
   padding: 0 15px;
   font-family: Gotham,Helvetica Neue,Helvetica,Roboto,sans-serif;
+  transition: left 2s ease-in;
+  &.pulsate {
+    .title, .content-on-right {
+      animation: ${Pulsate} 0.75s ease-in-out alternate infinite;
+    }
+  }
 `
 const Shade = styled.div`
   position: absolute;
@@ -68,10 +83,6 @@ const Wink = styled(Icon)`
 `
 class CalendarRow extends Component {
 
-  constructor(props) {
-    super(props)
-  }
-
   componentDidMount() {
     const rightColumnWidth = window.getComputedStyle(this.rightColumn, null).getPropertyValue('width')
     this.Title.scroller.style.width = `calc(100% - ${rightColumnWidth} - 30px)`
@@ -80,16 +91,16 @@ class CalendarRow extends Component {
 
   render() {
     return (
-      <Wrapper innerRef={(wrapper) => { this.wrapper = wrapper }} >
+      <Wrapper id={this.props.id} innerRef={(wrapper) => { this.wrapper = wrapper }} >
         <Shade opacity={this.props.opacity} />
         <LeftColumn>
           <Day color={this.props.colorCode} level={4}>{this.props.rowDay}</Day>
           { /* <Wink fillColor={'#ffd200'} icon="interwink" height={20} />*/ }
         </LeftColumn>
         <MainColumn>
-          <Title innerRef={Title => { this.Title = Title }}>{this.props.rowTitle}</Title>
+          <Title className={'title'} innerRef={Title => { this.Title = Title }}>{this.props.rowTitle}</Title>
           <SubTitle innerRef={SubTitle => { this.SubTitle = SubTitle }}>{this.props.rowSubTitle}</SubTitle>
-          <RightColumn innerRef={rightColumn => { this.rightColumn = rightColumn }}>{this.props.children}</RightColumn>
+          <RightColumn className={'content-on-right'} innerRef={rightColumn => { this.rightColumn = rightColumn }}>{this.props.children}</RightColumn>
         </MainColumn>
       </Wrapper>
     )
@@ -103,6 +114,13 @@ const mapStateToProps = state => ({
 CalendarRow.propTypes = {
   updateCalendarRow: PropTypes.func,
   countDownDisplay: PropTypes.string,
+  colorCode: PropTypes.string,
+  opacity: PropTypes.number,
+  id: PropTypes.string,
+  rowDay: PropTypes.string,
+  rowTitle: PropTypes.string,
+  rowSubTitle: PropTypes.string,
+  children: PropTypes.node,
 }
 
 const mapDispatchToProps = (dispatch) => ({
