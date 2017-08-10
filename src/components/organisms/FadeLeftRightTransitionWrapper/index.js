@@ -32,7 +32,7 @@ const FadeLeftRightTransitionWrapper = ({ children: child, ...props }) => (
     {...props}
     timeout={2500}
     onEnter={(node, isAppearing) => {
-      TweenLite.fromTo(node, 2, { opacity: 0, x: '-100%' }, { opacity: 1, x: '0%' })
+      TweenLite.fromTo(node, 2, { opacity: 0, x: '100%' }, { opacity: 1, x: '0%' })
     }}
     onExit={node => {
       TweenLite.to(node, 2, { opacity: 0, x: '-100%' })

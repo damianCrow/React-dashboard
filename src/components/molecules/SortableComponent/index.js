@@ -7,6 +7,9 @@ import { updatePlaylist, deletePlaylistItem, recievedPlaylistFromServer, showHid
 import { Button } from 'components'
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc'
 
+// Maybe make this more like this?
+// http://chenglou.github.io/react-motion/demos/demo8-draggable-list/
+
 const List = styled.ul`
   display: block;
   align-items: center;
