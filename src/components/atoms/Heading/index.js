@@ -10,8 +10,6 @@ const styles = css`
   font-weight: 500;
   font-size: ${fontSize};
   margin: 15px 0 0 0;
-  transform: translateX(-50%);
-  left: 50%;
   position: relative;
   text-align: center;
   color: ${palette({ grayscale: 0 }, 1)};
