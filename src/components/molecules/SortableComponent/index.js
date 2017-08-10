@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { font } from 'styled-theme'
 import { updatePlaylist, deletePlaylistItem, recievedPlaylistFromServer, showHideItem } from 'store/actions'
-import { Button } from 'components'
+import { Icon } from 'components'
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc'
 
 // Maybe make this more like this?
@@ -34,7 +34,7 @@ const ListItem = styled.li`
 `
 const ListItemText = styled.span`
  height: 50%;
- width: calc(100% - 80px);
+ width: calc(100% - 130px);
  text-overflow: ellipsis;
  color: white;
  display: block;
@@ -54,17 +54,31 @@ right: 0;
 z-index: 2;
 top: 5px;
 `
+const PreviewImg = styled.img`    
+  position: absolute;
+  z-index: 1;
+  height: calc(100% - 10px);
+  top: 5px;
+  right: 68px;
+`
+const PreviewVid = styled(Icon)`    
+  position: absolute;
+  z-index: 1;
+  height: calc(100% - 10px);
+  top: 2.5px;
+  right: 68px;
+`
 
 const SortableItem = SortableElement(({ value, deleteFunc, showHideFunc, playlist }) => {
   let isHidden
   let itemClass
   let btnColor
   if (value.hidden) {
-    isHidden = 'Show'
+    isHidden = 'show'
     itemClass = 'hidden'
     btnColor = 'grayscale'
   } else {
-    isHidden = 'Hide'
+    isHidden = 'hide'
     itemClass = 'not-hidden'
     btnColor = 'primary'
   }
@@ -72,18 +86,23 @@ const SortableItem = SortableElement(({ value, deleteFunc, showHideFunc, playlis
     <ListItem className={itemClass}>
       <ListItemText>{value.title}</ListItemText>
       <ListItemText>{value.type}</ListItemText>
+      {value.type === 'Image' ?
+        <PreviewImg alt={''} src={value.url} /> :
+        <PreviewVid icon={'video'} fillColor="#000" height={25} />
+      }
       <ListButton>
-        <Button
-          id={value.id}
-          height={30} palette={btnColor}
-          onClick={showHideFunc.bind(this, playlist)}
-        >{isHidden}</Button>
-        <Button
-          id={value.id}
-          height={30}
-          palette="secondary"
-          onClick={deleteFunc.bind(this, playlist)}
-        >Delete</Button>
+        <Icon
+          icon={isHidden}
+          fillColor="#fff"
+          height={25}
+          onClick={showHideFunc.bind(this, playlist, value)}
+        />
+        <Icon
+          icon={'delete'}
+          fillColor="#fff"
+          height={25}
+          onClick={deleteFunc.bind(this, playlist, value)}
+        />
       </ListButton>
     </ListItem>
   )

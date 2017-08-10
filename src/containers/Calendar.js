@@ -171,6 +171,7 @@ class CalendarContainer extends Component {
                     <CalendarRow
                       id={meeting.data.id}
                       key={idx}
+                      styles={meeting.style}
                       rowDay={rowDate}
                       rowTitle={meeting.data.summary}
                       rowSubTitle={location}

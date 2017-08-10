@@ -25,7 +25,7 @@ export const updatePlaylist = (playlist, savedState) => ({
 export const deletePlaylistItem = (playlist, item) => ({
   type: DELETE_PLAYLIST_ITEM,
   playlist,
-  payload: item.target.id,
+  payload: item.id,
 })
 
 export const publishPlaylist = (overideQueue) => ({
@@ -61,5 +61,5 @@ export const overideQueue = (newItem) => ({
 export const showHideItem = (playlist, item) => ({
   type: SHOW_HIDE_PLATLIST_ITEM,
   playlist,
-  payload: item.target.id,
+  payload: item.id,
 })
