@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { connect } from 'react-redux'
 import { Heading, Icon, TruncatedScroller } from 'components'
 
 const Pulsate = keyframes`
@@ -90,7 +89,7 @@ class CalendarRow extends Component {
 
   render() {
     return (
-      <Wrapper id={this.props.id} innerRef={(wrapper) => { this.wrapper = wrapper }} >
+      <Wrapper style={this.props.styles} id={this.props.id} innerRef={(wrapper) => { this.wrapper = wrapper }} >
         <Shade opacity={this.props.opacity} />
         <LeftColumn>
           <Day color={this.props.colorCode} level={4}>{this.props.rowDay}</Day>
@@ -106,10 +105,6 @@ class CalendarRow extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  // countDownDisplay: state.showcase.data.countDown,
-})
-
 CalendarRow.propTypes = {
   updateCalendarRow: PropTypes.func,
   countDownDisplay: PropTypes.string,
@@ -120,10 +115,7 @@ CalendarRow.propTypes = {
   rowTitle: PropTypes.string,
   rowSubTitle: PropTypes.string,
   children: PropTypes.node,
+  styles: PropTypes.object,
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  // updateCalendarRow: (newTime) => dispatch(updateCalendarRow(newTime)),
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(CalendarRow)
+export default CalendarRow
