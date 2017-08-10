@@ -16,6 +16,15 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   position: absolute;
+  &:after {
+    content: '';
+    width: 100%;
+    height: 100%;
+    left: 0;
+    bottom: 0;
+    position: absolute;
+    background-color: rgba(0,0,0,.08);
+  }
 `
 
 const TransitionWrapper = styled(TransitionGroup)`
