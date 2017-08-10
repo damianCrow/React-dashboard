@@ -5,7 +5,6 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { fonts } from 'components/globals'
 import { sortBy } from 'store/actions'
-// import Shuffle from 'react-shuffle'
 import { Motion, spring } from 'react-motion'
 import { UserCircle } from 'components'
 
@@ -296,7 +295,7 @@ class TimesheetLeaderBoard extends Component {
           <ShadingWrapper className={'showHide'} />
           <ShadingWrapper className={'showHide'} />
           {(users.sort((a, b) => b.totalHours[sortByThis] - a.totalHours[sortByThis])).map((user, i) => (
-            <Motion key={user.id} style={{ x: spring((i * 118.3), { stiffness: 100, damping: 26 }) }}>{val => (// array index correlates to 'top'
+            <Motion key={user.id} style={{ x: spring((i * 118.3), { stiffness: 70, damping: 26 }) }}>{val => (// array index correlates to 'top'
               <HarvestEntry style={{ position: 'absolute', transform: `translate3d(${val.x}px, 0, 0)` }} key={user.id}>
                 <UserCircle email={user.email} />
                 <HarvestHours className={'showHide'}>

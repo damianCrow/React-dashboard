@@ -54,10 +54,11 @@ app.use(historyApiFallback({
 
 app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
 
+const compiler = webpack(config);
+
 // app.use(auth.connect(basic));
 if (DEBUG) {
 
-  const compiler = webpack(config);
   const middleware = WebpackDevMiddleware(compiler, {
     contentBase: 'public',
     historyApiFallback: true,
@@ -76,6 +77,11 @@ if (DEBUG) {
   // Keeps crashing sometimes?
   app.use(webpackHotMiddleware(compiler));
 
+} else {
+  app.use(express.static(__dirname + '/dist'))
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist/index.html'))
+  })
 }
 
 // app.use(express.static(path.join(__dirname, '/public/index.html')));

@@ -1,7 +1,10 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import { Switch, Route } from 'react-router-dom'
 import { injectGlobal, ThemeProvider } from 'styled-components'
 
+import { MainDashboardPage, AdminPortalHome, AdminPortalAddVideo, AdminPortalAddImage } from 'components'
+
+// https://github.com/diegohaz/arc/wiki/Styling
 import theme from './themes/default'
 
 injectGlobal`
@@ -10,16 +13,20 @@ injectGlobal`
   }
 `
 
-const App = ({ children }) => {
+const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      {children}
-    </ThemeProvider>
+    <div>
+      <ThemeProvider theme={theme}>
+        <Switch>
+          <Route path="/" component={MainDashboardPage} exact />
+          <Route path="/admin-portal" component={AdminPortalHome} exact />
+          <Route path="/admin-portal/add-video" component={AdminPortalAddVideo} />
+          <Route path="/admin-portal/add-image" component={AdminPortalAddImage} />
+          <Route component={MainDashboardPage} />
+        </Switch>
+      </ThemeProvider>
+    </div>
   )
-}
-
-App.propTypes = {
-  children: PropTypes.any,
 }
 
 export default App

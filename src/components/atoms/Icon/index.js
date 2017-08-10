@@ -1,15 +1,19 @@
+// https://github.com/diegohaz/arc/wiki/Example-components#icon
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { palette } from 'styled-theme'
-import { prop, ifProp } from 'styled-tools'
+import { ifProp } from 'styled-tools'
 
-export const fontSize = ({ height }) => height ? `${height / 16}rem` : '1.25em'
+const fontSize = ({ width, height }) => {
+  const size = width || height
+  return size ? `${size / 16}rem` : '1.25em'
+}
 
 const Wrapper = styled.span`
-  display: inline-flex;
+  display: inline-block;
   font-size: ${fontSize};
-  color: ${ifProp('palette', palette({ grayscale: 0 }, 1), 'currentcolor')};
+  color: ${ifProp('palette', palette({ grayscale: 0 }, 1), 'white')};
   width: 1em;
   height: 1em;
   margin: 0.1em;
@@ -18,21 +22,22 @@ const Wrapper = styled.span`
   & > svg, & > svg > * {
     width: 100%;
     height: 100%;
-    fill: ${prop('fillColor', 'currentcolor')} !important;
+    fill:${ifProp('palette', palette({ grayscale: 0 }, 1), 'currentcolor')} !important;
     stroke: transparent;
     & * {
-      fill: ${prop('fillColor', 'currentcolor')} !important;
+      fill: ${ifProp('palette', palette({ grayscale: 0 }, 1), 'currentcolor')} !important;
     }
   }
 `
 
 const Icon = ({ icon, ...props }) => {
-  const svg = require(`raw-loader!./icons/${icon}.svg`)
+  const svg = require(`!raw-loader!./icons/${icon}.svg`)
   return <Wrapper {...props} dangerouslySetInnerHTML={{ __html: svg }} />
 }
 
 Icon.propTypes = {
   icon: PropTypes.string.isRequired,
+  width: PropTypes.number,
   height: PropTypes.number,
   palette: PropTypes.string,
   reverse: PropTypes.bool,

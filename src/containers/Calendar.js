@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import moment from 'moment'
 import { socketDataRequest } from 'store/actions'
 import { UserCircle, CalendarRow } from 'components'
+import { TransitionMotion, spring, presets } from 'react-motion'
 
 const CalendarWrapper = styled.div`
   position: absolute;
@@ -47,10 +48,7 @@ class CalendarContainer extends Component {
       element.classList.add('pulsate')
     }
     if (moment().isAfter(meetingObj.end.dateTime)) {
-      element.style.left = '-1130px'
-      setTimeout(() => {
-        this.props.serviceRequest('calendar')
-      }, 2000)
+      this.props.serviceRequest('calendar')
     }
   }
 
@@ -68,6 +66,39 @@ class CalendarContainer extends Component {
   startLoop(meetingObj) {
     if (!this.hilightCurrentMeeting) {
       this.hilightCurrentMeeting = window.requestAnimationFrame(this.loop.bind(this, meetingObj))
+    }
+  }
+
+  getDefaultStyles() {
+    return this.props.meetings.map((meeting, idx) => ({ data: meeting, style: { height: 0, opacity: 1 }, key: meeting.id }))
+  }
+
+  getStyles() {
+    const meetings = this.props.meetings
+
+    return meetings.map((meeting, idx) => {
+      return {
+        data: meeting,
+        key: meeting.id,
+        style: {
+          height: spring(80, presets.gentle),
+          opacity: spring(1, presets.gentle),
+        },
+      }
+    })
+  }
+
+  willEnter() {
+    return {
+      height: 0,
+      opacity: 1,
+    }
+  }
+
+  willLeave() {
+    return {
+      height: spring(0),
+      opacity: spring(0),
     }
   }
 
@@ -100,51 +131,61 @@ class CalendarContainer extends Component {
           </div>
         ) : (null)}
 
-        { this.props.meetings.map((meeting, idx) => {
-          let rowDate
-          let colorCode
-          let location
-          let opa
-          let numberOfMeetingRows = 5
+        {this.props.meetings.length > 0 ? (
+          <TransitionMotion
+            defaultStyles={this.getDefaultStyles()}
+            styles={this.getStyles()}
+            willLeave={this.willLeave}
+            willEnter={this.willEnter}>
+            {styles => {
+              return (<div> {styles.map((meeting, idx) => {
+                let rowDate
+                let colorCode
+                let location
+                let opa
+                let numberOfMeetingRows = 5
 
-          if (inAvatarArray.length < 1 && outAvatarArray.length < 1) {
-            numberOfMeetingRows = 7
-          }
-
-          if (idx < numberOfMeetingRows) {
-            if (!meeting.location) {
-              location = 'At Interstate Creative Partners'
-            } else {
-              location = meeting.location
+                if (inAvatarArray.length < 1 && outAvatarArray.length < 1) {
+                  numberOfMeetingRows = 7
+                }
+                if (idx < numberOfMeetingRows) {
+                  if (!meeting.data.location) {
+                    location = 'At Interstate Creative Partners'
+                  } else {
+                    location = meeting.data.location
+                  }
+                  if (moment().format('DD MM YYYY') === moment(meeting.data.start.dateTime).format('DD MM YYYY')) {
+                    rowDate = 'Today'
+                    colorCode = '#ffd200'
+                    opa = 0.3
+                  } else if (moment().format('DD MM YYYY') === moment(meeting.data.start.dateTime).subtract(1, 'days').format('DD MM YYYY')) {
+                    rowDate = 'Tomorrow'
+                    colorCode = '#41adaa'
+                    opa = 0.2
+                  } else {
+                    rowDate = moment(meeting.data.start.dateTime).format('dddd')
+                    colorCode = '#41adaa'
+                    opa = 0.1
+                  }
+                  return (
+                    <CalendarRow
+                      id={meeting.data.id}
+                      key={idx}
+                      styles={meeting.style}
+                      rowDay={rowDate}
+                      rowTitle={meeting.data.summary}
+                      rowSubTitle={location}
+                      colorCode={colorCode}
+                      opacity={opa}>
+                      {`${moment(meeting.data.start.dateTime).format('HH:mm')} to ${moment(meeting.data.end.dateTime).format('HH:mm')}`}
+                    </CalendarRow>
+                  )
+                }
+                return null
+              })}</div>)}
             }
-            if (moment().format('DD MM YYYY') === moment(meeting.start.dateTime).format('DD MM YYYY')) {
-              rowDate = 'Today'
-              colorCode = '#ffd200'
-              opa = 0.3
-            } else if (moment().format('DD MM YYYY') === moment(meeting.start.dateTime).subtract(1, 'days').format('DD MM YYYY')) {
-              rowDate = 'Tomorrow'
-              colorCode = '#41adaa'
-              opa = 0.2
-            } else {
-              rowDate = moment(meeting.start.dateTime).format('dddd')
-              colorCode = '#41adaa'
-              opa = 0.1
-            }
-            return (
-              <CalendarRow
-                id={meeting.id}
-                key={idx}
-                rowDay={rowDate}
-                rowTitle={meeting.summary}
-                rowSubTitle={location}
-                colorCode={colorCode}
-                opacity={opa}>
-                {`${moment(meeting.start.dateTime).format('HH:mm')} to ${moment(meeting.end.dateTime).format('HH:mm')}`}
-              </CalendarRow>
-            )
-          }
-          return null
-        })}
+          </TransitionMotion>
+        ) : (null)}
       </CalendarWrapper>
     )
   }
