@@ -14,7 +14,8 @@ const ImageWrapper = styled.div`
 
 const InstagramImg = styled.img`
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: cover;
   position: relative;
   width: 100%;
   z-index: 1;

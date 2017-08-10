@@ -21,7 +21,6 @@ const Wrapper = styled.div`
   display: flex;
   padding: 0 15px;
   font-family: Gotham,Helvetica Neue,Helvetica,Roboto,sans-serif;
-  transition: left 2s ease-in;
   &.pulsate {
     .title, .content-on-right {
       animation: ${Pulsate} 0.75s ease-in-out alternate infinite;
