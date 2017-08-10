@@ -1,7 +1,11 @@
 .DS_STORE
+.happypack
+dist
 *.log
 
 node_modules
+coverage
+webpack/webpack-assets.json
 build
 yarn-error.log
 npm-debug.log

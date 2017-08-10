@@ -111,7 +111,7 @@ class Countdown extends Component {
         <TimeLeftContainer>
           <TransitionWrapper>
             <FadeUpDownTransition key={event.id}>
-              <TimeLeft level={1}>{this.props.countdownFigure}</TimeLeft>
+              <TimeLeft level={2}>{this.props.countdownFigure}</TimeLeft>
             </FadeUpDownTransition>
           </TransitionWrapper>
         </TimeLeftContainer>
@@ -120,8 +120,8 @@ class Countdown extends Component {
             <FadeLeftRightTransitionWrapper key={event.id}>
               <CenterStyles>
                 <EventIcon icon={event.eventIconName} fillColor={'#ffffff'} height={60} />
-                <EventDate level={5}>{`${moment(event.startDateTime, 'DD-MM-YYYY HH:mm:ss').format('Do MMMM')}: `}</EventDate>
-                <EventTitle level={5}>{event.eventTitle}</EventTitle>
+                <EventDate level={2}>{`${moment(event.startDateTime, 'DD-MM-YYYY HH:mm:ss').format('Do MMMM')}: `}</EventDate>
+                <EventTitle level={2}>{event.eventTitle}</EventTitle>
               </CenterStyles>
             </FadeLeftRightTransitionWrapper>
           </TransitionWrapper>

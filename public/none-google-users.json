@@ -6,7 +6,7 @@
     "initals": "PR"
 	  },
 	  "email": "hello@peteridley.co.uk",
-	  "image": ""
+	  "image": "public/google-user-pics/peter.jpg"
 	},
 	{"name": {
     "givenName": "Rob",
@@ -15,6 +15,6 @@
     "initals": "RC"
 	  },
 	  "email": "robiero10@gmail.com",
-	  "image": ""
+	  "image": "public/google-user-pics/rob.jpg"
 	}
 ]
