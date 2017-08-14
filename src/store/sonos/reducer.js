@@ -12,35 +12,6 @@ import {
   SONOS_ZONES_RECEIVED,
 } from './actions'
 
-
-// function mergeByKey(arr1, arr2, key) {
-//   console.log('arr1', arr1)
-//   console.log('arr2', arr2)
-//   if (!isEmpty(arr1) && !isEmpty(arr2)) {
-//     return arr1.map((member) => {
-//       return arr2.forEach((memberTwo) => {
-//         // console.log('member', member)
-//         // console.log('memberTwo', memberTwo)
-//         if (memberTwo[key] === member[key]) {
-//           return merge(member, memberTwo)
-//         }
-//         return null
-//       })
-//     })
-//   } else if (isEmpty(arr1) && !isEmpty(arr2)) {
-//     return arr2
-//   } else if (isEmpty(arr2) && !isEmpty(arr1)) {
-//     return arr1
-//   }
-//   return []
-// }
-
-// function mergeByKey(arr1, arr2, key) {
-//   return arr1.map((item) => {
-//     return merge(item, find(arr2, { [key]: item[key] }))
-//   })
-// }
-
 function mergeByKey(arr1, arr2, key) {
   // console.log('merging arr1', arr1)
   // console.log('with arr2', arr2)
@@ -123,6 +94,7 @@ export default (state = initialState, action) => {
       }
 
     case SOCKET_SONOS_EMIT_TOPOLOGY_RECEIVED:
+      console.log('sonos topology: action = ', action)
       return {
         ...state,
         speakerZones: action.payload,

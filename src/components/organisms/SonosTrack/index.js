@@ -248,4 +248,19 @@ SonosTrack.propTypes = {
   playerCount: PropTypes.number,
 }
 
+SonosTrack.defaultProps = {
+  trackInfo: {
+    currentTrack: {
+      absoluteAlbumArtUri: '/public/albumArtLoading.gif',
+    },
+    nextTrack: {
+      absoluteAlbumArtUri: '/public/albumArtLoading.gif',
+    },
+  },
+  previousTrack: {
+    absoluteAlbumArtUri: '/public/albumArtLoading.gif',
+  },
+}
+
+
 export default SonosTrack

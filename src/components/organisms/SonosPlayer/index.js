@@ -24,7 +24,7 @@ const PlayerContainer = styled.div`
 const SonosPlayer = ({ previousTrack, playerState, speakers, featuredSpeaker, playerCount }) => {
   return (
     <PlayerContainer>
-      <SonosGroupInfo speakers={speakers} featuredSpeaker={featuredSpeaker} playerCount={playerCount} />
+      <SonosGroupInfo speakers={speakers} playerCount={playerCount} />
       <SonosTrack trackInfo={playerState} previousTrack={previousTrack} playerCount={playerCount} />
     </PlayerContainer>
   )

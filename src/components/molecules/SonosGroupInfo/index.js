@@ -1,5 +1,5 @@
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import React from 'react'
 import styled from 'styled-components'
 
 // import { Icon, Link, Heading, Badge } from 'components'
@@ -35,39 +35,44 @@ const SpeakerInfo = styled.div`
     left: 40%;
   }
 `
+class SonosGroupInfo extends Component {
+  constructor() {
+    super()
 
-const SonosGroupInfo = ({ featuredSpeaker, playerCount }) => {
+    this.state = { speakerNames: '' }
+  }
 
-  if (featuredSpeaker.split('/').length > 1) {
-    if (featuredSpeaker.split('/')[0].match('Studio') && featuredSpeaker.split('/')[1].match('Studio')) {
-      featuredSpeaker = 'Studio'
+  componentDidMount() {
+    this.speakerName(this.props.speakers)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.speakerName(nextProps.speakers)
+  }
+
+  speakerName(speakers) {
+    let spakerNameDisplay = speakers
+    if (speakers.filter(speaker => speaker.match('Studio')).length > 1) {
+      spakerNameDisplay = speakers.map(speaker => speaker.match('Studio') ? 'Studio' : speaker)
     }
+
+    this.setState({
+      speakerNames: Array.from(new Set(spakerNameDisplay)).join(', '),
+    })
   }
 
-  let groupClass
-  switch (playerCount) {
-    case 2:
-      groupClass = 'two_groups'
-      break
-    case 3:
-      groupClass = 'three_groups'
-      break
-    default: ''
+  render() {
+    return (
+      <Wrapper>
+        <SpeakerInfo>{this.state.speakerNames}</SpeakerInfo>
+      </Wrapper>
+    )
   }
-  return (
-    <Wrapper>
-      <SpeakerInfo className={groupClass}>
-        {featuredSpeaker}
-      </SpeakerInfo>
-    </Wrapper>
-  )
 }
 
 SonosGroupInfo.propTypes = {
   speakers: PropTypes.array.isRequired,
   children: PropTypes.any,
-  featuredSpeaker: PropTypes.string,
-  playerCount: PropTypes.number,
 }
 
 export default SonosGroupInfo
