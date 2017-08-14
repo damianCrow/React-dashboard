@@ -23,7 +23,9 @@ class CalendarContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.meetings[0] && this.props.meetings.length === 0) {
-      this.startLoop(nextProps.meetings[0])
+      nextProps.meetings.map(meeting => {
+        this.startLoop(meeting)
+      })
     }
   }
 
@@ -59,13 +61,13 @@ class CalendarContainer extends Component {
   loop(meetingObj) {
     if (document.getElementById(`${meetingObj.id}`)) {
       this.isMeetingCurrent(meetingObj)
-      this.hilightCurrentMeeting = window.requestAnimationFrame(this.loop.bind(this, meetingObj))
+      this[`hilightCurrentMeeting${meetingObj.id}`] = window.requestAnimationFrame(this.loop.bind(this, meetingObj))
     }
   }
 
   startLoop(meetingObj) {
-    if (!this.hilightCurrentMeeting) {
-      this.hilightCurrentMeeting = window.requestAnimationFrame(this.loop.bind(this, meetingObj))
+    if (!this[`hilightCurrentMeeting${meetingObj.id}`]) {
+      this[`hilightCurrentMeeting${meetingObj.id}`] = window.requestAnimationFrame(this.loop.bind(this, meetingObj))
     }
   }
 
@@ -97,8 +99,7 @@ class CalendarContainer extends Component {
 
   willLeave() {
     return {
-      height: spring(0),
-      opacity: spring(0),
+      height: spring(0, { stiffness: 75, damping: 20 }),
     }
   }
 
@@ -143,10 +144,10 @@ class CalendarContainer extends Component {
                 let colorCode
                 let location
                 let opa
-                let numberOfMeetingRows = 5
+                let numberOfMeetingRows = 8
 
                 if (inAvatarArray.length < 1 && outAvatarArray.length < 1) {
-                  numberOfMeetingRows = 7
+                  numberOfMeetingRows = 10
                 }
                 if (idx < numberOfMeetingRows) {
                   if (!meeting.data.location) {
