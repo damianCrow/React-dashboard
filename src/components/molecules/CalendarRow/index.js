@@ -69,7 +69,7 @@ const Title = styled(TruncatedScroller)`
 `
 const SubTitle = styled(TruncatedScroller)`
   font-weight: 100;
-  bottom: 15px;
+  top: 50px;
   position: absolute;
   color: #71c3a8;
   font-size: 1rem;

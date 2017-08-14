@@ -9,6 +9,7 @@ webpack/webpack-assets.json
 build
 yarn-error.log
 npm-debug.log
+showcase-media.json
 
 coverage
 
