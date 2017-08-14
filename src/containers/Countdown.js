@@ -98,7 +98,6 @@ class CountdownContainer extends Component {
   }
 
   render() {
-    console.log('this.state', this.state)
     if (this.state.events.length > 0 && this.props.slideshow.status !== 'waiting') {
       return <Countdown event={this.state.events[this.props.slideshow.current]} countdownFigure={this.state.countdownFigure} />
     }
