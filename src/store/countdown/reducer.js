@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 import { combineReducers } from 'redux'
 import { initialState } from './selectors'
 import { slideshowState } from '../slideshow/reducer'
@@ -20,7 +22,7 @@ function countdownReducerWrapper() {
       case FETCH_COUNTDOWN_SUCCESSFUL:
         return {
           ...state,
-          events: action.data.events,
+          events: action.data.events.sort((a, b) => (moment(a.endDateTime, 'DD-MM-YYYY HH:mm:ss').unix() - moment(b.endDateTime, 'DD-MM-YYYY HH:mm:ss').unix())),
           fetching: false,
         }
 

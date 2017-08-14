@@ -70,7 +70,7 @@ const EventTitle = styled(Heading)`
   line-height: 81px;
   margin: 0;
   text-align: left;
-  margin: 0 .15rem;
+  margin: 0 .25rem;
 `
 
 const EventDetails = styled.div`

@@ -11,6 +11,7 @@ class CountdownContainer extends Component {
     super(props)
     this.state = {
       countdownFigure: '0',
+      events: [],
     }
   }
 
@@ -23,7 +24,6 @@ class CountdownContainer extends Component {
 
     if (nextProps.events.length > 0 && events.length === 0) {
       this.startLoop()
-      nextProps.startSlideshowLogic(nextProps.events.length)
     } else if (nextProps.events.length === 0 && events.length !== 0) {
       this.stopLoop()
     }
@@ -33,16 +33,44 @@ class CountdownContainer extends Component {
     this.stopLoop()
   }
 
-  getRemainingTime(startDateTime) {
+  getLatestEvents(currentTime) {
+    const categorys = []
+    let updateOrNot = false
+    const allEvents = (this.state.events.length === 0) ? this.props.events : this.state.events
+
+    const events = allEvents.filter((event, index) => {
+      if (moment(event.startDateTime, 'DD-MM-YYYY HH:mm:ss').unix() > currentTime) {
+        if (categorys.includes(event.eventType) === false) {
+          categorys.push(event.eventType)
+          if (!updateOrNot && (event.id === allEvents[index].id)) {
+            updateOrNot = true
+          }
+          return true
+        }
+      }
+      return false
+    })
+
+    if (updateOrNot) {
+      this.setState({ events })
+      if (this.props.slideshow.status === 'waiting') {
+        this.props.startSlideshowLogic(this.state.events.length)
+      }
+    }
+  }
+
+  getRemainingTime(currentTime, startDateTime) {
     const eventTime = moment(startDateTime, 'DD-MM-YYYY HH:mm:ss').unix()
-    const currentTime = moment().unix()
     const diffTime = eventTime - currentTime
     const timeSpan = moment.duration(diffTime * 1000, 'milliseconds')
     const dura = moment.duration(timeSpan.asMilliseconds() - 1000, 'milliseconds')
-    if (this.state.countdownFigure !== moment.duration(dura).humanize()) {
-      this.setState({
-        countdownFigure: moment.duration(dura).humanize(),
-      })
+
+    if (this.props.slideshow.status !== 'waiting') {
+      if (this.state.countdownFigure !== moment.duration(dura).humanize()) {
+        this.setState({
+          countdownFigure: moment.duration(dura).humanize(),
+        })
+      }
     }
   }
 
@@ -53,8 +81,12 @@ class CountdownContainer extends Component {
   }
 
   loop() {
+    const currentTime = moment().unix()
+
+    this.getLatestEvents(currentTime)
     // perform loop work here
-    this.getRemainingTime(this.props.events[this.props.slideshow.current].startDateTime)
+    this.getRemainingTime(currentTime, this.state.events[this.props.slideshow.current].startDateTime)
+
     // Set up next iteration of the loop
     this.frameId = window.requestAnimationFrame(this.loop.bind(this))
   }
@@ -66,8 +98,9 @@ class CountdownContainer extends Component {
   }
 
   render() {
-    if (this.props.events.length > 0 && this.props.slideshow.status === 'ready') {
-      return <Countdown event={this.props.events[this.props.slideshow.current]} countdownFigure={this.state.countdownFigure} />
+    console.log('this.state', this.state)
+    if (this.state.events.length > 0 && this.props.slideshow.status !== 'waiting') {
+      return <Countdown event={this.state.events[this.props.slideshow.current]} countdownFigure={this.state.countdownFigure} />
     }
     return <SplashScreen icon="arc" service="Countdown" />
   }

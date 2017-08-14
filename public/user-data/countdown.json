@@ -1,100 +1,130 @@
-{"events":
-	[
-		{
-			"id":"frehgt3",
-			"startDateTime":"02-12-2017 00:00:00",
-			"endDateTime":"02-12-2017 23:59:59",
-			"eventTitle":"Hong Kong - Race Day (Friday)",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"gbeh6t3",
-			"startDateTime":"03-12-2017 00:00:00",
-			"endDateTime":"03-12-2017 23:59:59",
-			"eventTitle":"Hong Kong - Race Day (Saturday)",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"n4et53",
-			"startDateTime":"13-01-2018 00:00:00",
-			"endDateTime":"13-01-2018 23:59:59",
-			"eventTitle":"Marrakesh, MA - Race Day",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"bgterby53",
-			"startDateTime":"03-02-2018 00:00:00",
-			"endDateTime":"03-02-2018 23:59:59",
-			"eventTitle":"Santiago, CL - Race Day",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"b3jhy53",
-			"startDateTime":"03-03-2018 00:00:00",
-			"endDateTime":"03-03-2018 23:59:59",
-			"eventTitle":"Mexico City, MX - Race Day",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"ryn35by",
-			"startDateTime":"17-03-2018 00:00:00",
-			"endDateTime":"17-03-2018 23:59:59",
-			"eventTitle":"San Paulo, BR - Race Day",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"bt5yny235",
-			"startDateTime":"14-04-2018 00:00:00",
-			"endDateTime":"14-04-2018 23:59:59",
-			"eventTitle":"Rome, IT - Race Day",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"nybeb65",
-			"startDateTime":"28-04-2018 00:00:00",
-			"endDateTime":"28-04-2018 23:59:59",
-			"eventTitle":"Paris, FR - Race Day",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"by5yh",
-			"startDateTime":"07-06-2018 00:00:00",
-			"endDateTime":"07-06-2018 23:59:59",
-			"eventTitle":"New York City, US - Race Day (Saturday)",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"ny5ny5",
-			"startDateTime":"08-06-2018 00:00:00",
-			"endDateTime":"08-06-2018 23:59:59",
-			"eventTitle":"New York City, US - Race Day (Sunday)",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"ny53n57",
-			"startDateTime":"28-06-2018 00:00:00",
-			"endDateTime":"28-06-2018 23:59:59",
-			"eventTitle":"Montreal, CA - Race Day (Saturday)",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		},
-		{
-			"id":"y5n3n53",
-			"startDateTime":"29-06-2018 00:00:00",
-			"endDateTime":"29-06-2018 23:59:59",
-			"eventTitle":"Montreal, CA - Race Day (Sunday)",
-			"eventIconName":"formula-e",
-			"eventType":"F1"
-		}
-	]
-}
+{"events": [
+	{
+		"id":"tgt5e4gt5",
+		"startDateTime":"28-04-2018 00:00:00",
+		"endDateTime":"28-04-2018 23:59:59",
+		"eventTitle":"formula-one - Race Day (Friday)",
+		"eventIconName":"formula-one",
+		"eventType":"formula-one"
+	},
+	{
+		"id":"fr4gte",
+		"startDateTime":"03-03-2018 00:00:00",
+		"endDateTime":"03-03-2018 23:59:59",
+		"eventTitle":"formula-one - Race Day (Sa)",
+		"eventIconName":"formula-one",
+		"eventType":"formula-one"
+	},
+	{
+		"id":"frehgt3",
+		"startDateTime":"02-12-2017 00:00:00",
+		"endDateTime":"02-12-2017 23:59:59",
+		"eventTitle":"Hong Kong - Race Day (Friday)",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"gbeh6t3",
+		"startDateTime":"03-12-2017 00:00:00",
+		"endDateTime":"03-12-2017 23:59:59",
+		"eventTitle":"Hong Kong - Race Day (Saturday)",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"n4et53",
+		"startDateTime":"03-03-2018 00:00:00",
+		"endDateTime":"13-01-2018 23:59:59",
+		"eventTitle":"Marrakesh, MA - Race Day",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"bgterby53",
+		"startDateTime":"03-02-2018 00:00:00",
+		"endDateTime":"03-02-2018 23:59:59",
+		"eventTitle":"Santiago, CL - Race Day",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"b3jhy53",
+		"startDateTime":"03-03-2018 00:00:00",
+		"endDateTime":"03-03-2018 23:59:59",
+		"eventTitle":"Mexico City, MX - Race Day",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"ryn35by",
+		"startDateTime":"17-03-2018 00:00:00",
+		"endDateTime":"17-03-2018 23:59:59",
+		"eventTitle":"San Paulo, BR - Race Day",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"bt5yny235",
+		"startDateTime":"14-04-2018 00:00:00",
+		"endDateTime":"14-04-2018 23:59:59",
+		"eventTitle":"Rome, IT - Race Day",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"nybeb65",
+		"startDateTime":"28-04-2018 00:00:00",
+		"endDateTime":"28-04-2018 23:59:59",
+		"eventTitle":"Paris, FR - Race Day",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"by5yh",
+		"startDateTime":"07-06-2018 00:00:00",
+		"endDateTime":"07-06-2018 23:59:59",
+		"eventTitle":"New York City, US - Race Day (Saturday)",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"ny5ny5",
+		"startDateTime":"08-06-2018 00:00:00",
+		"endDateTime":"08-06-2018 23:59:59",
+		"eventTitle":"New York City, US - Race Day (Sunday)",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"ny53n57",
+		"startDateTime":"28-06-2018 00:00:00",
+		"endDateTime":"28-06-2018 23:59:59",
+		"eventTitle":"Montreal, CA - Race Day (Saturday)",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"y5n3n53",
+		"startDateTime":"29-06-2018 00:00:00",
+		"endDateTime":"29-06-2018 23:59:59",
+		"eventTitle":"Montreal, CA - Race Day (Sunday)",
+		"eventIconName":"formula-e",
+		"eventType":"formula-e"
+	},
+	{
+		"id":"frehggt4gt3",
+		"startDateTime":"29-06-2018 00:00:00",
+		"endDateTime":"29-06-2018 23:59:59",
+		"eventTitle":"test-category - Race Day (Friday)",
+		"eventIconName":"wrc",
+		"eventType":"wrc"
+	},
+	{
+		"id":"gt5h3h536u",
+		"startDateTime":"14-04-2018 00:00:00",
+		"endDateTime":"14-04-2018 23:59:59",
+		"eventTitle":"test-category 2 - Race Day (Saturday)",
+		"eventIconName":"wrc",
+		"eventType":"wrc"
+	}
+]}
