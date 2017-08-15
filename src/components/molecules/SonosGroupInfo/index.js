@@ -7,12 +7,11 @@ import styled from 'styled-components'
 const Wrapper = styled.div`
   display: inline-flex;
   z-index: 1;
+  flex: 1;
   color: white;
-  align-self: center;
   text-transform: uppercase;
-  width: 100%;
   align-items: center;
-  justify-content: center;
+  margin: .5rem 0;
 `
 
 const SpeakerInfo = styled.div`
@@ -24,16 +23,7 @@ const SpeakerInfo = styled.div`
   align-self: center;
   font-size: .67rem;
   padding: .5rem 1rem;
-  margin-bottom: 1rem;
   text-transform: uppercase;
-  position: absolute;
-  top: 25px;
-  &.two_groups {
-    left: 47%;
-  }
-  &.three_groups {
-    left: 40%;
-  }
 `
 class SonosGroupInfo extends Component {
   constructor() {
@@ -56,8 +46,14 @@ class SonosGroupInfo extends Component {
       spakerNameDisplay = speakers.map(speaker => speaker.match('Studio') ? 'Studio' : speaker)
     }
 
+    let newSpeakerList = Array.from(new Set(spakerNameDisplay))
+
+    if (newSpeakerList.length > 2) {
+      newSpeakerList = [newSpeakerList[0], newSpeakerList[1], `+${newSpeakerList.length - 2}`]
+    }
+
     this.setState({
-      speakerNames: Array.from(new Set(spakerNameDisplay)).join(', '),
+      speakerNames: newSpeakerList.join(', '),
     })
   }
 

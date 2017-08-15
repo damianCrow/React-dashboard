@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import SineWaves from 'sine-waves/sine-waves'
 
 class WaveAnimation extends Component {
@@ -64,10 +65,14 @@ class WaveAnimation extends Component {
     return (
       <canvas
         ref={(el) => { this.waveCanvas = el }}
-        style={{ position: 'absolute', top: '0', width: '100%', height: '100%', left: '0' }}
+        style={{ position: 'absolute', top: `${this.props.single ? '35%' : '0%'}`, width: '100%', height: '100%', left: '0' }}
       />
     )
   }
+}
+
+WaveAnimation.propTypes = {
+  single: PropTypes.bool,
 }
 
 export default WaveAnimation

@@ -1,78 +1,20 @@
-import unionBy from 'lodash/unionBy'
-import merge from 'lodash/merge'
-import find from 'lodash/find'
 import { initialState } from './selectors'
 import {
-  SONOS_PULL_REQUEST,
-  SONOS_READ_REQUEST,
-  SONOS_READ_SUCCESS,
   SOCKET_SONOS_PULL_ZONES_SUCCESS,
   SOCKET_SONOS_EMIT_TRANSPORT_RECEIVED,
   SOCKET_SONOS_EMIT_TOPOLOGY_RECEIVED,
-  SONOS_ZONES_RECEIVED,
 } from './actions'
 
-function mergeByKey(arr1, arr2, key) {
-  // console.log('merging arr1', arr1)
-  // console.log('with arr2', arr2)
-  const result = arr1.map((item) => {
-    // add the properties from second array matching the userID
-    // to the object from first array and return the updated object
-    return merge(item, find(arr2, { [key]: item[key] }))
-  })
-  // console.log('result', result)
-  return result
-}
-
-function mergeSonos(newState, oldState, key) {
+function mergeSonos(newState, oldState) {
   // console.log(newState, oldState, key)
-  return unionBy(newState, oldState, key)
-}
+  const mergedState = oldState
 
-// TODO: Write this better.
-function mergeTop(newState, oldState, key) {
-  // console.log('MERGE topology')
-  // console.log(newState, oldState, key)
-  const newArray = []
-  newState.forEach((group, index) => {
-    // const speakersNames = group.members.map((member) => member.roomName)
-    // const groupMod = group
-    // groupMod.members = group.members.map((member) => member.roomName)
-    oldState.forEach((existingGroup, index) => {
-      if (group[key] === existingGroup[key]) {
-        const groupMod = group
-        // console.log('groupMod.members', groupMod.members)
-        // groupMod.members = group.members.map((member) => member.roomName)
-        newArray[index] = (merge(group, existingGroup))
-        newArray[index].members = group.members.map((member) => member.roomName)
-      }
-    })
-    // newArray[index].members = group.members.map((member) => member.roomName)
-  })
-  // console.log('newArray', newArray)
-  return newArray
-}
-
-const updatePreviousTrack = (action, state) => {
-  let updateObj = {}
-
-  if (!action.speakers) {
-    action.speakers = action.payload
-  }
-
-  Object.keys(state.previousTracksObj).forEach((key) => {
-    if (action.speakers.uuid === key) {
-      if (state.previousTracksObj[key].length > 5) {
-        state.previousTracksObj[key].splice(0, state.previousTracksObj[key].length - 2)
-      }
-      updateObj = {
-        ...state.previousTracksObj,
-        [action.speakers.uuid]: [...state.previousTracksObj[action.speakers.uuid], action.speakers.state.currentTrack],
-      }
-      return updateObj
+  return mergedState.map(zone => {
+    if (zone.coordinator.coordinator === newState.coordinator) {
+      return { ...zone, coordinator: { ...newState, state: { ...newState.state, previousTrack: zone.coordinator.state.currentTrack } } }
     }
+    return zone
   })
-  return updateObj
 }
 
 export default (state = initialState, action) => {
@@ -81,7 +23,6 @@ export default (state = initialState, action) => {
     case SOCKET_SONOS_PULL_ZONES_SUCCESS:
       return {
         ...state,
-        speakers: [].concat(...action.payload.map(zone => zone.coordinator)),
         speakerZones: action.payload,
       }
 
@@ -89,12 +30,10 @@ export default (state = initialState, action) => {
     case SOCKET_SONOS_EMIT_TRANSPORT_RECEIVED:
       return {
         ...state,
-        speakers: mergeSonos([action.payload], state.speakers, 'uuid'),
-        previousTracksObj: updatePreviousTrack(action, state),
+        speakerZones: mergeSonos(action.payload, state.speakerZones),
       }
 
     case SOCKET_SONOS_EMIT_TOPOLOGY_RECEIVED:
-      console.log('sonos topology: action = ', action)
       return {
         ...state,
         speakerZones: action.payload,

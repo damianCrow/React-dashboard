@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { socketDataRequest, serviceRequest, sonosStateMatch, featuredSpeaker } from 'store/actions'
+import { socketDataRequest } from 'store/actions'
 
-import { SonosContainer, SonosGroupQueue, SonosPlayer, SplashScreen } from 'components'
+import { SonosContainer, SonosPlayer, SplashScreen } from 'components'
 
 class SonosInfoContainer extends Component {
 
@@ -32,14 +32,12 @@ class SonosInfoContainer extends Component {
       return (
         <SonosContainer>
           {zones.map(zone => {
-            console.log('zone', zone)
             return (
               <SonosPlayer
                 key={zone.coordinator.coordinator}
                 speakers={[].concat(zone.members.map(member => member.roomName))}
                 playerState={zone.coordinator.state}
-                // previousTrack={previousTrackObj}
-                // featuredSpeaker={zoneDisplayName}
+                single={zones.length === 1}
                 playerCount={zones.length}
               />
             )
@@ -54,13 +52,12 @@ class SonosInfoContainer extends Component {
 }
 
 // Listen and capture any changes made as a result of the the actions below.
-const mapStateToProps = (state) => ({
-  // speakers: state.sonos.speakers,
+const mapStateToProps = state => ({
   previousTracksObj: state.sonos.previousTracksObj,
   zones: state.sonos.speakerZones,
 })
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   serviceRequest: () => dispatch(socketDataRequest({ service: 'SONOS', serverAction: 'pull', request: 'zones' })),
 })
 
