@@ -26,7 +26,7 @@ const InstagramImg = styled.img`
   position: relative;
   width: 100%;
   z-index: 1;
-  animation: ${Animate} 15s linear forwards;
+  animation: ${Animate} 14s linear forwards;
 `
 
 const ShowcaseImage = ({ currentImage, thumbnail }) => (
