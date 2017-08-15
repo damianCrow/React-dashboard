@@ -9,6 +9,9 @@ const Wrapper = styled.div`
   min-height: 100vh;
   box-sizing: border-box;
   padding-top: 9.375rem;
+  width: 1080px;
+  overflow: hidden;
+  height: 1920px;
   background: linear-gradient(to right, #00928f 0%, #50b848 100%);
 `
 
