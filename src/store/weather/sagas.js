@@ -4,7 +4,7 @@ import * as actions from './actions'
 function* fetchWeather() {
   try {
     // Tell redux-saga to call fetch with the specified options
-    const response = yield call(fetch, 'http://api.openweathermap.org/data/2.5/weather?q=London,UK&units=metric&APPID=d4715be9a9535bb0b47b98901e84511e', { method: 'GET' })
+    const response = yield call(fetch, 'http://api.openweathermap.org/data/2.5/weather?lat=51.512015&lon=-0.218247&units=metric&APPID=d4715be9a9535bb0b47b98901e84511e', { method: 'GET' })
     const weather = yield response.json()
     // Tell redux-saga to dispatch the fetchWeatherSuccessful action
     yield put(actions.fetchWeatherSuccessful(weather))
