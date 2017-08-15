@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import styled, { keyframes } from 'styled-components'
 import PropTypes from 'prop-types'
+import shortid from 'shortid'
 
 const Truncated = styled.span`
   overflow: hidden;
@@ -18,6 +19,9 @@ class TruncatedScroller extends Component {
   constructor(props) {
     super(props)
     this.animateIfTrincated = this.animateIfTrincated.bind(this)
+    this.state = {
+      elementsWithEventListeners: {},
+    }
   }
 
   componentDidMount() {
@@ -26,7 +30,7 @@ class TruncatedScroller extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props !== nextProps) {
-      this.forceUpdate()
+      this.animateIfTrincated()
     }
   }
 
@@ -61,23 +65,31 @@ class TruncatedScroller extends Component {
         animationdelay = 10
       }
       const childEle = this.scrollerChild
+      const animation = `${animateTruncated} ${animationduration} linear`
+      this.animate(childEle, animation, this.scrollerChild.id, animationdelay)
+    }
+  }
 
-      const animate = () => {
-        childEle.style.animation = `${animateTruncated} ${animationduration} linear`
-        childEle.addEventListener('animationend', () => {
-          childEle.style.animation = ''
-          setTimeout(() => { animate() }, animationdelay * 1000)
+  animate(ele, animation, eleId, animationdelay) {
+    const animate = setTimeout(() => {
+      ele.style.animation = animation
+
+      if (!this.state.elementsWithEventListeners.eleId) {
+        ele.addEventListener('animationend', () => {
+          this.setState({ elementsWithEventListeners: { eleId } })
+          ele.style.animation = ''
+          this.animateIfTrincated()
+          clearTimeout(animate)
         })
       }
-      setTimeout(() => { animate() }, animationdelay * 1000)
-    }
+    }, animationdelay * 1000)
   }
 
   render() {
     const { children, className } = this.props
     return (
       <Truncated innerRef={parent => { this.scroller = parent }} className={className}>
-        <TruncatedChild innerRef={child => { this.scrollerChild = child }}>{children}</TruncatedChild>
+        <TruncatedChild id={shortid.generate()} innerRef={child => { this.scrollerChild = child }}>{children}</TruncatedChild>
       </Truncated>
     )
   }

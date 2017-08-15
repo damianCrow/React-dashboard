@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { MediaBluredBack } from 'components'
 import { SlideshowLogic } from 'hoc'
 
@@ -11,7 +11,14 @@ const ImageWrapper = styled.div`
   top: 0;
   width: 100%;
 `
-
+const Animate = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.15);
+  } 
+`
 const InstagramImg = styled.img`
   height: 100%;
   object-fit: cover;
@@ -19,6 +26,7 @@ const InstagramImg = styled.img`
   position: relative;
   width: 100%;
   z-index: 1;
+  animation: ${Animate} 15s linear forwards;
 `
 
 const ShowcaseImage = ({ currentImage, thumbnail }) => (
