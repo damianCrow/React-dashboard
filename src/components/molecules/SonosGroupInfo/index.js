@@ -1,5 +1,5 @@
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import React from 'react'
 import styled from 'styled-components'
 
 // import { Icon, Link, Heading, Badge } from 'components'
@@ -7,12 +7,11 @@ import styled from 'styled-components'
 const Wrapper = styled.div`
   display: inline-flex;
   z-index: 1;
+  flex: 1;
   color: white;
-  align-self: center;
   text-transform: uppercase;
-  width: 100%;
   align-items: center;
-  justify-content: center;
+  margin: .5rem 0;
 `
 
 const SpeakerInfo = styled.div`
@@ -24,50 +23,52 @@ const SpeakerInfo = styled.div`
   align-self: center;
   font-size: .67rem;
   padding: .5rem 1rem;
-  margin-bottom: 1rem;
   text-transform: uppercase;
-  position: absolute;
-  top: 25px;
-  &.two_groups {
-    left: 47%;
-  }
-  &.three_groups {
-    left: 40%;
-  }
 `
+class SonosGroupInfo extends Component {
+  constructor() {
+    super()
 
-const SonosGroupInfo = ({ featuredSpeaker, playerCount }) => {
+    this.state = { speakerNames: '' }
+  }
 
-  if (featuredSpeaker.split('/').length > 1) {
-    if (featuredSpeaker.split('/')[0].match('Studio') && featuredSpeaker.split('/')[1].match('Studio')) {
-      featuredSpeaker = 'Studio'
+  componentDidMount() {
+    this.speakerName(this.props.speakers)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.speakerName(nextProps.speakers)
+  }
+
+  speakerName(speakers) {
+    let spakerNameDisplay = speakers
+    if (speakers.filter(speaker => speaker.match('Studio')).length > 1) {
+      spakerNameDisplay = speakers.map(speaker => speaker.match('Studio') ? 'Studio' : speaker)
     }
+
+    let newSpeakerList = Array.from(new Set(spakerNameDisplay))
+
+    if (newSpeakerList.length > 2) {
+      newSpeakerList = [newSpeakerList[0], newSpeakerList[1], `+${newSpeakerList.length - 2}`]
+    }
+
+    this.setState({
+      speakerNames: newSpeakerList.join(', '),
+    })
   }
 
-  let groupClass
-  switch (playerCount) {
-    case 2:
-      groupClass = 'two_groups'
-      break
-    case 3:
-      groupClass = 'three_groups'
-      break
-    default: ''
+  render() {
+    return (
+      <Wrapper>
+        <SpeakerInfo>{this.state.speakerNames}</SpeakerInfo>
+      </Wrapper>
+    )
   }
-  return (
-    <Wrapper>
-      <SpeakerInfo className={groupClass}>
-        {featuredSpeaker}
-      </SpeakerInfo>
-    </Wrapper>
-  )
 }
 
 SonosGroupInfo.propTypes = {
   speakers: PropTypes.array.isRequired,
   children: PropTypes.any,
-  featuredSpeaker: PropTypes.string,
-  playerCount: PropTypes.number,
 }
 
 export default SonosGroupInfo
