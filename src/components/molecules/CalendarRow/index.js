@@ -20,6 +20,11 @@ const Wrapper = styled.div`
   display: flex;
   padding: 0 15px;
   font-family: Gotham,Helvetica Neue,Helvetica,Roboto,sans-serif;
+  &:first-child {
+    .main_content {
+      border-top: none;
+    }
+  }
   &.pulsate {
     .title, .content-on-right {
       animation: ${Pulsate} 0.75s ease-in-out alternate infinite;
@@ -95,7 +100,7 @@ class CalendarRow extends Component {
           <Day color={this.props.colorCode} level={4}>{this.props.rowDay}</Day>
           { /* <Wink fillColor={'#ffd200'} icon="interwink" height={20} />*/ }
         </LeftColumn>
-        <MainColumn>
+        <MainColumn className={'main_content'}>
           <Title className={'title'} innerRef={Title => { this.Title = Title }}>{this.props.rowTitle}</Title>
           <SubTitle innerRef={SubTitle => { this.SubTitle = SubTitle }}>{this.props.rowSubTitle}</SubTitle>
           <RightColumn className={'content-on-right'} innerRef={rightColumn => { this.rightColumn = rightColumn }}>{this.props.children}</RightColumn>
