@@ -49,9 +49,9 @@ class CalendarContainer extends Component {
     if (moment().isBetween(meetingObj.start.dateTime, meetingObj.end.dateTime)) {
       element.classList.add('pulsate')
     }
-    if (moment().isAfter(meetingObj.end.dateTime)) {
-      this.props.serviceRequest('calendar')
-    }
+    // if (moment().isAfter(meetingObj.end.dateTime)) {
+      // this.props.serviceRequest('calendar')
+    // }
   }
 
   stopLoop() {
