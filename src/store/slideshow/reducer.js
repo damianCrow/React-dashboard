@@ -11,13 +11,16 @@ export const slideshowState = (service = '') => {
   return function counter(state = initialState, action) {
     switch (action.type) {
 
-      case `${service}_${SLIDESHOW_META}`:
+      case `${service}_${SLIDESHOW_META}`: {
+        const max = ((action.max - 1) < 0) ? 0 : action.max - 1
         return {
           ...state,
-          max: action.max - 1,
+          // max: action.max - 1,
+          max,
+          current: (state.current > max) ? max : state.current,
           status: 'ready',
         }
-
+      }
       case `${service}_${SLIDESHOW_RESUME}`:
         return {
           ...state,
@@ -39,7 +42,7 @@ export const slideshowState = (service = '') => {
       case `${service}_${SLIDESHOW_EDIT}`:
         return {
           ...state,
-          max: action.max - 1,
+          max: ((action.max - 1) < 0) ? 0 : action.max - 1,
         }
 
       default:

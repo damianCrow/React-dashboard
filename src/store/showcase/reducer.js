@@ -10,8 +10,7 @@ function showcaseReducerWrapper() {
       case SOCKET_ADMIN_EMIT_PLAYLIST_RECEIVED:
         return {
           ...state,
-          playlist: action.payload.playlist,
-          fetching: false,
+          fetching: true,
         }
       case SHOWCASE_FETCH_PLAYLIST:
         return {

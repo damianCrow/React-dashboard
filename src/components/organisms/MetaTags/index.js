@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 import styled from 'styled-components'
 
 import { Icon } from 'components'
@@ -23,16 +23,18 @@ const Meta = styled.div`
 
 const StyledIcon = styled(Icon)`
   z-index: 59;
-  padding: .25rem;
+  padding: 0 .25rem;
   flex: 0 0 auto;
 `
 
-const MetaTags = ({ tags, ...props }) => {
+const MetaTags = ({ tags }) => {
   const builtTags = tags.map((tag, index) => {
-    return <Meta key={index}>
-      <StyledIcon icon={tag.icon} height={28} />
-      <span>{tag.metaInfo}</span>
-    </Meta>
+    return (
+      <Meta key={index}>
+        <StyledIcon icon={tag.icon} height={28} />
+        <span>{tag.metaInfo}</span>
+      </Meta>
+    )
   })
 
   return (
@@ -43,7 +45,7 @@ const MetaTags = ({ tags, ...props }) => {
 }
 
 MetaTags.propTypes = {
-  tags: PropTypes.array.isRequired
+  tags: PropTypes.array.isRequired,
 }
 
 export default MetaTags

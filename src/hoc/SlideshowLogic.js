@@ -10,9 +10,17 @@ function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true, propBased =
       this.startOrClear()
     }
 
-    // If this slideshow element is not a refreshing component, base the logic on the changing prop.
+    // If this slideshow component is not a refreshing...
+    // ...component (unmounting and mounting), base the slideshow logic on the changing prop.
     componentWillReceiveProps(nextProps) {
       if (propBased && (nextProps.slideshowCurrent !== this.props.slideshowCurrent)) {
+        this.startOrClear()
+      }
+
+      // If a single slideshow component has timed out and more get added...
+      // ...to the playlist, restart the timer.
+      if (this.props.slideshowMax === 0 && nextProps.slideshowMax > 0) {
+        console.log(`starting timeout again for ${service}`)
         this.startOrClear()
       }
     }
@@ -37,6 +45,7 @@ function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true, propBased =
   const mapStateToProps = state => ({
     slideshowStatus: state[service].slideshow.status,
     slideshowCurrent: state[service].slideshow.current,
+    slideshowMax: state[service].slideshow.max,
   })
 
   const mapDispatchToProps = dispatch => ({
@@ -52,6 +61,7 @@ function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true, propBased =
     compsInSlideshow: PropTypes.number,
     slideshowStatus: PropTypes.string,
     slideshowCurrent: PropTypes.number,
+    slideshowMax: PropTypes.number,
   }
 
   return connect(mapStateToProps, mapDispatchToProps)(SlideshowLogicWrapper)
