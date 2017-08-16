@@ -26,7 +26,9 @@ class SonosInfoContainer extends Component {
   }
 
   render() {
-    const zones = this.props.zones.filter(member => member.coordinator.state.playbackState !== 'STOPPED')
+    const zones = this.props.zones.filter(member => (
+      (member.coordinator.state.playbackState !== 'STOPPED') && (member.coordinator.state.currentTrack.type !== 'line_in')
+    ))
 
     if (zones.length) {
       return (
@@ -45,9 +47,7 @@ class SonosInfoContainer extends Component {
         </SonosContainer>
       )
     }
-    return (
-      <SplashScreen icon="sonos" service="Sonos" />
-    )
+    return <SplashScreen icon="sonos" service="Sonos" />
   }
 }
 

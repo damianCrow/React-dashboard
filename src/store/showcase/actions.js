@@ -22,7 +22,7 @@ export const pullInitalPlaylist = () => ({
   type: SHOWCASE_FETCH_PLAYLIST,
 })
 
-export const recieveInitalPlaylist = playlist => ({
+export const recievePlaylist = playlist => ({
   type: SHOWCASE_RECIEVE_PLAYLIST,
   fetching: false,
   playlist,

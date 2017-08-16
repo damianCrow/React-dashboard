@@ -25,13 +25,6 @@ function instagramReducerWrapper() {
           status: 'success',
         }
 
-      // case INSTAGRAM_UNAUTHORIZED:
-      //   return {
-      //     ...state,
-      //     // message: action.message,
-      //     status: 'auth-failed',
-      //   }
-
       default:
         return state
     }

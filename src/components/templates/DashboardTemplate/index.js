@@ -10,6 +10,7 @@ const Wrapper = styled.div`
   box-sizing: border-box;
   padding-top: 9.375rem;
   background: linear-gradient(to right, #00928f 0%, #50b848 100%);
+  cursor: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7), auto;
 `
 
 const Content = styled.article`

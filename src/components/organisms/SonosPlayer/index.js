@@ -51,6 +51,8 @@ const TrackInfo = styled.div`
   display: flex;
   flex-direction: column;
   flex: ${props => props.single ? '1' : '1'};
+  ${props => props.single && 'width: 100%;'}
+  box-sizing: border-box;
   position: relative;
   padding: 0 1rem;
   text-align: ${props => props.single ? 'center' : 'left'};
@@ -81,6 +83,7 @@ const AlbumArtContainer = styled.div`
 const AlbumArtWrapper = styled.div`
   position: relative;
   flex: ${props => props.side ? '1' : '1.4'} 1;
+  ${props => props.shift ? `transform: translateX(${props.shift})` : 'z-index: 1'};
   &:before{
     display: block;
     content: " ";
@@ -101,10 +104,9 @@ const AlbumArt = styled.img`
 `
 
 const PausedIndicator = styled.span`
-  position: absolute;
-  bottom: 20px;
   font-size: 0.75rem;
   font-weight: 600;
+  margin-top: .25rem;
 `
 
 const handleSrcError = (e) => {
@@ -139,7 +141,7 @@ class SonosPlayer extends Component {
           {single && speakerNameComp}
           <AlbumArtContainer single={single} >
             {single &&
-              <AlbumArtWrapper side>
+              <AlbumArtWrapper side shift="1rem">
                 {playerState.previousTrack &&
                   <AlbumArt
                     src={playerState.previousTrack && playerState.previousTrack.absoluteAlbumArtUri}
@@ -155,7 +157,7 @@ class SonosPlayer extends Component {
               />
             </AlbumArtWrapper>
             {single && playerState.nextTrack &&
-              <AlbumArtWrapper side>
+              <AlbumArtWrapper side shift="-1rem">
                 <AlbumArt
                   src={playerState.nextTrack.absoluteAlbumArtUri}
                   onError={(e) => { handleSrcError(e) }}

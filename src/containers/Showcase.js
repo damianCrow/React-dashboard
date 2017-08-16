@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 import { SplashScreen, FadingTransitionWrapper, ShowcaseImage, YouTubeVideo, VimeoVideo } from 'components'
 
-import { pullInitalPlaylist, startSlideshowLogic } from 'store/actions'
+import { pullInitalPlaylist } from 'store/actions'
 
 const styles = css`
   color: black;
@@ -29,8 +29,7 @@ class ShowcaseContainer extends Component {
 
   // TODO: Tidy this up, use a switch statement?
   render() {
-    const readyToGo = (this.props.playlist.length > 0)
-    if (readyToGo) {
+    if (this.props.playlist.length > 0) {
       const { id, serviceId, serviceName, type, url } = this.props.playlist[this.props.slideshow.current]
       let showcaseItem = null
       if (type === 'Image') {
@@ -58,21 +57,19 @@ class ShowcaseContainer extends Component {
 }
 
 // Listen and capture any changes made as a result of the the actions below.
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   playlist: state.showcase.data.playlist,
   status: state.showcase.data.status,
   slideshow: state.showcase.slideshow,
 })
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   fetchInitalPlaylist: () => dispatch(pullInitalPlaylist()),
-  startSlideshowLogic: max => dispatch(startSlideshowLogic('SHOWCASE', max)),
 })
 
 ShowcaseContainer.propTypes = {
   socketConnected: PropTypes.bool,
   fetchInitalPlaylist: PropTypes.func,
-  startSlideshowLogic: PropTypes.func,
   slideshow: PropTypes.object,
   playlist: PropTypes.array,
   status: PropTypes.string,
