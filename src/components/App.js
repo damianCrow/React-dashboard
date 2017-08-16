@@ -10,6 +10,7 @@ import theme from './themes/default'
 injectGlobal`
   body {
     margin: 0;
+    cursor: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7), auto;
   }
 `
 
