@@ -19,6 +19,7 @@ const Wrapper = styled.div`
   height: 80px;
   display: flex;
   padding: 0 15px;
+  overflow: hidden;
   font-family: Gotham,Helvetica Neue,Helvetica,Roboto,sans-serif;
   &:first-child {
     .main_content {
