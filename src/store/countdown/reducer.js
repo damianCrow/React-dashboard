@@ -10,6 +10,16 @@ import {
   FETCH_COUNTDOWN_FAILED,
 } from './actions'
 
+function sortEvents(events) {
+  events.sort((a, b) => (moment(a.endDateTime, 'DD-MM-YYYY HH:mm:ss').unix() - moment(b.endDateTime, 'DD-MM-YYYY HH:mm:ss').unix()))
+  events.map(event => {
+    const eventUnix = event
+    eventUnix.unixStart = moment(event.startDateTime, 'DD-MM-YYYY HH:mm:ss').unix()
+    return eventUnix
+  })
+  return events
+}
+
 function countdownReducerWrapper() {
   return (state = initialState, action) => {
     switch (action.type) {
@@ -22,14 +32,13 @@ function countdownReducerWrapper() {
       case FETCH_COUNTDOWN_SUCCESSFUL:
         return {
           ...state,
-          events: action.data.events.sort((a, b) => (moment(a.endDateTime, 'DD-MM-YYYY HH:mm:ss').unix() - moment(b.endDateTime, 'DD-MM-YYYY HH:mm:ss').unix())),
+          events: sortEvents(action.data.events),
           fetching: false,
         }
 
       case FETCH_COUNTDOWN_FAILED:
         return {
           ...state,
-          // message: action.message,
           fetching: false,
           message: action.reason,
         }

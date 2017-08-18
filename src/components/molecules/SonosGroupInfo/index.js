@@ -18,11 +18,11 @@ const SpeakerInfo = styled.div`
   display: inline-flex;
   z-index: 1;
   background: rgba(0, 0, 0, .2);
-  border-radius: 5px;
+  border-radius: 4px;
   color: white;
   align-self: center;
   font-size: .67rem;
-  padding: .5rem 1rem;
+  padding: .5rem 0.75rem;
   text-transform: uppercase;
 `
 class SonosGroupInfo extends Component {

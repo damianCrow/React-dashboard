@@ -84,14 +84,8 @@ class SunIcon extends Component {
     this.tl
       .addLabel('rays')
 
-    const isEven = x => !(x & 1)
-
     this.eachRay.forEach((ray, i) => {
-      let delay = ''
-
-      if (isEven(i)) {
-        delay = '+=3'
-      }
+      const delay = !(i & 1) ? '+=3' : ''
 
       this.tl
         .to(ray, 3, {
@@ -115,7 +109,7 @@ class SunIcon extends Component {
         </clipPath>
         <g>
           <IconWrapper
-            innerRef={e => (this.entireIcon = e)}
+            innerRef={e => { this.entireIcon = e }}
           >
             <IconStroke
               color={color}
@@ -161,7 +155,7 @@ class SunIcon extends Component {
 
           <g clipPath="url(#sunFillClip)">
             <SunBody
-              innerRef={e => (this.sunBody = e)}
+              innerRef={e => { this.sunBody = e }}
               color={color}
               strokeLength={this.state.strokeLength}
               dashArray={this.state.dashArray}

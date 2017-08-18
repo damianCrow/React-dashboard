@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import moment from 'moment'
+import humanizeDuration from 'humanize-duration'
 import { connect } from 'react-redux'
 import { fetchCountdown, startSlideshowLogic } from 'store/actions'
 import { Countdown, SplashScreen } from 'components'
@@ -22,6 +22,8 @@ class CountdownContainer extends Component {
   componentWillReceiveProps(nextProps) {
     const { events } = this.props
 
+    this.getLatestEventInEachCategory(nextProps)
+
     if (nextProps.events.length > 0 && events.length === 0) {
       this.startLoop()
     } else if (nextProps.events.length === 0 && events.length !== 0) {
@@ -33,13 +35,14 @@ class CountdownContainer extends Component {
     this.stopLoop()
   }
 
-  getLatestEvents(currentTime) {
+  getLatestEventInEachCategory(nextProps) {
+    const currentTime = Math.floor(Date.now() / 1000)
     const categorys = []
     let updateOrNot = false
-    const allEvents = (this.state.events.length === 0) ? this.props.events : this.state.events
+    const allEvents = nextProps.events
 
     const events = allEvents.filter((event, index) => {
-      if (moment(event.startDateTime, 'DD-MM-YYYY HH:mm:ss').unix() > currentTime) {
+      if (event.unixStart > currentTime) {
         if (categorys.includes(event.eventType) === false) {
           categorys.push(event.eventType)
           if (!updateOrNot && (event.id === allEvents[index].id)) {
@@ -59,18 +62,19 @@ class CountdownContainer extends Component {
     }
   }
 
-  getRemainingTime(currentTime, startDateTime) {
-    const eventTime = moment(startDateTime, 'DD-MM-YYYY HH:mm:ss').unix()
-    const diffTime = eventTime - currentTime
-    const timeSpan = moment.duration(diffTime * 1000, 'milliseconds')
-    const dura = moment.duration(timeSpan.asMilliseconds() - 1000, 'milliseconds')
-
-    if (this.props.slideshow.status !== 'waiting') {
-      if (this.state.countdownFigure !== moment.duration(dura).humanize()) {
-        this.setState({
-          countdownFigure: moment.duration(dura).humanize(),
-        })
+  getRemainingTime(currentTime, currentEvent) {
+    const eventTime = currentEvent.unixStart
+    const timeDiffSeconds = Math.round((1000 * ((eventTime - currentTime) / 1000))) * 1000
+    if (this.state.countdownFigure !== timeDiffSeconds) {
+      if (this.props.slideshow.status !== 'waiting') {
+        // Avoid using setState for this to save CPU power
+        this.currentCountdownFigure = timeDiffSeconds
       }
+    }
+
+    if (currentTime > eventTime) {
+      // This should remove the event and get the next (if there is one).
+      this.getLatestEventInEachCategory(this.state.events)
     }
   }
 
@@ -81,11 +85,10 @@ class CountdownContainer extends Component {
   }
 
   loop() {
-    const currentTime = moment().unix()
+    const currentTime = Math.floor(Date.now() / 1000)
 
-    this.getLatestEvents(currentTime)
     // perform loop work here
-    this.getRemainingTime(currentTime, this.state.events[this.props.slideshow.current].startDateTime)
+    this.getRemainingTime(currentTime, this.state.events[this.props.slideshow.current])
 
     // Set up next iteration of the loop
     this.frameId = window.requestAnimationFrame(this.loop.bind(this))
@@ -99,7 +102,7 @@ class CountdownContainer extends Component {
 
   render() {
     if (this.state.events.length > 0 && this.props.slideshow.status !== 'waiting') {
-      return <Countdown event={this.state.events[this.props.slideshow.current]} countdownFigure={this.state.countdownFigure} />
+      return <Countdown event={this.state.events[this.props.slideshow.current]} countdownFigure={humanizeDuration(this.currentCountdownFigure, { largest: 2 })} />
     }
     return <SplashScreen icon="arc" service="Countdown" />
   }

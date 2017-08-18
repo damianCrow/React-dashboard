@@ -23,7 +23,7 @@ const TweetWrapper = styled.div`
   height: calc(100% - 2rem);
   font-family: ${fonts.primary};
   color: white;
-  font-size: 1.5rem;
+  font-size: 2rem;
   left: 0;
 `
 
