@@ -1,3 +1,5 @@
+// TODO: Most of this isn't used anymore, get rid of it.
+
 export const SONOS_CREATE = 'SONOS_CREATE'
 export const SONOS_PULL_REQUEST = 'SONOS_PULL_REQUEST'
 export const SONOS_CREATE_SUCCESS = 'SONOS_CREATE_SUCCESS'

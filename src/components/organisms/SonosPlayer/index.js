@@ -77,12 +77,14 @@ const AlbumArtContainer = styled.div`
   box-sizing: border-box;
   ${props => props.single ? 'width: 100%' : 'height: 100%'};
   ${props => props.single && 'align-items: center'};
+  justify-content: center;
   padding: 1rem;
 `
 
 const AlbumArtWrapper = styled.div`
   position: relative;
   flex: ${props => props.side ? '1' : '1.4'} 1;
+  max-width: 150px;
   ${props => props.shift ? `transform: translateX(${props.shift})` : 'z-index: 1'};
   &:before{
     display: block;
@@ -140,30 +142,28 @@ class SonosPlayer extends Component {
         <SonosCurrentTrack single={single} >
           {single && speakerNameComp}
           <AlbumArtContainer single={single} >
-            {single &&
-              <AlbumArtWrapper side shift="1rem">
-                {playerState.previousTrack &&
-                  <AlbumArt
-                    src={playerState.previousTrack && playerState.previousTrack.absoluteAlbumArtUri}
-                    onError={(e) => { handleSrcError(e) }}
-                  />
-                }
-              </AlbumArtWrapper>
-            }
+            <AlbumArtWrapper side shift="1rem">
+              {single && (playerState.previousTrack.duration !== 0) &&
+                <AlbumArt
+                  src={playerState.previousTrack && playerState.previousTrack.absoluteAlbumArtUri}
+                  onError={(e) => { handleSrcError(e) }}
+                />
+              }
+            </AlbumArtWrapper>
             <AlbumArtWrapper>
               <AlbumArt
                 src={playerState.currentTrack.absoluteAlbumArtUri}
                 onError={(e) => { handleSrcError(e) }}
               />
             </AlbumArtWrapper>
-            {single && playerState.nextTrack &&
-              <AlbumArtWrapper side shift="-1rem">
+            <AlbumArtWrapper side shift="-1rem">
+              {single && (playerState.nextTrack.duration !== 0) &&
                 <AlbumArt
                   src={playerState.nextTrack.absoluteAlbumArtUri}
                   onError={(e) => { handleSrcError(e) }}
                 />
-              </AlbumArtWrapper>
-            }
+              }
+            </AlbumArtWrapper>
           </AlbumArtContainer>
           <TrackInfo single={single} >
             {!single && speakerNameComp}
@@ -200,6 +200,7 @@ SonosPlayer.defaultProps = {
     },
     previousTrack: {
       absoluteAlbumArtUri: '/public/albumArtLoading.gif',
+      duration: 0,
     },
   },
   single: false,
