@@ -299,7 +299,7 @@ class TimesheetLeaderBoard extends Component {
               <HarvestEntry style={{ position: 'absolute', transform: `translate3d(${val.x}px, 0, 0)` }} key={user.id}>
                 <UserCircle email={user.email} />
                 <HarvestHours className={'showHide'}>
-                  {user.totalHours[sortByThis]}
+                  {user.totalHours[sortByThis].toFixed(1)}
                   <HoursAbrv title="hours">hrs</HoursAbrv>
                 </HarvestHours>
               </HarvestEntry>

@@ -15,16 +15,19 @@ const CalendarWrapper = styled.div`
 `
 class CalendarContainer extends Component {
 
-  componentDidMount() {
+  constructor(props) {
+    super(props)
+    this.state = { meetings: [] }
     this.props.serviceRequest('calendar')
     this.props.serviceRequest('outOfOfficeCalendar')
     this.props.serviceRequest('inOfficeCalendar')
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.meetings[0] && this.props.meetings.length === 0) {
+    this.setState({ meetings: nextProps.meetings })
+    if (nextProps.meetings.length) {
       nextProps.meetings.map(meeting => {
-        this.startLoop(meeting)
+        this[`hilightCurrentMeeting${meeting.id}`] = setInterval(() => { this.isMeetingCurrent(meeting) }, 1000)
       })
     }
   }
@@ -44,39 +47,30 @@ class CalendarContainer extends Component {
   }
 
   isMeetingCurrent(meetingObj) {
-    const element = document.getElementById(`${meetingObj.id}`)
-
-    if (moment().isBetween(meetingObj.start.dateTime, meetingObj.end.dateTime)) {
-      element.classList.add('pulsate')
-    }
-    if (moment().isAfter(meetingObj.end.dateTime)) {
-      this.props.serviceRequest('calendar')
-    }
-  }
-
-  stopLoop() {
-    window.cancelAnimationFrame(this.hilightCurrentMeeting)
-  }
-
-  loop(meetingObj) {
-    if (document.getElementById(`${meetingObj.id}`)) {
-      this.isMeetingCurrent(meetingObj)
-      this[`hilightCurrentMeeting${meetingObj.id}`] = window.requestAnimationFrame(this.loop.bind(this, meetingObj))
-    }
-  }
-
-  startLoop(meetingObj) {
-    if (!this[`hilightCurrentMeeting${meetingObj.id}`]) {
-      this[`hilightCurrentMeeting${meetingObj.id}`] = window.requestAnimationFrame(this.loop.bind(this, meetingObj))
+    if (this[meetingObj.id]) {
+      const element = this[meetingObj.id].wrapper
+      if (moment().isBetween(meetingObj.start.dateTime, meetingObj.end.dateTime)) {
+        if (element && !element.classList.contains('pulsate')) {
+          setTimeout(() => {}, 10000)
+          element.classList.add('pulsate')
+        }
+      }
+      if (moment().isAfter(meetingObj.end.dateTime)) {
+        element.classList.remove('pulsate')
+        clearInterval(this[`hilightCurrentMeeting${meetingObj.id}`])
+        this.setState({ meetings: this.state.meetings.filter(meeting => meeting.id !== meetingObj.id) })
+        this.props.serviceRequest('calendar')
+        this.forceUpdate()
+      }
     }
   }
 
   getDefaultStyles() {
-    return this.props.meetings.map((meeting, idx) => ({ data: meeting, style: { height: 0, opacity: 1 }, key: meeting.id }))
+    return this.state.meetings.map((meeting, idx) => ({ data: meeting, style: { height: 0, opacity: 1 }, key: meeting.id }))
   }
 
   getStyles() {
-    const meetings = this.props.meetings
+    const meetings = this.state.meetings
 
     return meetings.map((meeting, idx) => {
       return {
@@ -99,7 +93,7 @@ class CalendarContainer extends Component {
 
   willLeave() {
     return {
-      height: spring(0, { stiffness: 75, damping: 20 }),
+      height: spring(0, { stiffness: 90, damping: 50 }),
     }
   }
 
@@ -132,7 +126,7 @@ class CalendarContainer extends Component {
           </div>
         ) : (null)}
 
-        {this.props.meetings.length > 0 ? (
+        {this.state.meetings.length > 0 ? (
           <TransitionMotion
             defaultStyles={this.getDefaultStyles()}
             styles={this.getStyles()}
@@ -170,7 +164,7 @@ class CalendarContainer extends Component {
                   }
                   return (
                     <CalendarRow
-                      id={meeting.data.id}
+                      ref={(ele) => { this[meeting.data.id] = ele }}
                       key={idx}
                       styles={meeting.style}
                       rowDay={rowDate}
