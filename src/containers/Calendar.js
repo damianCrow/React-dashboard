@@ -26,10 +26,14 @@ class CalendarContainer extends Component {
   componentWillReceiveProps(nextProps) {
     this.setState({ meetings: nextProps.meetings })
     if (nextProps.meetings.length) {
-      nextProps.meetings.map(meeting => {
-        this[`hilightCurrentMeeting${meeting.id}`] = setInterval(() => { this.isMeetingCurrent(meeting) }, 1000)
-      })
+      this.startLoop(nextProps.meetings)
     }
+  }
+
+  startLoop(arrayToLoop) {
+    arrayToLoop.map(meeting => {
+      this[`hilightCurrentMeeting${meeting.id}`] = setInterval(() => { this.isMeetingCurrent(meeting) }, 1000)
+    })
   }
 
   getAvatars(arrayToPopulate, arrayToMap) {
@@ -50,17 +54,15 @@ class CalendarContainer extends Component {
     if (this[meetingObj.id]) {
       const element = this[meetingObj.id].wrapper
       if (moment().isBetween(meetingObj.start.dateTime, meetingObj.end.dateTime)) {
-        if (element && !element.classList.contains('pulsate')) {
-          setTimeout(() => {}, 10000)
+        if (!element.classList.contains('pulsate')) {
           element.classList.add('pulsate')
         }
       }
-      if (moment().isAfter(meetingObj.end.dateTime)) {
-        element.classList.remove('pulsate')
+      if (moment().isSameOrAfter(meetingObj.end.dateTime)) {
         clearInterval(this[`hilightCurrentMeeting${meetingObj.id}`])
+        element.classList.remove('pulsate')
         this.setState({ meetings: this.state.meetings.filter(meeting => meeting.id !== meetingObj.id) })
         this.props.serviceRequest('calendar')
-        this.forceUpdate()
       }
     }
   }
