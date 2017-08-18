@@ -1,4 +1,7 @@
-import { initialState } from './selectors'
+// import merge from 'lodash/merge'
+import merge from 'deepmerge'
+
+import { initialState, initialCoordinatorState } from './selectors'
 import {
   SOCKET_SONOS_PULL_ZONES_SUCCESS,
   SOCKET_SONOS_EMIT_TRANSPORT_RECEIVED,
@@ -7,15 +10,24 @@ import {
 
 function mergeSonos(newState, oldState) {
   // console.log(newState, oldState, key)
-  const mergedState = oldState
-
-  return mergedState.map(zone => {
-    if (zone.coordinator.coordinator === newState.coordinator) {
-      return { ...zone, coordinator: { ...newState, state: { ...newState.state, previousTrack: zone.coordinator.state.currentTrack } } }
+  return oldState.map(oldZone => {
+    if (oldZone.coordinator.coordinator === newState.coordinator) {
+      return {
+        ...oldZone,
+        coordinator: merge(initialCoordinatorState, {
+          ...newState,
+          state: {
+            ...newState.state,
+            previousTrack: oldZone.coordinator.state.currentTrack,
+          },
+        }),
+      }
     }
-    return zone
+    return oldZone
   })
 }
+
+const buildZoneObject = newZones => newZones.map(zone => merge({ coordinator: initialCoordinatorState }, zone))
 
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -23,7 +35,7 @@ export default (state = initialState, action) => {
     case SOCKET_SONOS_PULL_ZONES_SUCCESS:
       return {
         ...state,
-        speakerZones: action.payload,
+        speakerZones: buildZoneObject(action.payload),
       }
 
       // Check if exists in array and merge
@@ -36,7 +48,7 @@ export default (state = initialState, action) => {
     case SOCKET_SONOS_EMIT_TOPOLOGY_RECEIVED:
       return {
         ...state,
-        speakerZones: action.payload,
+        speakerZones: buildZoneObject(action.payload),
       }
 
     default:
