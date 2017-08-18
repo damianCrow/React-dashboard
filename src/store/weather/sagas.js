@@ -1,3 +1,4 @@
+import { delay } from 'redux-saga'
 import { put, call, fork, takeLatest } from 'redux-saga/effects'
 import * as actions from './actions'
 
@@ -12,6 +13,9 @@ function* fetchWeather() {
     // You get it
     yield put(actions.fetchWeatherFailed(err))
   }
+  yield delay(300000)
+  // yield delay(5000)
+  yield call(fetchWeather)
 }
 
 function* flow() {

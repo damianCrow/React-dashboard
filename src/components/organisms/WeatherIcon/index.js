@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { fetchWeather } from 'store/actions'
-import { SunIcon, RainIcon, CloudIcon, MoonIcon } from 'components'
+import { SunIcon, RainIcon, CloudIcon, MoonIcon, CloudSun } from 'components'
 
 import styled from 'styled-components'
 
@@ -17,12 +17,15 @@ class WeatherIcon extends Component {
   }
 
   whichIcon(iconCode) {
+    // https://openweathermap.org/weather-conditions
+    // https://codepen.io/juan/pen/eDwKo
     switch (iconCode) {
       case '01d':
         return <SunIcon color="white" />
       case '01n':
         return <MoonIcon color="white" />
       case '02d':
+        return <CloudSun color="white" />
       case '02n':
       case '03d':
       case '03n':
