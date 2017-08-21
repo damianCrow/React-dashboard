@@ -63,8 +63,10 @@ class CalendarContainer extends Component {
         element.classList.remove('pulsate')
         clearInterval(this[`hilightCurrentMeeting${meetingObj.id}`])
         this.setState({ meetings: this.state.meetings.filter(meeting => meeting.id !== meetingObj.id) })
-        this.props.serviceRequest('calendar')
-        this.forceUpdateDom()
+        setTimeout(() => {
+          this.props.serviceRequest('calendar')
+          this.forceUpdateDom()
+        }, 1500)
       }
     }
   }
