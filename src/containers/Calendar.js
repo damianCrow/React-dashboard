@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import moment from 'moment'
+import shortid from 'shortid'
 import { socketDataRequest } from 'store/actions'
 import { UserCircle, CalendarRow } from 'components'
 import { TransitionMotion, spring, presets } from 'react-motion'
@@ -17,7 +18,7 @@ class CalendarContainer extends Component {
 
   constructor(props) {
     super(props)
-    this.state = { meetings: [] }
+    this.state = { meetings: [], key: shortid.generate() }
     this.props.serviceRequest('calendar')
     this.props.serviceRequest('outOfOfficeCalendar')
     this.props.serviceRequest('inOfficeCalendar')
@@ -59,10 +60,11 @@ class CalendarContainer extends Component {
         }
       }
       if (moment().isSameOrAfter(meetingObj.end.dateTime)) {
-        clearInterval(this[`hilightCurrentMeeting${meetingObj.id}`])
         element.classList.remove('pulsate')
+        clearInterval(this[`hilightCurrentMeeting${meetingObj.id}`])
         this.setState({ meetings: this.state.meetings.filter(meeting => meeting.id !== meetingObj.id) })
         this.props.serviceRequest('calendar')
+        this.forceUpdateDom()
       }
     }
   }
@@ -86,6 +88,11 @@ class CalendarContainer extends Component {
     })
   }
 
+  forceUpdateDom() {
+    this.setState({ key: shortid.generate() })
+    this.forceUpdate()
+  }
+
   willEnter() {
     return {
       height: 0,
@@ -106,7 +113,7 @@ class CalendarContainer extends Component {
     this.getAvatars(inAvatarArray, this.props.inOffice)
 
     return (
-      <CalendarWrapper>
+      <CalendarWrapper key={this.state.key}>
         {inAvatarArray.length > 0 && outAvatarArray.length > 0 ? (
           <div>
             <CalendarRow
