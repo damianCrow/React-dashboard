@@ -8,7 +8,7 @@ import {
   GOOGLE_UNAUTHORIZED,
 } from './actions'
 
-const google = (state = initialState, action) => {
+const users = (state = initialState, action) => {
   switch (action.type) {
 
     case SOCKET_GOOGLE_PULL_GETUSERS_SUCCESS:
@@ -38,4 +38,4 @@ const google = (state = initialState, action) => {
 
 
 // TODO: Spread (...) instragramReducerWrapper(), not in 'data'
-export default google
+export default users

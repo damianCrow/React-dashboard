@@ -11,47 +11,47 @@ const IconContainer = styled.svg`
   vertical-align: middle;
 `
 
+function whichIcon(iconCode) {
+  // https://openweathermap.org/weather-conditions
+  // https://codepen.io/juan/pen/eDwKo
+  switch (iconCode) {
+    case '01d':
+      return <SunIcon color="white" />
+    case '01n':
+      return <MoonIcon color="white" />
+    case '02d':
+      return <CloudSun color="white" />
+    case '02n':
+    case '03d':
+    case '03n':
+    case '04d':
+    case '04n':
+    case '50d':
+    case '50n':
+      return <CloudIcon color="white" />
+    case '09d':
+    case '09n':
+    case '10d':
+    case '10n':
+    case '11d':
+    case '11n':
+    case '13d':
+    case '13n':
+      return <RainIcon color="white" />
+    default:
+      return null
+  }
+}
+
 class WeatherIcon extends Component {
   componentWillMount() {
     this.props.fetchWeather()
   }
 
-  whichIcon(iconCode) {
-    // https://openweathermap.org/weather-conditions
-    // https://codepen.io/juan/pen/eDwKo
-    switch (iconCode) {
-      case '01d':
-        return <SunIcon color="white" />
-      case '01n':
-        return <MoonIcon color="white" />
-      case '02d':
-        return <CloudSun color="white" />
-      case '02n':
-      case '03d':
-      case '03n':
-      case '04d':
-      case '04n':
-      case '50d':
-      case '50n':
-        return <CloudIcon color="white" />
-      case '09d':
-      case '09n':
-      case '10d':
-      case '10n':
-      case '11d':
-      case '11n':
-      case '13d':
-      case '13n':
-        return <RainIcon color="white" />
-      default:
-        return null
-    }
-  }
-
   render() {
     return (
       <IconContainer viewBox="15 15 70 70">
-        {this.whichIcon(this.props.iconCode)}
+        {whichIcon(this.props.iconCode)}
       </IconContainer>
     )
   }

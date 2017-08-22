@@ -3,14 +3,14 @@ import { combineReducers } from 'redux'
 import { statusInitialState, dataInitialState } from './selectors'
 import {
   HARVEST_NEW_POSTS_ERROR,
-  SOCKET_HARVEST_PULL_GETUSERSANDTIMES_SUCCESS,
-  SOCKET_HARVEST_PULL_GETUSERSANDTIMES_FAILED,
+  HARVEST_PULL_GETUSERSANDTIMES_SUCCESS,
+  HARVEST_PULL_GETUSERSANDTIMES_ERROR,
   UPDATE_HARVEST_SORTING,
 } from './actions'
 
 const harvestStatus = (state = statusInitialState, action) => {
   switch (action.type) {
-    case SOCKET_HARVEST_PULL_GETUSERSANDTIMES_SUCCESS:
+    case HARVEST_PULL_GETUSERSANDTIMES_SUCCESS:
       return {
         ...state,
         status: 'success',
@@ -22,7 +22,7 @@ const harvestStatus = (state = statusInitialState, action) => {
         message: action.message,
       }
 
-    case SOCKET_HARVEST_PULL_GETUSERSANDTIMES_FAILED:
+    case HARVEST_PULL_GETUSERSANDTIMES_ERROR:
       return {
         ...state,
         status: action.message,
@@ -41,10 +41,16 @@ const harvestStatus = (state = statusInitialState, action) => {
 
 const harvestProcess = (state = dataInitialState, action) => {
   switch (action.type) {
-    case SOCKET_HARVEST_PULL_GETUSERSANDTIMES_SUCCESS:
+    case HARVEST_PULL_GETUSERSANDTIMES_SUCCESS:
       return {
         ...state,
-        users: action.payload,
+        users: action.users,
+      }
+
+    case HARVEST_PULL_GETUSERSANDTIMES_ERROR:
+      return {
+        ...state,
+        message: action.message,
       }
 
     default:
