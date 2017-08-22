@@ -38,13 +38,13 @@ class CalendarContainer extends Component {
   }
 
   getAvatars(arrayToPopulate, arrayToMap) {
-    arrayToMap.map((item, idx) => {
+    arrayToMap.map(item => {
       const startDate = moment(item.start.date)
       const endDate = moment(item.end.date)
 
       if (moment().isBetween(startDate, endDate)) {
         if (item.attendees && item.attendees[0].email) {
-          arrayToPopulate.push(<UserCircle className={'small'} key={idx} email={item.attendees[0].email} />)
+          arrayToPopulate.push(<UserCircle className={'small'} key={item.attendees[0].email} email={item.attendees[0].email} />)
         }
       }
       return null
@@ -70,13 +70,13 @@ class CalendarContainer extends Component {
   }
 
   getDefaultStyles() {
-    return this.state.meetings.map((meeting, idx) => ({ data: meeting, style: { height: 0, opacity: 1 }, key: meeting.id }))
+    return this.state.meetings.map(meeting => ({ data: meeting, style: { height: 0, opacity: 1 }, key: meeting.id }))
   }
 
   getStyles() {
     const meetings = this.state.meetings
 
-    return meetings.map((meeting, idx) => {
+    return meetings.map(meeting => {
       return {
         data: meeting,
         key: meeting.id,
@@ -121,7 +121,8 @@ class CalendarContainer extends Component {
               rowTitle={'Out Of Office'}
               rowSubTitle={'Holidays, Sickness & Meetings'}
               colorCode={'#ffd200'}
-              opacity={0.4}>
+              opacity={0.4}
+            >
               {outAvatarArray}
             </CalendarRow>
             <CalendarRow
@@ -129,7 +130,8 @@ class CalendarContainer extends Component {
               rowTitle={'Creative Resources'}
               rowSubTitle={'Freelancers & Interns'}
               colorCode={'#ffd200'}
-              opacity={0.4}>
+              opacity={0.4}
+            >
               {inAvatarArray}
             </CalendarRow>
           </div>
@@ -140,7 +142,8 @@ class CalendarContainer extends Component {
             defaultStyles={this.getDefaultStyles()}
             styles={this.getStyles()}
             willLeave={this.willLeave}
-            willEnter={this.willEnter}>
+            willEnter={this.willEnter}
+          >
             {styles => {
               return (<div> {styles.map((meeting, idx) => {
                 let rowDate

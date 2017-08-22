@@ -21,27 +21,32 @@ const styles = ({ ...props }) => css`
   position: absolute;
   text-align: left;
   top: 0;
+  padding: 1rem;
   width: 100%;
+  box-sizing: border-box;
 `
 
 const LoadingMessage = styled.span`
   font-family: ${fonts.primary};
   color: white;
   margin: 1rem;
+  flex: 1;
+`
+
+const StyledIcon = styled(Icon)`
+  flex: 3;
+  max-width: 100px;
+  width: auto;
+  height: auto;
+  margin: 0;
 `
 
 const SplashScreenContainer = styled.div`${styles}`
 
-// const PlaybackIcon = styled.Icon`
-//   display: absolute;
-// `
-
-// const StyledIcon = styled(Icon)`${iconStyles}`
-
 const SplashScreen = ({ children, ...props, icon, service }) => {
   return (
     <SplashScreenContainer>
-      <Icon {...props} icon={icon} fillColor="#fff" height={100} />
+      <StyledIcon {...props} icon={icon} fillColor="#fff" height={100} />
       <LoadingMessage>Loading {service}</LoadingMessage>
     </SplashScreenContainer>
   )
@@ -54,19 +59,3 @@ SplashScreen.propTypes = {
 }
 
 export default SplashScreen
-
-// import React, { PropTypes } from 'react'
-
-// const SonosInfo = ({posts}) => (
-//   <ul>
-//     {posts.map((post, i) =>
-//       <li key={i}>{post.title}</li>
-//     )}
-//   </ul>
-// )
-
-// SonosInfo.propTypes = {
-//   posts: PropTypes.array.isRequired
-// }
-
-// export default SonosInfo

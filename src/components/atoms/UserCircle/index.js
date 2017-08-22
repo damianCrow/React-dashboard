@@ -61,21 +61,17 @@ class UserCircle extends Component {
   }
 
   componentDidMount() {
+    // TODO: Put these in the store, then check the store before making another fetch.
     fetch('public/none-google-users.json').then(response => {
       return response.json()
     }).then(noneGoogleUsersObj => {
-      const releventUser = noneGoogleUsersObj.filter(user => user.email === this.props.email)
+      const releventUser = noneGoogleUsersObj.users.filter(user => user.email === this.props.email)
       if (releventUser.length > 0) {
         this.setState(...releventUser)
       } else {
         this.props.serviceRequest([this.props.email])
       }
     })
-  }
-
-  componentWillReceiveProps(nextProps) {
-    // console.log('UserCircle nextProps', nextProps)
-    // nextProps.fetchGoogleInfo(nextProps.email)
   }
 
   render() {
@@ -96,13 +92,12 @@ class UserCircle extends Component {
 // Listen and capture any changes made as a result of the the actions below.
 const mapStateToProps = (state, ownProps) => {
   return {
-    ...state.google.users.filter(user => user.email === ownProps.email)[0],
+    ...state.users.users.filter(user => user.email === ownProps.email)[0],
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  // fetchGoogleInfo: (user) => dispatch(getGoogleUsers([user])),
-  serviceRequest: (user) => dispatch(socketDataRequest({ service: 'GOOGLE', serverAction: 'pull', request: 'getUsers', payload: user })),
+const mapDispatchToProps = dispatch => ({
+  serviceRequest: user => dispatch(socketDataRequest({ service: 'GOOGLE', serverAction: 'pull', request: 'getUsers', payload: user })),
 })
 
 UserCircle.propTypes = {
