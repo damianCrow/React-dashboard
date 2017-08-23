@@ -1,5 +1,10 @@
 export const initialState = {
-  playlist: [],
+  currentPlaylist: {
+	  name: '',
+	  id: '',
+	  data: [],
+  },
+  allAvailablePlaylists: [],
   saved: true,
   uploadedFiles: [],
   fetching: false,

@@ -9,8 +9,7 @@ webpack/webpack-assets.json
 build
 yarn-error.log
 npm-debug.log
-public/user-data/showcase-media.json
-public/user-data/uploaded-files-index.json
+
 
 coverage
 

@@ -10,10 +10,22 @@ export const RECIEVED_PLAYLIST_FROM_SERVER = 'RECIEVED_PLAYLIST_FROM_SERVER'
 export const UPLOAD_AND_OVERIDE_QUEUE = 'UPLOAD_AND_OVERIDE_QUEUE'
 export const OVERIDE_QUEUE = 'OVERIDE_QUEUE'
 export const SOCKET_ADMIN_EMIT_PLAYLIST_RECEIVED = 'SOCKET_ADMIN_EMIT_PLAYLIST_RECEIVED'
+export const STORE_ALL_PLAYLISTS = 'STORE_ALL_PLAYLISTS'
+export const ADD_NEW_PLAYLIST_TO_STORE = 'ADD_NEW_PLAYLIST_TO_STORE'
 
 export const getNewPlaylist = () => ({
   type: GET_NEW_PLAYLIST,
   fetching: true,
+})
+
+export const storeAllPlaylists = (playlists) => ({
+  type: STORE_ALL_PLAYLISTS,
+  payload: playlists,
+})
+
+export const addNewPlaylistToStore = (newPlaylistObj) => ({
+  type: ADD_NEW_PLAYLIST_TO_STORE,
+  payload: newPlaylistObj,
 })
 
 export const updatePlaylist = (playlist, savedState) => ({
@@ -43,9 +55,9 @@ export const addEntryToPlaylist = (entryObj) => ({
   payload: entryObj,
 })
 
-export const recievedPlaylistFromServer = (playlistFromServer) => ({
+export const recievedPlaylistFromServer = (playlistObj) => ({
   type: RECIEVED_PLAYLIST_FROM_SERVER,
-  payload: playlistFromServer,
+  payload: playlistObj,
 })
 
 export const uploadAndOverideQueue = (newItem) => ({

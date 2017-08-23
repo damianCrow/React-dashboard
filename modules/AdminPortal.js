@@ -34,18 +34,31 @@ class AdminPortal {
           console.log(err)
         } else {
           const obj = JSON.parse(data)
-          obj.playlist = req.body.playlist
+          let count = 0
+          obj.playlists.map((playlist, idx) => {
+            if (playlist.id === req.body.playlist.id) {
+              obj.playlists.splice(idx, 1, req.body.playlist)
+            } else {
+              count++
+
+              if (count === obj.playlists.length) {
+                obj.playlists.push(req.body.playlist)
+              }
+            }
+          })
           fs.writeFile('./public/user-data/showcase-media.json', JSON.stringify(obj), 'utf8', (err) => {
             if (err) {
               console.log(err)
             } else {
               const activePlaylistItems = []
-              req.body.playlist.forEach((item) => {
+              req.body.playlist.data.forEach((item) => {
                 if (item.hidden === false) {
                   activePlaylistItems.push(item)
                 }
               })
-              this.sockets.emit('SOCKET_DATA_EMIT', { service: 'ADMIN', description: 'PLAYLIST', payload: { overideQueue: req.body.overideQueue, playlist: activePlaylistItems } })
+              if (req.body.overideQueue) {
+                this.sockets.emit('SOCKET_DATA_EMIT', { service: 'ADMIN', description: 'PLAYLIST', payload: { overideQueue: req.body.overideQueue, playlist: activePlaylistItems } })
+              }
             }
           })
         }
