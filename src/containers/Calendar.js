@@ -65,7 +65,7 @@ class CalendarContainer extends Component {
         this.setState({ meetings: this.state.meetings.filter(meeting => meeting.id !== meetingObj.id) })
         setTimeout(() => {
           this.props.serviceRequest('calendar')
-          this.forceUpdateDom()
+          // this.forceUpdateDom()
         }, 1500)
       }
     }
