@@ -20,7 +20,6 @@ function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true, propBased =
       // If a single slideshow component has timed out and more get added...
       // ...to the playlist, restart the timer.
       if (this.props.slideshowMax === 0 && nextProps.slideshowMax > 0) {
-        console.log(`starting timeout again for ${service}`)
         this.startOrClear()
       }
     }

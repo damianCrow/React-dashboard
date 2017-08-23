@@ -1,54 +1,27 @@
-import { eventChannel } from 'redux-saga'
-import { take, select, put, call, fork, cancel } from 'redux-saga/effects'
+import { put, call, fork, takeEvery } from 'redux-saga/effects'
 import * as actions from './actions'
-import { getSocketConnection } from '../socket/selectors'
 
-// Socket listeners from server actions.
-function connectStream(socket) {
-  // Tell the server we want to connect the "stream"
-  socket.emit('pull-request', { service: 'HARVEST', request: '', package: {} })
-  // Return redux-saga's eventChannel which handles socket actions
-  return eventChannel(emit => {
-    socket.on('harvest-new-posts', (posts) => {
-      emit(actions.newHarvestPosts(posts))
-    })
+function* filterUsers(users) {
+  try {
+    // Tell redux-saga to call fetch with the specified options
+    const response = yield call(fetch, 'public/none-google-users.json', { method: 'GET' })
+    const nonGoogleUsers = yield response.json()
+    const filterUsers = users.payload.filter(user => !nonGoogleUsers.ignore.includes(user.email))
 
-    // socket.on('harvest-new-posts-error', (message) => {
-    //   console.log('harvest-new-posts-error received')
-    //   emit(actions.newHarvestPostsError(message))
-    // })
-
-    socket.on('harvest-new-posts-error', (message) => {
-      emit(actions.harvestUnauthorized(message))
-    })
-    return () => {}
-  })
-}
-
-export function* connectService(socket) {
-  // Load the connectStream func into channel to be watched
-  const channel = yield call(connectStream, socket)
-  while (true) {
-    // Watch the channel for any chances and load them into an action
-    const action = yield take(channel)
-    // Fire whatever actions come from the channel
-    yield put(action)
+    // Tell redux-saga to dispatch the fetchWeatherSuccessful action
+    yield put(actions.newHarvestUsersAndTimes(filterUsers))
+  } catch (err) {
+    // You get it
+    yield put(actions.newHarvestUsersAndTimesError(err))
   }
 }
 
 function* flow() {
-  while (true) {
-    // Wait to see if the server is happy to provide data
-    yield take('HARVEST_SERVICE_SUCCESS')
-    // Grab socket details from the store
-    const socket = yield select(getSocketConnection)
-    // Connect the Sonos stream to start reciving data, with the socket
-    yield fork(connectService, socket)
-  }
+  // Wait to see if the server is happy to provide data
+  yield takeEvery(actions.SOCKET_HARVEST_PULL_GETUSERSANDTIMES_SUCCESS, filterUsers)
 }
 
 // Handles connecting, message processing and disconnecting
 export default function* () {
   yield fork(flow)
 }
-

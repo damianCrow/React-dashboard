@@ -8,13 +8,6 @@ import { sortBy } from 'store/actions'
 import { Motion, spring } from 'react-motion'
 import { UserCircle } from 'components'
 
-
-// import styled, { css } from 'styled-components'
-// import ReactTransitionGroup from 'react-addons-transition-group'
-// import * as d3 from 'd3'
-// import { RadarChart } from '../../RadarChart'
-
-
 const HarvestWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -93,17 +86,17 @@ const HarvestPanel = styled(HarvestEntry)`
   background-position: 40% 10%;
   background-repeat: no-repeat;
 `
-const HarvestPanelImage = styled.div`
-  background-color: #f66822;
-  background-image: url(/public/calendar-icon.svg);
-  background-size: 75%;
-  width: 100%;
-  height: 100%;
-  background-position: 50% 90%;
-  background-repeat: no-repeat;
-  position: absolute;
-  opacity: 0.25;
-`
+// const HarvestPanelImage = styled.div`
+//   background-color: #f66822;
+//   background-image: url(/public/calendar-icon.svg);
+//   background-size: 75%;
+//   width: 100%;
+//   height: 100%;
+//   background-position: 50% 90%;
+//   background-repeat: no-repeat;
+//   position: absolute;
+//   opacity: 0.25;
+// `
 const HarvestHours = styled.figcaption`
   font-family: ${fonts.primary};
   font-weight: bold;
@@ -144,20 +137,6 @@ const TimePeriodText = styled(MonthText)`
   font-size: 0.8rem;
 `
 
-// const Spider = styled.div`
-//   flex: 1 1 50%;
-// `
-
-// // const InstagramWrapperStyled = styled(InstagramTransitionWrapper)`${wrapperStyles}`
-// const TransitionWrapper = styled(ReactTransitionGroup)`${styles}`
-
-// const PlaybackIcon = styled.Icon`
-//   display: absolute;
-// `
-
-// const StyledIcon = styled(Icon)`${iconStyles}`
-
-// const Timesheets = ({ children, ...props, posts }) => {
 class TimesheetLeaderBoard extends Component {
 
   componentWillMount() {
@@ -189,13 +168,6 @@ class TimesheetLeaderBoard extends Component {
     //   .attr('width', width)
     //   .attr('height', height)
   }
-
-  // constructor(props) {
-  //   super(props)
-  //   this.state = {
-  //     hideClass: 'showing',
-  //   }
-  // }
 
   componentDidMount() {
     const timePeriods = ['lastWorkDay', 'ThisWeek', 'LastWeek']
@@ -314,15 +286,15 @@ class TimesheetLeaderBoard extends Component {
 }
 
 // Listen and capture any changes made as a result of the the actions below.
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   users: state.harvest.data.users,
   status: state.harvest.status.status,
   message: state.harvest.status.message,
   sortTimePeriod: state.harvest.status.sortBy,
 })
 
-const mapDispatchToProps = (dispatch) => ({
-  sortBy: (timePeriod) => dispatch(sortBy(timePeriod)),
+const mapDispatchToProps = dispatch => ({
+  sortBy: timePeriod => dispatch(sortBy(timePeriod)),
 })
 
 TimesheetLeaderBoard.propTypes = {
