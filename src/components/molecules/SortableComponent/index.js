@@ -3,7 +3,8 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { font } from 'styled-theme'
-import { updatePlaylist, deletePlaylistItem, recievedPlaylistFromServer, showHideItem } from 'store/actions'
+import { withRouter } from 'react-router-dom'
+import { updatePlaylist, deletePlaylistItem, recievedPlaylistFromServer, showHideItem, storeAllPlaylists } from 'store/actions'
 import { Icon } from 'components'
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc'
 
@@ -17,7 +18,7 @@ const List = styled.ul`
   margin: 15px 20px;
   font-family: ${font('primary')};
   max-width: 700px;
-  max-height: calc(100vh - 12rem);
+  max-height: calc(100vh - 16rem);
   overflow: scroll;
 `
 const ListItem = styled.li`
@@ -109,42 +110,44 @@ const SortableItem = SortableElement(({ value, deleteFunc, showHideFunc, playlis
 })
 
 const SortableList = SortableContainer(({ items, deleteFunc, showHideFunc }) => {
-  return (
-    <List>
-      {items.map((value, index) => (
-        <SortableItem
-          playlist={items}
-          deleteFunc={deleteFunc}
-          showHideFunc={showHideFunc}
-          key={`item-${index}`}
-          index={index}
-          value={value}
-        />
-      ))}
-    </List>
-  )
+  if (items.length) {
+    return (
+      <List>
+        {items.map((value, index) => (
+          <SortableItem
+            playlist={items}
+            deleteFunc={deleteFunc}
+            showHideFunc={showHideFunc}
+            key={`item-${index}`}
+            index={index}
+            value={value}
+          />
+        ))}
+      </List>
+    )
+  }
+  return (<List />)
 })
 
 class SortableComponent extends Component {
 
   constructor(props) {
     super(props)
-    if (this.props.playlist.length < 1) {
+
+    if (this.props.playlist.data.length < 1 && this.props.allAvailablePlaylists.length < 1) {
       fetch('/public/user-data/showcase-media.json').then((response) => {
         return response.json()
       }).then((j) => {
-        this.props.recievedPlaylistFromServer(j.playlist)
-        const playlistToStore = [...j.playlist.filter(item => item.hidden === false), ...j.playlist.filter(item => item.hidden === true)]
-        localStorage.setItem('playList', JSON.stringify(playlistToStore))
+        this.props.storeAllPlaylists(j.playlists)
+        this.props.recievedPlaylistFromServer(j.playlists.filter(playlist => playlist.id === this.props.match.params.playlistId)[0])
       })
     }
   }
 
   onSortEnd({ oldIndex, newIndex }) {
     let savedState
-    const reOrderdPlaylist = arrayMove(this.props.playlist, oldIndex, newIndex)
-
-    if (localStorage.getItem('playList') !== JSON.stringify(reOrderdPlaylist)) {
+    const reOrderdPlaylist = arrayMove(this.props.playlist.data, oldIndex, newIndex)
+    if (JSON.stringify(this.props.allAvailablePlaylists.filter(playlist => playlist.id === this.props.match.params.playlistId)[0].data) !== JSON.stringify(reOrderdPlaylist)) {
       savedState = false
     } else {
       savedState = true
@@ -157,7 +160,7 @@ class SortableComponent extends Component {
       <SortableList
         deleteFunc={this.props.deletePlaylistItem}
         showHideFunc={this.props.showHideItem}
-        items={this.props.playlist}
+        items={this.props.playlist.data}
         pressDelay={200}
         onSortEnd={this.onSortEnd.bind(this)}
       />
@@ -167,28 +170,31 @@ class SortableComponent extends Component {
 
 const mapStateToProps = state => ({
   saved: state.admin.saved,
-  playlist: state.admin.playlist,
+  playlist: state.admin.currentPlaylist,
+  allAvailablePlaylists: state.admin.allAvailablePlaylists,
 })
 
 SortableComponent.defaultProps = {
-  playlist: [{ id: '001', type: 'Default', title: 'Default Item', url: '', serviceId: '' }],
+  playlist: { name: 'Default', id: 'Default', data: { id: '001', type: 'Default', title: 'Default Item', url: '', serviceId: '' } },
   saved: true,
 }
 
 SortableComponent.propTypes = {
-  playlist: PropTypes.array,
+  playlist: PropTypes.object,
   saved: PropTypes.bool,
   updateAdminPlaylist: PropTypes.func,
   deletePlaylistItem: PropTypes.func,
   showHideItem: PropTypes.func,
   recievedPlaylistFromServer: PropTypes.func,
+  storeAllPlaylists: PropTypes.func,
 }
 
 const mapDispatchToProps = (dispatch) => ({
+  storeAllPlaylists: (playlists) => dispatch(storeAllPlaylists(playlists)),
   updateAdminPlaylist: (updatedPlaylist, savedState) => dispatch(updatePlaylist(updatedPlaylist, savedState)),
   deletePlaylistItem: (playlist, item) => dispatch(deletePlaylistItem(playlist, item)),
   showHideItem: (playlist, item) => dispatch(showHideItem(playlist, item)),
   recievedPlaylistFromServer: (playlistFromServer) => dispatch(recievedPlaylistFromServer(playlistFromServer)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(SortableComponent)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SortableComponent))

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import styled from 'styled-components'
 import shortid from 'shortid'
 import { connect } from 'react-redux'
@@ -104,6 +104,10 @@ class AdminPortalAddImageForm extends Component {
     })
   }
 
+  goBack() {
+    this.props.history.goBack()
+  }
+
   render() {
     return (
       <AdminPortalTemplate>
@@ -142,11 +146,11 @@ class AdminPortalAddImageForm extends Component {
           <ButtonWrapper>
             <Button type="submit" palette="primary">Upload Image</Button>
             <AdminLink to="/admin-portal">
-              <Button type="reset" palette="secondary">Cancel</Button>
+              <Button onClick={this.goBack.bind(this)} type="reset" palette="secondary">Cancel</Button>
             </AdminLink>
           </ButtonWrapper>
         </form>
-        <SwipableArea swipedUp={this.onSubmit.bind(this, 'overide')} />
+        <SwipableArea swipedUp={this.onSubmit.bind(this, 'overide')}>Swipe up to overide queue</SwipableArea>
       </AdminPortalTemplate>
     )
   }
@@ -174,4 +178,4 @@ const mapDispatchToProps = (dispatch) => ({
   publishPlaylist: (overideQueue) => dispatch(publishPlaylist(overideQueue)),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(AdminPortalAddImageForm)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AdminPortalAddImageForm))

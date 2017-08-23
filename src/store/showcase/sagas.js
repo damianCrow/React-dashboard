@@ -16,7 +16,7 @@ function* pullInitalPlaylist() {
     // Tell redux-saga to call fetch with the specified options
     const response = yield call(fetch, '/public/user-data/showcase-media.json', { method: 'GET' })
     const reponse = yield response.json()
-    const playlist = reponse.playlist.filter(item => !item.hidden)
+    const playlist = reponse.playlists[0].data.filter(item => !item.hidden)
     // Tell redux-saga to dispatch the recieveInitalPlaylist action
     yield put(slideshowActions.startSlideshowLogic('SHOWCASE', playlist.length))
     yield put(actions.recievePlaylist(playlist))

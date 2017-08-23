@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import shortid from 'shortid'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
@@ -80,7 +80,11 @@ class AdminPortalAddVideoForm extends Component {
     }
   }
 
-  render() {
+  goBack() {
+    this.props.history.goBack()
+  }
+
+  render() {console.log(this.props)
     return (
       <AdminPortalTemplate>
         <Heading level={6}>
@@ -106,13 +110,11 @@ class AdminPortalAddVideoForm extends Component {
           />
           <EleError innerRef={(videoUrlError) => { this.videoUrlError = videoUrlError }} className="error" id="videoUrlError"> A video URL is required!</EleError>
           <ButtonWrapper>
-            <Button type="submit" palette="primary">Add Video</Button>
-            <AdminLink to="/admin-portal">
-              <Button type="reset" palette="secondary">Cancel</Button>
-            </AdminLink>
+            <Button type="submit" palette="primary">Add Video</Button>  
+            <Button onClick={this.goBack.bind(this)} type="reset" palette="secondary">Cancel</Button> 
           </ButtonWrapper>
         </form>
-        <SwipableArea swipedUp={this.onSubmit.bind(this, 'overide')} />
+        <SwipableArea swipedUp={this.onSubmit.bind(this, 'overide')}>Swipe up to overide queue</SwipableArea>
       </AdminPortalTemplate>
     )
   }
@@ -130,5 +132,5 @@ const mapDispatchToProps = (dispatch) => ({
   publishPlaylist: (overideQueue) => dispatch(publishPlaylist(overideQueue)),
 })
 
-export default connect(null, mapDispatchToProps)(AdminPortalAddVideoForm)
+export default withRouter(connect(null, mapDispatchToProps)(AdminPortalAddVideoForm))
 

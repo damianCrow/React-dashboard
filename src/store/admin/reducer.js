@@ -11,6 +11,8 @@ import {
   OVERIDE_QUEUE,
   GET_NEW_PLAYLIST,
   SHOW_HIDE_PLATLIST_ITEM,
+  STORE_ALL_PLAYLISTS,
+  ADD_NEW_PLAYLIST_TO_STORE,
 } from './actions'
 
 const publishPlaylist = (overideQueue, playlist) => {
@@ -18,7 +20,6 @@ const publishPlaylist = (overideQueue, playlist) => {
     overideQueue,
     playlist,
   }
-  localStorage.setItem('playList', JSON.stringify(playlist))
   return fetch('/admin/playlist-update', {
     method: 'post',
     headers: {
@@ -66,31 +67,49 @@ const adminReducer = (state = initialState, action) => {
         fetching: true,
       }
 
+    case STORE_ALL_PLAYLISTS:
+      return {
+        ...state,
+        allAvailablePlaylists: action.payload,
+      }
+
+    case ADD_NEW_PLAYLIST_TO_STORE:
+      return {
+        ...state,
+        allAvailablePlaylists: [...state.allAvailablePlaylists, action.payload],
+        currentPlaylist: {
+          name: action.payload.name,
+          id: action.payload.id,
+          data: action.payload.data,
+        },
+      }
+
     case UPDATE_PLAYLIST:
       return {
         ...state,
-        playlist: action.playlist,
+        currentPlaylist: { ...state.currentPlaylist, data: action.playlist },
         saved: action.payload,
       }
 
     case PUBLISH_PLAYLIST:
-      publishPlaylist(action.overideQueue, state.playlist)
+      publishPlaylist(action.overideQueue, state.currentPlaylist)
       return {
         ...state,
         saved: true,
+        allAvailablePlaylists: [state.allAvailablePlaylists.filter(playlist => playlist.id !== state.currentPlaylist.id), state.currentPlaylist],
       }
 
     case DELETE_PLAYLIST_ITEM:
       return {
         ...state,
-        playlist: action.playlist.filter(item => item.id !== action.payload),
+        currentPlaylist: { ...state.currentPlaylist, data: action.playlist.filter(item => item.id !== action.payload) },
         saved: false,
       }
 
     case SHOW_HIDE_PLATLIST_ITEM:
       return {
         ...state,
-        playlist: showHidePlaylistItem(action),
+        currentPlaylist: { ...state.currentPlaylist, data: showHidePlaylistItem(action) },
         saved: false,
       }
 
@@ -100,7 +119,7 @@ const adminReducer = (state = initialState, action) => {
         ...state,
         uploadedFiles: [...state.uploadedFiles, action.payload],
         saved: false,
-        playlist: [...state.playlist, action.payload],
+        currentPlaylist: { ...state.currentPlaylist, data: [...state.currentPlaylist.data, action.payload] },
       }
 
     case UPLOAD_AND_OVERIDE_QUEUE:
@@ -109,27 +128,32 @@ const adminReducer = (state = initialState, action) => {
         ...state,
         uploadedFiles: [...state.uploadedFiles, action.payload],
         saved: true,
-        playlist: [action.payload, ...state.playlist],
+        currentPlaylist: { ...state.currentPlaylist, data: [action.payload, ...state.currentPlaylist.data] },
       }
 
     case OVERIDE_QUEUE:
       return {
         ...state,
         saved: true,
-        playlist: [action.payload, ...state.playlist],
+        currentPlaylist: { ...state.currentPlaylist, data: [action.payload, ...state.currentPlaylist.data] },
       }
 
     case ADD_ENTRY_TO_PLAYLIST:
       return {
         ...state,
-        playlist: [...state.playlist, action.payload],
+        currentPlaylist: { ...state.currentPlaylist, data: [...state.currentPlaylist.data, action.payload] },
         saved: false,
       }
 
     case RECIEVED_PLAYLIST_FROM_SERVER:
       return {
         ...state,
-        playlist: [...state.playlist, ...action.payload.filter(item => item.hidden === false), ...action.payload.filter(item => item.hidden === true)],
+        currentPlaylist: {
+          ...state.currentPlaylist,
+          name: action.payload.name,
+          id: action.payload.id,
+          data: [...action.payload.data.filter(item => item.hidden === false), ...action.payload.data.filter(item => item.hidden === true)],
+        },
         saved: true,
       }
 
