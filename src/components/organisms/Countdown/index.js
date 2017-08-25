@@ -121,8 +121,8 @@ class Countdown extends Component {
             <FadeLeftRightTransitionWrapper key={event.id}>
               <CenterStyles>
                 <EventIcon icon={event.eventIconName} fillColor={'#ffffff'} height={60} />
-                <EventDate level={2}>{`${moment(event.startDateTime, 'DD-MM-YYYY HH:mm:ss').format('Do MMMM')}: `}</EventDate>
                 <EventTitle level={2}>{event.eventTitle}</EventTitle>
+                <EventDate level={2}>{moment(event.startDateTime, 'DD-MM-YYYY HH:mm:ss').format('Do MMMM')}</EventDate>
               </CenterStyles>
             </FadeLeftRightTransitionWrapper>
           </TransitionWrapper>
