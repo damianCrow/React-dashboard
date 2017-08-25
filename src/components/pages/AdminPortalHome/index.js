@@ -32,13 +32,11 @@ class AdminPortalHome extends Component {
   constructor(props) {
     super(props)
     this.state = { goToPlaylist: '' }
-    if (this.props.allAvailablePlaylists.length < 1) {
-      fetch('/public/user-data/showcase-media.json').then((response) => {
-        return response.json()
-      }).then((j) => {
-        this.props.storeAllPlaylists(j.playlists)
-      })
-    }
+    fetch('/public/user-data/showcase-media.json').then((response) => {
+      return response.json()
+    }).then((j) => {
+      this.props.storeAllPlaylists(j.playlists)
+    })
     this.onSelect = this.onSelect.bind(this)
     this.onCreate = this.onCreate.bind(this)
   }
