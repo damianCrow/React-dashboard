@@ -10,6 +10,9 @@ import { AdminPortalTemplate, Button, ButtonWrapper, SortableComponent, Heading,
 const AdminLink = styled(Link)`
   text-decoration: none;
 `
+const BtnWrapper = styled(ButtonWrapper)`
+ margin-bottom: 0;
+`
 class AdminPortalPlaylistView extends Component {
   // PLAYLIST GETS FETCHED IN SORTABLELIST COMPONENT \\
   resetPlaylist() {
@@ -33,20 +36,20 @@ class AdminPortalPlaylistView extends Component {
         </Heading>
         <SortableComponent />
         {this.props.saved ? (
-          <ButtonWrapper>
+          <BtnWrapper>
             <AdminLink to={`/admin-portal/playlist/add-video/${this.props.match.params.playlistId}`}>
               <Button type="info" palette="primary">Add Video</Button>
             </AdminLink>
             <AdminLink to={`/admin-portal/playlist/add-image/${this.props.match.params.playlistId}`}>
               <Button type="info" palette="primary">Add Image</Button>
             </AdminLink>
-          </ButtonWrapper>
+          </BtnWrapper>
           ) : (
-            <ButtonWrapper>
+            <BtnWrapper>
               <Button type="info" palette="secondary" onClick={this.resetPlaylist.bind(this)}>Cancel</Button>
               <Button type="info" palette="primary" onClick={this.handlePusblish.bind(this, true)}>Publish</Button>
               <Button type="info" palette="primary" onClick={this.handlePusblish.bind(this, false)}>Save</Button>
-            </ButtonWrapper>
+            </BtnWrapper>
         )}
         <SwipableArea classes={'swipe_left'} swipedLeft={this.goBack.bind(this)}>Swipe left to go back</SwipableArea>
       </AdminPortalTemplate>
