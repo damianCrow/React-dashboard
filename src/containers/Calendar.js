@@ -25,6 +25,7 @@ class CalendarContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log('nextProps ', nextProps)
     this.setState({ meetings: nextProps.meetings })
     if (nextProps.meetings.length) {
       this.startLoop(nextProps.meetings)
@@ -64,15 +65,15 @@ class CalendarContainer extends Component {
         clearInterval(this[`hilightCurrentMeeting${meetingObj.id}`])
         this.setState({ meetings: this.state.meetings.filter(meeting => meeting.id !== meetingObj.id) })
         setTimeout(() => {
-          this.props.serviceRequest('calendar')
-          // this.forceUpdateDom()
-        }, 1500)
+          // this.props.serviceRequest('calendar')
+          this.forceUpdateDom()
+        }, 1750)
       }
     }
   }
 
   getDefaultStyles() {
-    return this.state.meetings.map(meeting => ({ data: meeting, style: { height: 0, opacity: 1 }, key: meeting.id }))
+    return this.state.meetings.map(meeting => ({ data: meeting, style: { height: 80, opacity: 1 }, key: meeting.id }))
   }
 
   getStyles() {
@@ -97,7 +98,7 @@ class CalendarContainer extends Component {
 
   willEnter() {
     return {
-      height: 0,
+      height: 80,
       opacity: 1,
     }
   }
