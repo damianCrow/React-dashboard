@@ -83,7 +83,7 @@ const AlbumArtContainer = styled.div`
 
 const AlbumArtWrapper = styled.div`
   position: relative;
-  flex: ${props => props.side ? '1' : '9'} 1;
+  flex: ${props => props.side ? '1' : '3'} 1;
   
   ${props => props.shift ? `transform: translateX(${props.shift})` : 'z-index: 1'};
   &:before{
