@@ -91,31 +91,18 @@ if (DEBUG) {
 
 } else {
 
-  app.use(express.static(__dirname + '/dist'))
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/index.html'))
-  })
+  // app.use(express.static(__dirname + '/dist'))
+  // app.get('*', (req, res) => {
+  //   res.sendFile(path.join(__dirname, 'dist/index.html'))
+  // })
 
-  const PROD = false
-  const lex = letsEncrypt.create({
-    server: PROD ? 'https://acme-v01.api.letsencrypt.org/directory' : 'staging',
-   
-    approveDomains: (opts, certs, cb) => {
-      if (certs) {
-        // change domain list here
-        opts.domains = ['interdash.duckdns.org:3000']
-      } else { 
-        // change default email to accept agreement
-        opts.email = 'simon.b@interstateteam.com';
-        opts.agreeTos = true
-      }
-      cb(null, { options: opts, certs: certs });
-    }
-  })
-
-  https.createServer(lex.httpsOptions, lex.middleware(app)).listen(port, () => {
-    console.log("Listening for ACME tls-sni-01 challenges and serve app on", this.address());
-  });
+  letsEncrypt.create({
+    server: 'staging',
+    email: 'john.doe@example.com',
+    agreeTos: true,
+    approveDomains: [ 'example.com' ],
+    app: app.use(express.static(__dirname + '/dist'))
+  }).listen(3000)
 
 }
 
