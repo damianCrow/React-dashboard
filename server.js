@@ -98,9 +98,9 @@ if (DEBUG) {
 
   letsEncrypt.create({
     server: 'staging',
-    email: 'john.doe@example.com',
+    email: 'simon.b@interstateteam.com',
     agreeTos: true,
-    approveDomains: [ 'example.com' ],
+    approveDomains: [ 'interdash.duckdns.org' ],
     app: app.use(express.static(__dirname + '/dist'))
   }).listen(3000)
 
