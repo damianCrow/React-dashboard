@@ -1,4 +1,8 @@
 /* eslint-disable */
+const http = require('http');
+const https = require('https');
+
+const letsEncrypt = require('greenlock-express');
 const path = require('path');
 const webpack = require('webpack');
 // const WebpackDevServer = require('webpack-dev-server')
@@ -9,6 +13,8 @@ const config = require('./webpack.config');
 const express = require('express');
 const auth = require('http-auth');
 const socketIo = require('socket.io')
+
+
 
 const Harvest = require('./modules/Harvest.js')
 const Sonos = require('./modules/Sonos.js')
@@ -48,20 +54,20 @@ const services = {
 const socketHandler = new Sockets(sockets)
 socketHandler.requests(services)
 
-app.use(historyApiFallback({
-  verbose: false
-}));
+// app.use(historyApiFallback({
+//   verbose: false
+// }));
 
-app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
+// app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
 
 const compiler = webpack(config);
 
-var basic = auth.basic({
-  realm: "Protected Area",
-  file: __dirname + '/.htpasswd'
-});
+// var basic = auth.basic({
+//   realm: "Protected Area",
+//   file: __dirname + '/.htpasswd'
+// });
 
-app.use(auth.connect(basic));
+// app.use(auth.connect(basic));
 
 if (DEBUG) {
 
@@ -84,10 +90,33 @@ if (DEBUG) {
   app.use(webpackHotMiddleware(compiler));
 
 } else {
+
   app.use(express.static(__dirname + '/dist'))
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'dist/index.html'))
   })
+
+  const PROD = false
+  const lex = letsEncrypt.create({
+    server: PROD ? 'https://acme-v01.api.letsencrypt.org/directory' : 'staging',
+   
+    approveDomains: (opts, certs, cb) => {
+      if (certs) {
+        // change domain list here
+        opts.domains = ['interdash.duckdns.org:3000']
+      } else { 
+        // change default email to accept agreement
+        opts.email = 'simon.b@interstateteam.com';
+        opts.agreeTos = true
+      }
+      cb(null, { options: opts, certs: certs });
+    }
+  })
+
+  https.createServer(lex.httpsOptions, lex.middleware(app)).listen(port, () => {
+    console.log("Listening for ACME tls-sni-01 challenges and serve app on", this.address());
+  });
+
 }
 
 // app.use(express.static(path.join(__dirname, '/public/index.html')));
