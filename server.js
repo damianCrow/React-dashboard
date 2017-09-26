@@ -56,7 +56,13 @@ app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
 
 const compiler = webpack(config);
 
-// app.use(auth.connect(basic));
+var basic = auth.basic({
+  realm: "Protected Area",
+  file: __dirname + '/.htpasswd'
+});
+
+app.use(auth.connect(basic));
+
 if (DEBUG) {
 
   const middleware = WebpackDevMiddleware(compiler, {
