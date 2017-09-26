@@ -5193,7 +5193,7 @@ le-acme-core@^2.0.5:
     request "^2.74.0"
     rsa-compat "^1.2.7"
 
-le-challenge-fs@^2.0.2, le-challenge-fs@^2.0.4:
+le-challenge-fs@^2.0.2, le-challenge-fs@^2.0.4, le-challenge-fs@^2.0.8:
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/le-challenge-fs/-/le-challenge-fs-2.0.8.tgz#b6d458a37f097e87df3d8b5ff67013737ab9d5a2"
   dependencies:
@@ -5211,7 +5211,7 @@ le-sni-auto@^2.0.1, le-sni-auto@^2.1.0:
   dependencies:
     bluebird "^3.4.1"
 
-le-store-certbot@^2.0.3:
+le-store-certbot@^2.0.3, le-store-certbot@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/le-store-certbot/-/le-store-certbot-2.0.5.tgz#b53fcfc177bdf00ea88812d0de673a0de0fe3491"
   dependencies:
@@ -7188,7 +7188,7 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redirect-https@^1.1.0:
+redirect-https@^1.1.0, redirect-https@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/redirect-https/-/redirect-https-1.1.4.tgz#aaa1fc72ac51623a5c49e80425051fea43bcee32"
   dependencies:
