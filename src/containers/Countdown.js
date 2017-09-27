@@ -12,6 +12,7 @@ class CountdownContainer extends Component {
     this.state = {
       countdownFigure: '0',
       events: [],
+      humanCountdown: '...',
     }
   }
 
@@ -24,6 +25,7 @@ class CountdownContainer extends Component {
 
     this.getLatestEventInEachCategory(nextProps)
 
+    // We only want to start this loop once (hence 'events.length === 0')
     if (nextProps.events.length > 0 && events.length === 0) {
       this.startLoop()
     } else if (nextProps.events.length === 0 && events.length !== 0) {
@@ -67,8 +69,11 @@ class CountdownContainer extends Component {
     const timeDiffSeconds = Math.round((1000 * ((eventTime - currentTime) / 1000))) * 1000
     if (this.state.countdownFigure !== timeDiffSeconds) {
       if (this.props.slideshow.status !== 'waiting') {
-        // Avoid using setState for this to save CPU power
-        this.currentCountdownFigure = timeDiffSeconds
+        // Avoid hammering setState for this to save CPU power
+        const humanCountdown = humanizeDuration(timeDiffSeconds, { largest: 2 })
+        if (humanCountdown !== this.state.humanCountdown) {
+          this.setState({ humanCountdown })
+        }
       }
     }
 
@@ -102,7 +107,7 @@ class CountdownContainer extends Component {
 
   render() {
     if (this.state.events.length > 0 && this.props.slideshow.status !== 'waiting') {
-      return <Countdown event={this.state.events[this.props.slideshow.current]} countdownFigure={humanizeDuration(this.currentCountdownFigure, { largest: 2 })} />
+      return <Countdown event={this.state.events[this.props.slideshow.current]} countdownFigure={this.state.humanCountdown} />
     }
     return <SplashScreen icon="arc" service="Countdown" />
   }
