@@ -50,7 +50,6 @@ const TimeLeftContainer = styled.div`
   flex: 1;
   height: 100%;
   position: relative;
-  background-color: #00928f;
   text-align: center;
 `
 
