@@ -143,28 +143,30 @@ class SonosPlayer extends Component {
         <SonosCurrentTrack single={single} >
           {single && speakerNameComp}
           <AlbumArtContainer single={single} >
-            <AlbumArtWrapper side shift="1rem">
-              {single && (playerState.previousTrack.duration !== 0) &&
+            {single && 
+              <AlbumArtWrapper side shift="1rem">
+                {(playerState.previousTrack.duration !== 0) &&
                 <AlbumArt
                   src={playerState.previousTrack && playerState.previousTrack.absoluteAlbumArtUri}
                   onError={(e) => { handleSrcError(e) }}
-                />
-              }
-            </AlbumArtWrapper>
+                />}
+              </AlbumArtWrapper>
+            }
             <AlbumArtWrapper>
               <AlbumArt
                 src={playerState.currentTrack.absoluteAlbumArtUri}
                 onError={(e) => { handleSrcError(e) }}
               />
             </AlbumArtWrapper>
-            <AlbumArtWrapper side shift="-1rem">
-              {single && (playerState.nextTrack.duration !== 0) &&
+            {single &&
+              <AlbumArtWrapper side shift="-1rem">
+                {(playerState.nextTrack.duration !== 0) &&
                 <AlbumArt
                   src={playerState.nextTrack.absoluteAlbumArtUri}
                   onError={(e) => { handleSrcError(e) }}
-                />
-              }
-            </AlbumArtWrapper>
+                />}
+              </AlbumArtWrapper>
+            }
           </AlbumArtContainer>
           <TrackInfo single={single} >
             {!single && speakerNameComp}
