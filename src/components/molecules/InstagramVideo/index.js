@@ -1,11 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-
-// import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import { SlideshowLogic } from 'hoc'
-
-// import { TweenMax } from 'gsap'
 
 const ImageWrapper = styled.div`
   height: 100%;
@@ -28,11 +24,9 @@ const InstagramVideo = ({ currentVideo, nextComponent }) => {
     <ImageWrapper>
       <InstagramVideoSrc
         src={currentVideo}
-        autoPlay="true"
+        autoPlay
         muted
-        onEnded={() => {
-          nextComponent()
-        }}
+        onEnded={() => nextComponent()}
       />
     </ImageWrapper>
   )

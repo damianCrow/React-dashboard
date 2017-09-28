@@ -1,7 +1,6 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
 import { FadingTransitionWrapper, InstagramImage, InstagramVideo, MetaTags, Ticker } from 'components'
@@ -63,16 +62,15 @@ const InstagramFrame = ({ post, mediaType, slideShowKey }) => {
     { icon: 'comment', metaInfo: post.comments.count },
   ]
 
-  let currentPost
-  if (mediaType === 'image' || mediaType === 'carousel') {
-    currentPost = (<InstagramImage currentImage={post.images.standard_resolution.url} />)
-  } else if (mediaType === 'video') {
-    currentPost = (
-      <InstagramVideo
-        // resumeAutoSlides={resumeAutoSlides}
-        currentVideo={post.videos.standard_resolution.url}
-      />
-    )
+  const currentPost = () => {
+    switch (mediaType) {
+      case 'image':
+      case 'carousel':
+      default:
+        return (<InstagramImage currentImage={post.images.standard_resolution.url} />)
+      case 'video':
+        return (<InstagramVideo currentVideo={post.videos.standard_resolution.url} />)
+    }
   }
 
   return (
@@ -81,7 +79,7 @@ const InstagramFrame = ({ post, mediaType, slideShowKey }) => {
         <StyledIcon icon="instagram" size={35} />
         <InstagramCaption>{post.caption.text}</InstagramCaption>
         <MetaTags tags={metaTags} />
-      </Header>*/ }
+      </Header> */ }
       <Ticker icon="instagram" slideShowKey={slideShowKey}>
         <HeaderLevel>
           {post.location &&
@@ -94,7 +92,7 @@ const InstagramFrame = ({ post, mediaType, slideShowKey }) => {
       <InstagramMedia>
         <TransitionWrapper>
           <FadingTransitionWrapper key={slideShowKey}>
-            {currentPost}
+            {currentPost()}
           </FadingTransitionWrapper>
         </TransitionWrapper>
       </InstagramMedia>
@@ -103,7 +101,6 @@ const InstagramFrame = ({ post, mediaType, slideShowKey }) => {
 }
 
 InstagramFrame.propTypes = {
-  children: PropTypes.any,
   post: PropTypes.object.isRequired,
   slideShowKey: PropTypes.string.isRequired,
   mediaType: PropTypes.string,

@@ -3,6 +3,10 @@ import PropTypes from 'prop-types'
 import styled, { keyframes } from 'styled-components'
 import { MediaBluredBack } from 'components'
 import { SlideshowLogic } from 'hoc'
+import 'lazysizes/plugins/attrchange/ls.attrchange'
+import 'lazysizes/plugins/respimg/ls.respimg'
+import 'lazysizes/plugins/parent-fit/ls.parent-fit'
+import 'lazysizes'
 
 
 const ImageWrapper = styled.div`
@@ -19,7 +23,7 @@ const Animate = keyframes`
     transform: scale(1.15);
   } 
 `
-const InstagramImg = styled.img`
+const FeaturedImage = styled.img`
   height: 100%;
   object-fit: cover;
   object-position: cover;
@@ -27,18 +31,31 @@ const InstagramImg = styled.img`
   width: 100%;
   z-index: 1;
   animation: ${Animate} 14s linear forwards;
+  -webkit-filter: blur(5px);
+  filter: blur(5px);
+  transition: filter 400ms;
+  &.lazyloaded {
+    -webkit-filter: blur(0);
+    filter: blur(0);
+  }
 `
 
-const ShowcaseImage = ({ currentImage, thumbnail }) => (
+const ShowcaseImage = ({ currentImage, preview }) => (
   <ImageWrapper>
-    <InstagramImg src={currentImage} />
-    {thumbnail && <MediaBluredBack media={thumbnail} type="image" />}
+    <FeaturedImage
+      src={currentImage}
+      srcSet={preview}
+      data-srcset={`${currentImage} 1080w 607h`}
+      data-sizes="auto"
+      className="lazyload"
+    />
+    {preview && <MediaBluredBack media={preview} type="image" />}
   </ImageWrapper>
 )
 
 ShowcaseImage.propTypes = {
   currentImage: PropTypes.string.isRequired,
-  thumbnail: PropTypes.string,
+  preview: PropTypes.string,
 }
 
 export default SlideshowLogic(ShowcaseImage, 'showcase')

@@ -23,6 +23,7 @@ const ChildContainer = styled.div`
   top: 0;
   left: 0;
   opacity: 1;
+  will-change: opacity;
 `
 
 // https://github.com/reactjs/react-transition-group/blob/master/migration.md
@@ -34,9 +35,7 @@ const FadingTransitionWrapper = ({ children: child, ...props }) => (
     onEnter={(node, isAppearing) => {
       TweenLite.fromTo(node, 2, { opacity: 0 }, { opacity: 1 })
     }}
-    onExit={node => {
-      TweenLite.to(node, 2, { opacity: 0 })
-    }}
+    onExit={node => TweenLite.to(node, 2, { opacity: 0 })}
     // addEndListener={(node, done) => {
     //   // use the css transitionend event to mark the finish of a transition
     //   node.addEventListener('transitionend', done, false)

@@ -48,13 +48,14 @@ class AdminPortalAddImageForm extends Component {
       fetch('/admin/upload', {
         method: 'post',
         body: formData,
-      }).then((response) => response.json()).then((data) => {
+      }).then(response => response.json()).then((data) => {
         const newObj = {
           id: shortid.generate(),
           hidden: false,
           type: 'Image',
           title: data.imageTitle,
           url: data.imagePath,
+          preview: data.preview,
           serviceId: '',
           serviceName: '',
         }
