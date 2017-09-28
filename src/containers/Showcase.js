@@ -30,10 +30,10 @@ class ShowcaseContainer extends Component {
   // TODO: Tidy this up, use a switch statement?
   render() {
     if (this.props.playlist.length > 0) {
-      const { id, serviceId, serviceName, type, url } = this.props.playlist[this.props.slideshow.current]
+      const { id, serviceId, serviceName, type, url, preview } = this.props.playlist[this.props.slideshow.current]
       let showcaseItem = null
       if (type === 'Image') {
-        showcaseItem = <ShowcaseImage currentImage={url} thumbnail={url} />
+        showcaseItem = <ShowcaseImage currentImage={url} thumbnail={preview} />
       } else if (type === 'Video' && serviceName === 'youtube') {
         showcaseItem = <YouTubeVideo serviceId={serviceId} />
       } else if (type === 'Video' && serviceName === 'vimeo') {
@@ -42,9 +42,7 @@ class ShowcaseContainer extends Component {
 
       return (
         <TransitionWrapper>
-          <FadingTransitionWrapper
-            key={id}
-          >
+          <FadingTransitionWrapper key={id}>
             {showcaseItem}
           </FadingTransitionWrapper>
         </TransitionWrapper>
@@ -68,11 +66,9 @@ const mapDispatchToProps = dispatch => ({
 })
 
 ShowcaseContainer.propTypes = {
-  socketConnected: PropTypes.bool,
   fetchInitalPlaylist: PropTypes.func,
   slideshow: PropTypes.object,
   playlist: PropTypes.array,
-  status: PropTypes.string,
 }
 
 ShowcaseContainer.defaultProps = {

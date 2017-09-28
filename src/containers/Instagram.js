@@ -1,13 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-
 import { connect } from 'react-redux'
-import { fonts } from 'components/globals'
-// import { startSlideshow, pauseServiceSlideshow, socketDataRequest, numberOfSlideshowPosts } from 'store/actions'
-// import { Instagram, SplashScreen } from 'components'
-import { startSlideshowLogic, socketDataRequest } from 'store/actions'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
+
+import { fonts } from 'components/globals'
+import { startSlideshowLogic, socketDataRequest } from 'store/actions'
 import { FadingTransitionWrapper, InstagramFrame, MediaBluredBack, SplashScreen, Icon } from 'components'
 
 
@@ -48,7 +46,6 @@ const StyledIcon = styled(Icon)`
 `
 
 class InstagramContainer extends Component {
-
   componentDidMount() {
     this.props.serviceRequest()
   }
@@ -60,19 +57,21 @@ class InstagramContainer extends Component {
   }
 
   render() {
-    // const { status, message, posts, slideshow } = this.props
-
     const isEmpty = this.props.posts.length === 0
 
     if (!isEmpty && this.props.slideshow.status === 'ready') {
       const post = this.props.posts[this.props.slideshow.current]
       const { id, type } = post
 
-      let backgroundMedia
-      if (type === 'image' || type === 'carousel') {
-        backgroundMedia = <MediaBluredBack media={post.images.thumbnail.url} type="image" />
-      } else if (type === 'video') {
-        backgroundMedia = <MediaBluredBack media={post.videos.low_bandwidth.url} type="video" />
+      const backgroundMedia = () => {
+        switch (type) {
+          case 'image':
+          case 'carousel':
+          default:
+            return (<MediaBluredBack media={post.images.thumbnail.url} type="image" />)
+          case 'video':
+            return (<MediaBluredBack media={post.videos.standard_resolution.url} type="video" />)
+        }
       }
 
       return (
@@ -80,7 +79,7 @@ class InstagramContainer extends Component {
           <StyledIcon icon={'instagram'} height={35} />
           <TransitionWrapper>
             <FadingTransitionWrapper key={id}>
-              {backgroundMedia}
+              {backgroundMedia()}
             </FadingTransitionWrapper>
           </TransitionWrapper>
           <InstagramFrame post={post} slideShowKey={id} mediaType={type} />

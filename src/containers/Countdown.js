@@ -6,7 +6,6 @@ import { fetchCountdown, startSlideshowLogic } from 'store/actions'
 import { Countdown, SplashScreen } from 'components'
 
 class CountdownContainer extends Component {
-
   constructor(props) {
     super(props)
     this.state = {

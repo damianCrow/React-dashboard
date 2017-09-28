@@ -10,7 +10,6 @@ import {
 export const slideshowState = (service = '') => {
   return function counter(state = initialState, action) {
     switch (action.type) {
-
       case `${service}_${SLIDESHOW_META}`: {
         const max = ((action.max - 1) < 0) ? 0 : action.max - 1
         return {
