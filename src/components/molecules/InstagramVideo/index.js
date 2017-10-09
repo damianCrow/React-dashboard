@@ -18,13 +18,12 @@ const InstagramVideoSrc = styled.video`
   z-index: 1;
 `
 
-
 const InstagramVideo = ({ currentVideo, nextComponent }) => {
   return (
     <ImageWrapper>
       <InstagramVideoSrc
         src={currentVideo}
-        autoPlay
+        autoPlay="true"
         muted
         onEnded={() => nextComponent()}
       />
@@ -42,4 +41,3 @@ InstagramVideo.defaultProps = {
 }
 
 export default SlideshowLogic(InstagramVideo, 'instagram', false)
-
