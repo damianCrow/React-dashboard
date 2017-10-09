@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { SlideshowLogic } from 'hoc'
@@ -18,17 +18,27 @@ const InstagramVideoSrc = styled.video`
   z-index: 1;
 `
 
-const InstagramVideo = ({ currentVideo, nextComponent }) => {
-  return (
-    <ImageWrapper>
-      <InstagramVideoSrc
-        src={currentVideo}
-        autoPlay="true"
-        muted
-        onEnded={() => nextComponent()}
-      />
-    </ImageWrapper>
-  )
+// const InstagramVideo = ({ currentVideo, nextComponent }) => {
+class InstagramVideo extends Component {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.currentVideo !== this.props.currentVideo) {
+      console.log('new video src, forcing rerender')
+      this.forceUpdate()
+    }
+  }
+
+  render() {
+    return (
+      <ImageWrapper>
+        <InstagramVideoSrc
+          src={this.props.currentVideo}
+          autoPlay="true"
+          muted
+          onEnded={() => this.props.nextComponent()}
+        />
+      </ImageWrapper>
+    )
+  }
 }
 
 InstagramVideo.propTypes = {
