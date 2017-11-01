@@ -62,7 +62,7 @@ const EventDate = styled(Heading)`
   color: #ffffff;
   font-weight: 100;
   line-height: 81px;
-  margin: 0;
+  margin: 0 .5rem;
 `
 const EventTitle = styled(Heading)`
   color: #ffffff;
@@ -84,13 +84,12 @@ const EventDetails = styled.div`
 const CenterStyles = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  /*justify-content: center;*/
   width: 100%;
   flex: 1;
 `
 
 class Countdown extends Component {
-
   constructor(props) {
     super(props)
     this.idx = 0
