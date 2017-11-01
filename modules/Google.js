@@ -145,7 +145,7 @@ class Google {
       scope: SCOPES,
     })
     // this.authUrl = `${HARVEST_HOST}/oauth2/authorize?client_id=${this.config.client_id}&redirect_uri=${this.config.redirect_uri}&state=optional-csrf-token&response_type=code`
-    console.log('this.authUrl', this.authUrl)
+    // console.log('this.authUrl', this.authUrl)
   }
 
   /**
@@ -163,8 +163,8 @@ class Google {
     return new Promise((resolve, reject) => {
       // PULL NEW CODE FROM URL PARAM
       if (requstType === 'refresh') {
-        console.log('getting refresh token')
-        console.log('this.oauth2Client', this.oauth2Client)
+        // console.log('getting refresh token')
+        // console.log('this.oauth2Client', this.oauth2Client)
         this.oauth2Client.refreshAccessToken((err, tokens) => {
           // your access_token is now refreshed and stored in oauth2Client
           // store these new tokens in a safe place (e.g. database)
