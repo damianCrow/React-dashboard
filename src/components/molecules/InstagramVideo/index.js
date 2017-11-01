@@ -30,8 +30,9 @@ class InstagramVideo extends Component {
   render() {
     return (
       <ImageWrapper>
+        { /* Temp fix for chrome or instagram server cahce error: https://github.com/igvteam/igv.js/issues/424 */ }
         <InstagramVideoSrc
-          src={this.props.currentVideo}
+          src={`${this.props.currentVideo}?chromeCacheBugBust=${Math.random().toString(36)}`}
           autoPlay="true"
           muted
           onEnded={() => this.props.nextComponent()}
