@@ -42,8 +42,6 @@ class CountdownContainer extends Component {
     let updateOrNot = false
     const allEvents = nextProps.events
 
-    console.log('getLatestEventInEachCategory, nextProps = ', nextProps)
-
     const events = allEvents.filter((event, index) => {
       if (event.unixStart > currentTime) {
         if (categorys.includes(event.eventType) === false) {
