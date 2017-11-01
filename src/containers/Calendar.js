@@ -14,8 +14,8 @@ const CalendarWrapper = styled.div`
   height: 100%;
   top: 0;
 `
-class CalendarContainer extends Component {
 
+class CalendarContainer extends Component {
   constructor(props) {
     super(props)
     this.state = { meetings: [], key: shortid.generate() }
@@ -25,7 +25,6 @@ class CalendarContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('nextProps ', nextProps)
     this.setState({ meetings: nextProps.meetings })
     if (nextProps.meetings.length) {
       this.startLoop(nextProps.meetings)
@@ -39,7 +38,7 @@ class CalendarContainer extends Component {
   }
 
   getAvatars(arrayToPopulate, arrayToMap) {
-    arrayToMap.map(item => {
+    arrayToMap.map((item) => {
       const startDate = moment(item.start.date)
       const endDate = moment(item.end.date)
 
@@ -147,7 +146,7 @@ class CalendarContainer extends Component {
             willLeave={this.willLeave}
             willEnter={this.willEnter}
           >
-            {styles => {
+            {(styles) => {
               return (<div> {styles.map((meeting, idx) => {
                 let rowDate
                 let colorCode
@@ -186,13 +185,15 @@ class CalendarContainer extends Component {
                       rowTitle={meeting.data.summary}
                       rowSubTitle={location}
                       colorCode={colorCode}
-                      opacity={opa}>
+                      opacity={opa}
+                    >
                       {`${moment(meeting.data.start.dateTime).format('HH:mm')} to ${moment(meeting.data.end.dateTime).format('HH:mm')}`}
                     </CalendarRow>
                   )
                 }
                 return null
-              })}</div>)}
+              })}</div>)
+            }
             }
           </TransitionMotion>
         ) : (null)}
@@ -216,8 +217,8 @@ const mapDispatchToProps = dispatch => ({
 
 CalendarContainer.propTypes = {
   serviceRequest: PropTypes.func,
-  status: PropTypes.string,
-  message: PropTypes.string,
+  // status: PropTypes.string,
+  // message: PropTypes.string,
   meetings: PropTypes.array,
   outOfOffice: PropTypes.array,
   inOffice: PropTypes.array,

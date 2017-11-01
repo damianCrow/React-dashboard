@@ -80,13 +80,14 @@ const SubTitle = styled(TruncatedScroller)`
   color: #71c3a8;
   font-size: 1rem;
 `
-const Wink = styled(Icon)`
-  position: absolute;
-  right: -8px;
-  top: calc(50% - 10px);
-`
-class CalendarRow extends Component {
 
+// const Wink = styled(Icon)`
+//   position: absolute;
+//   right: -8px;
+//   top: calc(50% - 10px);
+// `
+
+class CalendarRow extends Component {
   componentDidMount() {
     const rightColumnWidth = window.getComputedStyle(this.rightColumn, null).getPropertyValue('width')
     this.Title.scroller.style.width = `calc(100% - ${rightColumnWidth} - 30px)`
@@ -99,12 +100,12 @@ class CalendarRow extends Component {
         <Shade opacity={this.props.opacity} />
         <LeftColumn>
           <Day color={this.props.colorCode} level={4}>{this.props.rowDay}</Day>
-          { /* <Wink fillColor={'#ffd200'} icon="interwink" height={20} />*/ }
+          { /* <Wink fillColor={'#ffd200'} icon="interwink" height={20} /> */ }
         </LeftColumn>
         <MainColumn className={'main_content'}>
-          <Title className={'title'} innerRef={Title => { this.Title = Title }}>{this.props.rowTitle}</Title>
-          <SubTitle innerRef={SubTitle => { this.SubTitle = SubTitle }}>{this.props.rowSubTitle}</SubTitle>
-          <RightColumn className={'content-on-right'} innerRef={rightColumn => { this.rightColumn = rightColumn }}>{this.props.children}</RightColumn>
+          <Title className={'title'} innerRef={(Title) => { this.Title = Title }}>{this.props.rowTitle}</Title>
+          <SubTitle innerRef={(SubTitle) => { this.SubTitle = SubTitle }}>{this.props.rowSubTitle}</SubTitle>
+          <RightColumn className={'content-on-right'} innerRef={(rightColumn) => { this.rightColumn = rightColumn }}>{this.props.children}</RightColumn>
         </MainColumn>
       </Wrapper>
     )
@@ -112,8 +113,6 @@ class CalendarRow extends Component {
 }
 
 CalendarRow.propTypes = {
-  updateCalendarRow: PropTypes.func,
-  countDownDisplay: PropTypes.string,
   colorCode: PropTypes.string,
   opacity: PropTypes.number,
   id: PropTypes.string,
