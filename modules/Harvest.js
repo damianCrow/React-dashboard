@@ -102,9 +102,9 @@ class HarvestTimesheets {
   }
 
   setupExternalAuthUrl() {
-    console.log('setupExternalAuthUrl')
+    // console.log('setupExternalAuthUrl')
     this.authUrl = `${HARVEST_HOST}/oauth2/authorize?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
-    console.log('this.authUrl', this.authUrl)
+    // console.log('this.authUrl', this.authUrl)
   }
 
   setupLocalAuthPaths() {
