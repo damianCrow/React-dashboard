@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
+import { SlideshowLogic } from 'hoc'
 
 import { fonts } from 'components/globals'
 import { startSlideshowLogic, socketDataRequest } from 'store/actions'
-import { FadingTransitionWrapper, InstagramFrame, MediaBluredBack, SplashScreen, Icon } from 'components'
-
+import { FadingTransitionWrapper, InstagramCarousel, MediaBluredBack, SplashScreen, Icon, MetaTags, Ticker, InstagramImage, InstagramVideo, InstagramBackground } from 'components'
 
 const TransitionWrapper = styled(TransitionGroup)`
   color: black;
@@ -45,6 +45,49 @@ const StyledIcon = styled(Icon)`
   bottom: 0.5rem;
 `
 
+// Frame
+
+const InstagramMedia = styled.div`
+  overflow: hidden;
+  flex: 1 0 auto;
+  margin: 1rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+`
+
+const InstagramCaption = styled.span`
+  display: inline-block;
+  flex: 1 1 auto;
+  margin: 1rem .5rem;
+`
+
+const Frame = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  overflow: hidden;
+  position: relative;
+  text-align: left;
+  top: 0;
+  width: 100%;
+`
+
+const HeaderLevel = styled.div`
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex: 0 0 100%;
+  justify-content: space-between;
+  z-index: 1;
+`
+
+
 class InstagramContainer extends Component {
   componentDidMount() {
     this.props.serviceRequest()
@@ -63,26 +106,54 @@ class InstagramContainer extends Component {
       const post = this.props.posts[this.props.slideshow.current]
       const { id, type } = post
 
-      const backgroundMedia = () => {
+      const metaTags = [
+        { icon: 'heart', metaInfo: post.likes.count },
+        { icon: 'comment', metaInfo: post.comments.count },
+      ]
+
+      let InstagramSlideshow = {}
+      console.log('post', post)
+
+
+      const mediaType = () => {
+        console.log('Instagram Container: type = ', type)
+        console.log('Instagram Container: id = ', id)
         switch (type) {
-          case 'image':
           case 'carousel':
-          default:
-            return (<MediaBluredBack media={post.images.thumbnail.url} type="image" />)
+            InstagramSlideshow = SlideshowLogic({ connectedComp: InstagramCarousel, service: 'instagram', timeout: false })
+            return (<InstagramSlideshow posts={post.carousel_media} carouselPostId={id} />)
           case 'video':
-            return (<MediaBluredBack media={post.videos.standard_resolution.url} type="video" />)
+            InstagramSlideshow = SlideshowLogic({ connectedComp: InstagramVideo, service: 'instagram', timeout: false })
+            return (<InstagramSlideshow currentVideo={post.videos.standard_resolution.url} />)
+          default:
+          case 'image':
+            InstagramSlideshow = SlideshowLogic({ connectedComp: InstagramImage, service: 'instagram' })
+            return (<InstagramSlideshow currentImage={post.images.standard_resolution.url} />)
         }
       }
 
       return (
         <InstagramWrapper>
           <StyledIcon icon={'instagram'} height={35} />
-          <TransitionWrapper>
-            <FadingTransitionWrapper key={id}>
-              {backgroundMedia()}
-            </FadingTransitionWrapper>
-          </TransitionWrapper>
-          <InstagramFrame post={post} slideShowKey={id} mediaType={type} />
+          {/*<InstagramBackground />*/}
+          <Frame>
+            <Ticker icon="instagram" slideShowKey={id}>
+              <HeaderLevel>
+                {post.location && <InstagramCaption>{post.location.name}</InstagramCaption>}
+              </HeaderLevel>
+              <HeaderLevel>
+                <MetaTags tags={metaTags} />
+              </HeaderLevel>
+            </Ticker>
+            <InstagramMedia>
+              <TransitionWrapper>
+                <FadingTransitionWrapper key={id}>
+                  {mediaType()}
+                </FadingTransitionWrapper>
+              </TransitionWrapper>
+            </InstagramMedia>
+          </Frame>
+          {/* <InstagramFrame post={post} slideShowKey={id} mediaType={type} /> */}
         </InstagramWrapper>
       )
     }

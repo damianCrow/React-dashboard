@@ -10,7 +10,6 @@ import {
 function instagramReducerWrapper() {
   return (state = initialState, action) => {
     switch (action.type) {
-
       case SOCKET_INSTAGRAM_PULL_POSTS_SUCCESS:
         return {
           ...state,
@@ -35,4 +34,5 @@ function instagramReducerWrapper() {
 export default combineReducers({
   data: instagramReducerWrapper(),
   slideshow: slideshowState('INSTAGRAM'),
+  innerSlideshow: slideshowState('INSTAGRAMCAROUSEL'),
 })

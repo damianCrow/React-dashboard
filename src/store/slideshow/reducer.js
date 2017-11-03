@@ -5,6 +5,7 @@ import {
   SLIDESHOW_META,
   SLIDESHOW_RESUME,
   SLIDESHOW_EDIT,
+  SLIDESHOW_CLEAN,
 } from './actions'
 
 export const slideshowState = (service = '') => {
@@ -42,6 +43,11 @@ export const slideshowState = (service = '') => {
         return {
           ...state,
           max: ((action.max - 1) < 0) ? 0 : action.max - 1,
+        }
+
+      case `${service}_${SLIDESHOW_CLEAN}`:
+        return {
+          ...initialState,
         }
 
       default:

@@ -20,7 +20,6 @@ const Content = styled.article`
   box-sizing: border-box;
   display: flex;
   justify-content: center;
-  max-width: 1080px;
   width: 100%;
   overflow: hidden;
   will-change: transform;

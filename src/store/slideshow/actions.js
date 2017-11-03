@@ -6,6 +6,7 @@ export const SLIDESHOW_CLEAR_TIME = 'SLIDESHOW_CLEAR_TIME'
 export const SLIDESHOW_RESTART = 'SLIDESHOW_RESTART'
 export const SLIDESHOW_EDIT = 'SLIDESHOW_EDIT'
 export const SLIDESHOW_META = 'SLIDESHOW_META'
+export const SLIDESHOW_CLEAN = 'SLIDESHOW_CLEAN'
 
 // For the sake of the sagas, passes the service name and inital length.
 export const startSlideshowLogic = (service, max) => ({
@@ -34,6 +35,10 @@ export const nextComponentSlideshow = service => ({
 export const restartSlideshow = service => ({
   type: `${service.toUpperCase()}_${SLIDESHOW_RESTART}`,
   service,
+})
+
+export const cleanSlideshow = service => ({
+  type: `${service.toUpperCase()}_${SLIDESHOW_CLEAN}`,
 })
 
 export const clearComponentTimeout = service => ({

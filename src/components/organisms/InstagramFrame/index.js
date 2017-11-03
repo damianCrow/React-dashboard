@@ -2,8 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
+import { SlideshowLogic } from 'hoc'
 
-import { FadingTransitionWrapper, InstagramImage, InstagramVideo, MetaTags, Ticker } from 'components'
+
+import { FadingTransitionWrapper, InstagramImage, InstagramVideo, InstagramCarousel, MetaTags, Ticker } from 'components'
 
 const TransitionWrapper = styled(TransitionGroup)`
   color: black;
@@ -62,14 +64,18 @@ const InstagramFrame = ({ post, mediaType, slideShowKey }) => {
     { icon: 'comment', metaInfo: post.comments.count },
   ]
 
+  const SlideShowControlImage = SlideshowLogic(InstagramImage, 'instagram')
+  const SlideShowControlVideo = SlideshowLogic(InstagramVideo, 'instagram')
+
   const currentPost = () => {
     switch (mediaType) {
-      case 'image':
-      case 'carousel':
-      default:
-        return (<InstagramImage currentImage={post.images.standard_resolution.url} />)
       case 'video':
-        return (<InstagramVideo currentVideo={post.videos.standard_resolution.url} />)
+        return (<SlideShowControlVideo currentVideo={post.videos.standard_resolution.url} />)
+      case 'carousel':
+        // return (<InstagramCarousel post={post} />)
+      case 'image':
+      default:
+        return (<SlideShowControlImage currentImage={post.images.standard_resolution.url} />)
     }
   }
 
