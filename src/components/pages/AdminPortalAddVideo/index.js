@@ -84,7 +84,7 @@ class AdminPortalAddVideoForm extends Component {
     this.props.history.goBack()
   }
 
-  render() {console.log(this.props)
+  render() {
     return (
       <AdminPortalTemplate>
         <Heading level={6}>
@@ -126,11 +126,15 @@ AdminPortalAddVideoForm.propTypes = {
   overideQueue: PropTypes.func,
 }
 
+const mapStateToProps = state => ({
+  currentPlaylist: state.admin.currentPlaylist,
+})
+
 const mapDispatchToProps = (dispatch) => ({
   addEntryToPlaylist: (newObj) => dispatch(addEntryToPlaylist(newObj)),
   overideQueue: (newObj) => dispatch(overideQueue(newObj)),
   publishPlaylist: (overideQueue) => dispatch(publishPlaylist(overideQueue)),
 })
 
-export default withRouter(connect(null, mapDispatchToProps)(AdminPortalAddVideoForm))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AdminPortalAddVideoForm))
 

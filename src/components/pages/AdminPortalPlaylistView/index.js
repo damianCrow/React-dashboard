@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
 import styled from 'styled-components'
-import { updatePlaylist, publishPlaylist } from 'store/actions'
+import { updatePlaylist, publishPlaylist, savePlaylist } from 'store/actions'
 
 import { AdminPortalTemplate, Button, ButtonWrapper, SortableComponent, Heading, SwipableArea } from 'components'
 
@@ -19,9 +19,13 @@ class AdminPortalPlaylistView extends Component {
     this.props.updateAdminPlaylist(this.props.allAvailablePlaylists.filter(playlist => playlist.id === this.props.match.params.playlistId)[0].data, true)
   }
 
-  handlePusblish(overideState) {
-    this.props.publishPlaylist(overideState)
+  handlePusblish(playlist, overideState) {
+    this.props.publishPlaylist(playlist, overideState)
     // this.props.serviceRequest({ playlist: this.props.playlist, overideQueue: false })
+  }
+
+  handleSave(playlist) {
+    this.props.savePlaylist(playlist)
   }
 
   goBack() {
@@ -47,8 +51,8 @@ class AdminPortalPlaylistView extends Component {
           ) : (
             <BtnWrapper>
               <Button type="info" palette="secondary" onClick={this.resetPlaylist.bind(this)}>Cancel</Button>
-              <Button type="info" palette="primary" onClick={this.handlePusblish.bind(this, true)}>Publish</Button>
-              <Button type="info" palette="primary" onClick={this.handlePusblish.bind(this, false)}>Save</Button>
+              <Button type="info" palette="primary" onClick={this.handlePusblish.bind(this, this.props.playlist, true)}>Publish</Button>
+              <Button type="info" palette="primary" onClick={this.handleSave.bind(this, this.props.playlist)}>Save</Button>
             </BtnWrapper>
         )}
         <SwipableArea classes={'swipe_left'} swipedLeft={this.goBack.bind(this)}>Swipe left to go back</SwipableArea>
@@ -65,7 +69,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => ({
   updateAdminPlaylist: (updatedPlaylist, savedState) => dispatch(updatePlaylist(updatedPlaylist, savedState)),
-  publishPlaylist: (overideQueue) => dispatch(publishPlaylist(overideQueue)),
+  publishPlaylist: (playlist, overideQueue) => dispatch(publishPlaylist(playlist, overideQueue)),
+  savePlaylist: (playlist) => dispatch(savePlaylist(playlist)),
   // serviceRequest: (playlistData) => dispatch(socketDataRequest({ service: 'ADMIN', serverAction: 'emit', request: 'newPlaylist', payload: playlistData })),
 })
 
@@ -74,6 +79,7 @@ AdminPortalPlaylistView.propTypes = {
   saved: PropTypes.bool,
   updateAdminPlaylist: PropTypes.func,
   publishPlaylist: PropTypes.func,
+  savePlaylist: PropTypes.func,
   allAvailablePlaylists: PropTypes.array,
   // serviceRequest: PropTypes.func,
 }

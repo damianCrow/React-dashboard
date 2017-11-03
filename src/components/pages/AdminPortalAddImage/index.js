@@ -159,6 +159,7 @@ class AdminPortalAddImageForm extends Component {
 
 const mapStateToProps = state => ({
   filesArray: state.admin.uploadedFiles,
+  currentPlaylist: state.admin.currentPlaylist,
 })
 
 AdminPortalAddImageForm.propTypes = {
