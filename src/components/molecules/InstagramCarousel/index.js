@@ -52,7 +52,7 @@ class InstagramCarousel extends Component {
   }
 
   componentWillMount() {
-    if ((this.props.posts.length !== this.props.slideshow.max) && (this.props.slideshow.current !== 0)) {
+    if ((this.props.posts.length !== this.props.carousel.max) && (this.props.carousel.current !== 0)) {
       console.log('new carousel, cleaning')
       this.props.cleanSlideshow()
     } else {
@@ -61,18 +61,18 @@ class InstagramCarousel extends Component {
   }
 
   componentDidMount() {
-    if (this.props.slideshow.status === 'waiting') {
+    if (this.props.carousel.status === 'waiting') {
       this.props.startSlideshowLogic(this.props.posts.length)
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if ((nextProps.slideshow.current === nextProps.slideshow.max) && (nextProps.slideshow.status === 'ready')) {
+    if ((nextProps.carousel.current === nextProps.carousel.max) && (nextProps.carousel.status === 'ready')) {
       console.log('this is the last photo in the carousel after it, we will going back to main slideshow')
       this.setState({ last: true })
     }
 
-    if (nextProps.slideshow.status === 'waiting' && !this.state.ready) {
+    if (nextProps.carousel.status === 'waiting' && !this.state.ready) {
       console.log('carousel now cleaned and ready')
       this.setState({ ready: true })
       nextProps.startSlideshowLogic(nextProps.posts.length)
@@ -86,18 +86,18 @@ class InstagramCarousel extends Component {
   }
 
   render() {
-    const post = this.props.posts[this.props.slideshow.current]
-    if ((this.props.slideshow.status === 'ready') && this.state.ready) {
+    const post = this.props.posts[this.props.carousel.current]
+    if ((this.props.carousel.status === 'ready') && this.state.ready) {
       const currentPost = () => {
         let InstagramMedia = {}
 
         switch (post.type) {
           case 'video':
-            InstagramMedia = SlideshowLogic({ connectedComp: InstagramVideo, service: 'instagram', subSlideshow: (this.state.last ? '' : 'instagramCarousel'), timeout: false })
+            InstagramMedia = SlideshowLogic({ connectedComp: InstagramVideo, service: 'instagram', subSlideshow: (this.state.last ? '' : 'carousel'), timeout: false })
             return (<InstagramMedia currentVideo={post.videos.standard_resolution.url} />)
           case 'image':
           default:
-            InstagramMedia = SlideshowLogic({ connectedComp: InstagramImage, service: 'instagram', subSlideshow: (this.state.last ? '' : 'instagramCarousel') })
+            InstagramMedia = SlideshowLogic({ connectedComp: InstagramImage, service: 'instagram', subSlideshow: (this.state.last ? '' : 'carousel') })
             return (<InstagramMedia currentImage={post.images.standard_resolution.url} />)
         }
       }
@@ -106,7 +106,7 @@ class InstagramCarousel extends Component {
         <Carousel>
           <InstagramMedia>
             <TransitionWrapper>
-              <FadeRightLeftOutInTransitionWrapper key={`${this.props.carouselPostId}-${this.props.slideshow.current}`}>
+              <FadeRightLeftOutInTransitionWrapper key={`${this.props.carouselPostId}-${this.props.carousel.current}`}>
                 {currentPost()}
               </FadeRightLeftOutInTransitionWrapper>
             </TransitionWrapper>
@@ -119,7 +119,7 @@ class InstagramCarousel extends Component {
 }
 
 const mapStateToProps = state => ({
-  slideshow: state.instagram.innerSlideshow,
+  carousel: state.instagram.slideshow.carousel,
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -130,7 +130,7 @@ const mapDispatchToProps = dispatch => ({
 
 InstagramCarousel.propTypes = {
   posts: PropTypes.array.isRequired,
-  slideshow: PropTypes.object,
+  carousel: PropTypes.object,
   startSlideshowLogic: PropTypes.func,
   cleanSlideshow: PropTypes.func,
   carouselPostId: PropTypes.string,

@@ -50,11 +50,11 @@ function SlideshowLogic(initalConfig) {
   }
 
   const mapStateToProps = (state) => {
-    const slideType = config.subSlideshow ? 'innerSlideshow' : 'slideshow'
+    const slideshow = config.subSlideshow ? state[config.service].slideshow[config.subSlideshow] : state[config.service].slideshow
     return {
-      slideshowStatus: state[config.service][slideType].status,
-      slideshowCurrent: state[config.service][slideType].current,
-      slideshowMax: state[config.service][slideType].max,
+      slideshowStatus: slideshow.status,
+      slideshowCurrent: slideshow.current,
+      slideshowMax: slideshow.max,
     }
   }
 

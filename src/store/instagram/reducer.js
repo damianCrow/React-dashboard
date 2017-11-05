@@ -33,6 +33,5 @@ function instagramReducerWrapper() {
 // TODO: Spread (...) instragramReducerWrapper(), not in 'data'
 export default combineReducers({
   data: instagramReducerWrapper(),
-  slideshow: slideshowState('INSTAGRAM'),
-  innerSlideshow: slideshowState('INSTAGRAMCAROUSEL'),
+  slideshow: slideshowState('INSTAGRAM', 'CAROUSEL'),
 })

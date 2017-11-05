@@ -1,4 +1,4 @@
-import { initialState } from './selectors'
+import { initialState, initalSlideshowCarouselState } from './selectors'
 import {
   SLIDESHOW_NEXT,
   SLIDESHOW_RESTART,
@@ -8,8 +8,11 @@ import {
   SLIDESHOW_CLEAN,
 } from './actions'
 
-export const slideshowState = (service = '') => {
-  return function counter(state = initialState, action) {
+export const slideshowState = (service = '', carousel = '') => {
+  const slideshowStateType = carousel ? initalSlideshowCarouselState : initialState
+  const restartCarousel = () => (carousel && { carousel: initialState })
+
+  return function counter(state = slideshowStateType, action) {
     switch (action.type) {
       case `${service}_${SLIDESHOW_META}`: {
         const max = ((action.max - 1) < 0) ? 0 : action.max - 1
@@ -31,6 +34,7 @@ export const slideshowState = (service = '') => {
         return {
           ...state,
           current: ((state.current + 1) > state.max) ? 0 : (state.current + 1),
+          restartCarousel,
         }
 
       case `${service}_${SLIDESHOW_RESTART}`:
