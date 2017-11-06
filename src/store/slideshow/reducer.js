@@ -1,3 +1,5 @@
+import mergeable from 'redux-merge-reducers'
+
 import { initialState, initalSlideshowCarouselState } from './selectors'
 import {
   SLIDESHOW_NEXT,
@@ -8,34 +10,34 @@ import {
   SLIDESHOW_CLEAN,
 } from './actions'
 
-export const slideshowState = (service = '', carousel = '') => {
+export const slideshowState = (service = '', carousel = false) => {
   const slideshowStateType = carousel ? initalSlideshowCarouselState : initialState
-  const restartCarousel = () => (carousel && { carousel: initialState })
+  // const restartCarousel = () => (carousel && { carousel: initialState })
 
-  return function counter(state = slideshowStateType, action) {
+  function counter(state = slideshowStateType, action) {
+    const slideLevel = (carousel ? state.carousel : state)
     switch (action.type) {
       case `${service}_${SLIDESHOW_META}`: {
         const max = ((action.max - 1) < 0) ? 0 : action.max - 1
-        return {
-          ...state,
-          // max: action.max - 1,
+        const newState = {
           max,
-          current: (state.current > max) ? max : state.current,
+          current: (slideLevel.current > max) ? max : slideLevel.current,
           status: 'ready',
         }
+        return (carousel ? { ...state, carousel: { ...newState } } : { ...state, ...newState })
       }
+
       case `${service}_${SLIDESHOW_RESUME}`:
         return {
           ...state,
           delay: action.delay,
         }
 
-      case `${service}_${SLIDESHOW_NEXT}`:
-        return {
-          ...state,
-          current: ((state.current + 1) > state.max) ? 0 : (state.current + 1),
-          restartCarousel,
-        }
+      case `${service}_${SLIDESHOW_NEXT}`: {
+        console.log('showToSkip adding 1 to current: ', slideLevel)
+        const current = ((slideLevel.current + 1) > slideLevel.max) ? 0 : (slideLevel.current + 1)
+        return (carousel ? { ...state, carousel: { ...slideLevel, current } } : { ...state, current, carousel: initalSlideshowCarouselState })
+      }
 
       case `${service}_${SLIDESHOW_RESTART}`:
         return {
@@ -58,4 +60,6 @@ export const slideshowState = (service = '', carousel = '') => {
         return state
     }
   }
+
+  return mergeable(counter)
 }

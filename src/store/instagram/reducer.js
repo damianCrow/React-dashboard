@@ -30,8 +30,13 @@ function instagramReducerWrapper() {
   }
 }
 
+// const slideshow = combineReducers({
+//   main: slideshowState('INSTAGRAM', 'CAROUSEL'),
+//   carousel: slideshowState('INSTAGRAM'),
+// })
+
 // TODO: Spread (...) instragramReducerWrapper(), not in 'data'
 export default combineReducers({
   data: instagramReducerWrapper(),
-  slideshow: slideshowState('INSTAGRAM', 'CAROUSEL'),
+  slideshow: slideshowState('INSTAGRAM').merge(slideshowState('INSTAGRAMCAROUSEL', true)),
 })

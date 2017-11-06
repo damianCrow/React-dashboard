@@ -99,6 +99,16 @@ class InstagramContainer extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps) {
+    if (this.props.slideshow.status === 'ready') {
+      if (nextProps.posts[nextProps.slideshow.current].id === this.props.posts[this.props.slideshow.current].id) {
+        return false
+      }
+    }
+
+    return true
+  }
+
   render() {
     const isEmpty = this.props.posts.length === 0
 
@@ -135,7 +145,7 @@ class InstagramContainer extends Component {
       return (
         <InstagramWrapper>
           <StyledIcon icon={'instagram'} height={35} />
-          {/*<InstagramBackground />*/}
+          {/* <InstagramBackground /> */}
           <Frame>
             <Ticker icon="instagram" slideShowKey={id}>
               <HeaderLevel>

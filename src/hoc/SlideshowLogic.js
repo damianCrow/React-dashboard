@@ -59,7 +59,7 @@ function SlideshowLogic(initalConfig) {
   }
 
   const mapDispatchToProps = (dispatch) => {
-    const slideType = config.subSlideshow ? config.subSlideshow : config.service
+    const slideType = config.subSlideshow ? (config.service + config.subSlideshow) : config.service
     // console.log('hoc slideType dispatch: ', slideType)
     return {
       startTimeoutUntilNextSlide: () => dispatch(startComponentTimeout(slideType)),

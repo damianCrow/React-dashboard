@@ -111,6 +111,7 @@
     "react-youtube": "^7.4.0",
     "redux": "^3.6.0",
     "redux-form": "^7.0.4",
+    "redux-merge-reducers": "^0.0.2",
     "redux-saga": "^0.15.3",
     "redux-saga-thunk": "^0.5.2",
     "restler": "^3.4.0",

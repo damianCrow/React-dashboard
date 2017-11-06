@@ -7028,6 +7028,10 @@ redux-form@^7.0.4:
     lodash-es "^4.17.3"
     prop-types "^15.5.9"
 
+redux-merge-reducers@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/redux-merge-reducers/-/redux-merge-reducers-0.0.2.tgz#2d83da42de18636bd526be183de19e9a3a0d647b"
+
 redux-mock-store@^1.2.3:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/redux-mock-store/-/redux-mock-store-1.3.0.tgz#6edfef0d2332f20576381069d6d889a6d0a4451c"

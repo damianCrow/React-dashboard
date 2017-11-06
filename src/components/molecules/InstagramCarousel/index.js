@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { connect } from 'react-redux'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
-import { startSlideshowLogic, cleanSlideshow } from 'store/actions'
+import { startSlideshowLogic } from 'store/actions'
 import { SlideshowLogic } from 'hoc'
 import { FadeRightLeftOutInTransitionWrapper, InstagramImage, InstagramVideo } from 'components'
 
@@ -51,19 +51,19 @@ class InstagramCarousel extends Component {
     this.state = { last: false, ready: false }
   }
 
-  componentWillMount() {
-    if ((this.props.posts.length !== this.props.carousel.max) && (this.props.carousel.current !== 0)) {
-      console.log('new carousel, cleaning')
-      this.props.cleanSlideshow()
-    } else {
-      this.setState({ ready: true })
-    }
-  }
+  // componentWillMount() {
+  //   if ((this.props.posts.length !== this.props.carousel.max) && (this.props.carousel.current !== 0)) {
+  //     // this.props.cleanSlideshow()
+  //   } else {
+  //     this.setState({ ready: true })
+  //   }
+  // }
 
   componentDidMount() {
     if (this.props.carousel.status === 'waiting') {
       this.props.startSlideshowLogic(this.props.posts.length)
     }
+    console.log('InstagramCarousel componentDidMount this.props: ', this.props)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -72,9 +72,9 @@ class InstagramCarousel extends Component {
       this.setState({ last: true })
     }
 
-    if (nextProps.carousel.status === 'waiting' && !this.state.ready) {
-      console.log('carousel now cleaned and ready')
-      this.setState({ ready: true })
+    if (nextProps.carousel.status === 'waiting') {
+      // console.log('carousel now cleaned and ready')
+      // this.setState({ ready: true })
       nextProps.startSlideshowLogic(nextProps.posts.length)
     }
   }
@@ -87,7 +87,7 @@ class InstagramCarousel extends Component {
 
   render() {
     const post = this.props.posts[this.props.carousel.current]
-    if ((this.props.carousel.status === 'ready') && this.state.ready) {
+    if (this.props.carousel.status === 'ready') {
       const currentPost = () => {
         let InstagramMedia = {}
 
@@ -124,7 +124,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   startSlideshowLogic: max => dispatch(startSlideshowLogic('INSTAGRAMCAROUSEL', max)),
-  cleanSlideshow: () => dispatch(cleanSlideshow('INSTAGRAMCAROUSEL')),
+  // cleanSlideshow: () => dispatch(cleanSlideshow('INSTAGRAMCAROUSEL')),
 })
 
 
@@ -132,7 +132,7 @@ InstagramCarousel.propTypes = {
   posts: PropTypes.array.isRequired,
   carousel: PropTypes.object,
   startSlideshowLogic: PropTypes.func,
-  cleanSlideshow: PropTypes.func,
+  // cleanSlideshow: PropTypes.func,
   carouselPostId: PropTypes.string,
 }
 
