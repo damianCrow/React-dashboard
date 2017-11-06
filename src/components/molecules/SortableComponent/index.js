@@ -161,7 +161,7 @@ class SortableComponent extends Component {
         deleteFunc={this.props.deletePlaylistItem}
         showHideFunc={this.props.showHideItem}
         items={this.props.playlist.data}
-        pressDelay={200}
+        pressDelay={500}
         onSortEnd={this.onSortEnd.bind(this)}
       />
     )
