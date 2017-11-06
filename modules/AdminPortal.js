@@ -81,13 +81,18 @@ class AdminPortal {
         } else {
           const obj = JSON.parse(data)
           let count = 0
+
           obj.playlists.map((playlist, idx) => {
-            if (playlist.id === req.body.playlist.id) {
+            if(req.body.overideQueue !== undefined) {
+              Object.assign(playlist, {isCurrent: false})
+            }
+            
+            if(playlist.id === req.body.playlist.id) {
               obj.playlists.splice(idx, 1, req.body.playlist)
             } else {
               count++
 
-              if (count === obj.playlists.length) {
+              if(count === obj.playlists.length) {
                 obj.playlists.push(req.body.playlist)
               }
             }
@@ -102,7 +107,7 @@ class AdminPortal {
                   activePlaylistItems.push(item)
                 }
               })
-              if (req.body.overideQueue) {
+              if(req.body.overideQueue) {
                 this.sockets.emit('SOCKET_DATA_EMIT', { service: 'ADMIN', description: 'PLAYLIST', payload: { overideQueue: req.body.overideQueue, playlist: activePlaylistItems } })
               }
             }

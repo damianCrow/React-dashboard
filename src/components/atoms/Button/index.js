@@ -7,7 +7,7 @@ import { ifProp } from 'styled-tools'
 const fontSize = ({ height }) => `${height / 40}rem`
 
 const backgroundColor = ({ transparent, disabled }) =>
-  transparent ? 'transparent' : palette(disabled ? 2 : 1)
+  transparent ? 'transparent' : palette(disabled ? 4 : 1)
 
 const foregroundColor = ({ transparent, disabled }) =>
   transparent ? palette(disabled ? 2 : 1) : palette('grayscale', 0, true)

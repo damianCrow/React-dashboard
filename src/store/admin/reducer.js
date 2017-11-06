@@ -3,6 +3,7 @@ import { initialState } from './selectors'
 import {
   UPDATE_PLAYLIST,
   PUBLISH_PLAYLIST,
+  SAVE_PLAYLIST,
   DELETE_PLAYLIST_ITEM,
   IMAGE_UPLOADED,
   ADD_ENTRY_TO_PLAYLIST,
@@ -15,11 +16,21 @@ import {
   ADD_NEW_PLAYLIST_TO_STORE,
 } from './actions'
 
-const publishPlaylist = (overideQueue, playlist) => {
-  const obj = {
-    overideQueue,
-    playlist,
+const saveOrPublishPlaylist = (playlist, overideQueue) => {
+  let obj
+
+  if(overideQueue) {
+    playlist.isCurrent = true
+    obj = {
+      overideQueue,
+      playlist,
+    }
+  } else {
+    obj = {
+      playlist,
+    }
   }
+  
   return fetch('/admin/playlist-update', {
     method: 'post',
     headers: {
@@ -92,11 +103,21 @@ const adminReducer = (state = initialState, action) => {
       }
 
     case PUBLISH_PLAYLIST:
-      publishPlaylist(action.overideQueue, state.currentPlaylist)
+      saveOrPublishPlaylist(state.currentPlaylist, action.overideQueue)
+      
       return {
         ...state,
         saved: true,
-        allAvailablePlaylists: [state.allAvailablePlaylists.filter(playlist => playlist.id !== state.currentPlaylist.id), state.currentPlaylist],
+        allAvailablePlaylists: [state.currentPlaylist, ...state.allAvailablePlaylists.filter(playlist => playlist.id !== state.currentPlaylist.id).map(list => Object.assign(list, {isCurrent: false}))],
+      }
+
+    case SAVE_PLAYLIST:
+      saveOrPublishPlaylist(state.currentPlaylist)
+
+      return {
+        ...state,
+        saved: true,
+        allAvailablePlaylists: [...state.allAvailablePlaylists.filter(playlist => playlist.id !== state.currentPlaylist.id), state.currentPlaylist],
       }
 
     case DELETE_PLAYLIST_ITEM:

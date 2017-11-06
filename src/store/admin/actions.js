@@ -12,6 +12,7 @@ export const OVERIDE_QUEUE = 'OVERIDE_QUEUE'
 export const SOCKET_ADMIN_EMIT_PLAYLIST_RECEIVED = 'SOCKET_ADMIN_EMIT_PLAYLIST_RECEIVED'
 export const STORE_ALL_PLAYLISTS = 'STORE_ALL_PLAYLISTS'
 export const ADD_NEW_PLAYLIST_TO_STORE = 'ADD_NEW_PLAYLIST_TO_STORE'
+export const SAVE_PLAYLIST = 'SAVE_PLAYLIST'
 
 export const getNewPlaylist = () => ({
   type: GET_NEW_PLAYLIST,
@@ -43,6 +44,10 @@ export const deletePlaylistItem = (playlist, item) => ({
 export const publishPlaylist = (overideQueue) => ({
   type: PUBLISH_PLAYLIST,
   overideQueue,
+})
+
+export const savePlaylist = () => ({
+  type: SAVE_PLAYLIST,
 })
 
 export const imageUploaded = (newImageObj) => ({

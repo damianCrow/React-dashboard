@@ -4,8 +4,8 @@ import shortid from 'shortid'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
 import { Redirect, Link, withRouter } from 'react-router-dom'
-import { storeAllPlaylists, recievedPlaylistFromServer, addNewPlaylistToStore } from 'store/actions'
-import { AdminPortalTemplate, AdminPortalPlaylistView, Field, Button, ButtonWrapper, Heading, Input } from 'components'
+import { storeAllPlaylists, recievedPlaylistFromServer, addNewPlaylistToStore, publishPlaylist } from 'store/actions'
+import { AdminPortalTemplate, AdminPortalPlaylistView, Field, Button, ButtonWrapper, Heading } from 'components'
 
 const AdminLink = styled(Link)`
   text-decoration: none;
@@ -19,35 +19,72 @@ const EleError = styled.div`
  font-size: 3.29vw;
  text-align: center;
 `
-const Dropdown = styled(Input)`
+const List = styled.ul`
  margin: 0 27.5px;
- width: calc(100% - 55px);
+ width: calc(100% - 1rem);
  font-family: Helvetica Neue, Helvetica, Roboto, sans-serif;
  font-size: 1.125rem;
- height: 40px;
- margin-top: 20px;
+ margin: 1rem 0.5rem;
+ padding: 0;
+ max-height: calc(100% - 240px);
+ overflow-y: scroll;
 `
+const ListItem = styled.li`
+ display: flex;
+ flex-direction: column;
+ border-bottom: 1px solid #616161;
+
+ div {
+   margin-bottom: 0.5rem;
+
+   button {
+    height: 2em;
+    font-size: 0.9rem;
+
+    &[disabled] {
+      color: #41adaa;
+    }
+   }
+ }
+`
+const ListItemTitle = styled.p`
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  color: #fff;
+  text-align: center;
+`
+
+const SubHeading = styled.span`
+ display: block;
+ font-size: 0.75rem;
+ color: #616161;
+`
+
 class AdminPortalHome extends Component {
 
   constructor(props) {
     super(props)
-    this.state = { goToPlaylist: '' }
-    fetch('/public/user-data/showcase-media.json').then((response) => {
-      return response.json()
-    }).then((j) => {
-      this.props.storeAllPlaylists(j.playlists)
-    })
+    this.state = { goToPlaylist: ''}
+    if (this.props.allAvailablePlaylists.length < 1) {
+      fetch('/public/user-data/showcase-media.json').then((response) => {
+        return response.json()
+      }).then((j) => {
+        this.props.storeAllPlaylists(j.playlists)
+      })
+    }
+
     this.onSelect = this.onSelect.bind(this)
     this.onCreate = this.onCreate.bind(this)
   }
 
-  onSelect(e) {
-    this.props.allAvailablePlaylists.filter(playlist => {
-      if (playlist.id === e.target.value) {
-        this.props.recievedPlaylistFromServer(playlist)
-      }
-    })
-    this.setState({ goToPlaylist: e.target.value })
+  onSelect(playlistId) {
+    this.props.recievedPlaylistFromServer(...this.props.allAvailablePlaylists.filter(playlist => playlist.id === playlistId))
+    this.setState({ goToPlaylist: playlistId })
+  }
+
+  onPublish(playlistId) {
+    this.props.recievedPlaylistFromServer(...this.props.allAvailablePlaylists.filter(playlist => playlist.id === playlistId))
+    this.props.publishPlaylist()
   }
 
   onCreate() {
@@ -58,6 +95,7 @@ class AdminPortalHome extends Component {
     const newPlaylist = {
       name: this.playlistTitle.value,
       id: shortid.generate(),
+      isCurrent: false,
       data: [],
     }
     this.props.addNewPlaylistToStore(newPlaylist)
@@ -68,31 +106,55 @@ class AdminPortalHome extends Component {
     if (this.state.goToPlaylist) {
       return (<Redirect to={`/admin-portal/playlist/${this.state.goToPlaylist}`} component={AdminPortalPlaylistView} />)
     }
+
+    let currentPlaylistName
+
+    if(this.props.allAvailablePlaylists.find(playlist => playlist.isCurrent)){
+      currentPlaylistName = this.props.allAvailablePlaylists.find(playlist => playlist.isCurrent).name
+    } else {
+      currentPlaylistName = ''
+    }
+
     return (
       <AdminPortalTemplate>
-        <Heading level={6}>
-          Select A Playlist To Edit
+        <Heading palette="alert" level={6}>
+          <SubHeading>The current playlist is:</SubHeading>
+          {currentPlaylistName}
         </Heading>
-        <Dropdown type={'select'} onChange={this.onSelect}>
-          <option value="" disabled selected>Select A Playlist</option>
+        <Heading style={{color: '#616161'}} level={3}>
+          Playlists:
+        </Heading>
+        <List>
           {this.props.allAvailablePlaylists.map((playlistObj, idx) =>
-            <option value={playlistObj.id} key={idx}>{playlistObj.name}</option>
+            <ListItem value={playlistObj.id} key={idx}>
+              <ListItemTitle>{playlistObj.name}</ListItemTitle>
+              <div style={{textAlign: 'center'}}>
+                <Button onClick={this.onSelect.bind(this, playlistObj.id)} palette="primary">Edit</Button>
+                  {(() => {
+                    if(playlistObj.isCurrent) {
+                      return <Button disabled palette="primary">CURRENT</Button>
+                    } else {
+                      return <Button onClick={this.onPublish.bind(this, playlistObj.id)} palette="primary">Publish</Button>
+                    }
+                  })()}
+              </div>
+            </ListItem>
           )}
-        </Dropdown>
-        <Heading level={6}>
-          Or Create A Playlist
+        </List>
+        <Heading style={{color: '#616161'}} level={6}>
+          Create New Playlist
         </Heading>
         <form>
           <Field
             innerRef={(playlistTitle) => { this.playlistTitle = playlistTitle }}
             name="playlistTitle"
-            label="New Playlist Title"
+            label="Playlist Title:"
             type="text"
-            placeholder="Enter New Playlist Title Here"
+            placeholder="Enter Playlist Title Here"
           />
           <EleError innerRef={(playlistTitleError) => { this.playlistTitleError = playlistTitleError }} className="error" id="playlistTitleError"> A Title for the new playlist is required!</EleError>
           <ButtonWrapper>
-            <Button onClick={this.onCreate} palette="primary">Create New Playlist</Button>
+            <Button onClick={this.onCreate} palette="primary">Create Playlist</Button>
           </ButtonWrapper>
         </form>
       </AdminPortalTemplate>
@@ -114,6 +176,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  publishPlaylist: () => dispatch(publishPlaylist(true)),
   addNewPlaylistToStore: (newPlaylistObj) => dispatch(addNewPlaylistToStore(newPlaylistObj)),
   storeAllPlaylists: (allPlaylists) => dispatch(storeAllPlaylists(allPlaylists)),
   recievedPlaylistFromServer: (playlistFromServer) => dispatch(recievedPlaylistFromServer(playlistFromServer)),
