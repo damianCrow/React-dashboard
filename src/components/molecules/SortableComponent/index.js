@@ -88,7 +88,7 @@ const SortableItem = SortableElement(({ value, deleteFunc, showHideFunc, playlis
       <ListItemText>{value.title}</ListItemText>
       <ListItemText>{value.type}</ListItemText>
       {value.type === 'Image' ?
-        <PreviewImg alt={''} src={value.url} /> :
+        <PreviewImg alt={'No Image'} src={value.url} /> :
         <PreviewVid icon={'video'} fillColor="#000" height={25} />
       }
       <ListButton>
