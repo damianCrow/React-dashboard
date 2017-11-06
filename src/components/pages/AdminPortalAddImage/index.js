@@ -146,9 +146,7 @@ class AdminPortalAddImageForm extends Component {
           <EleError innerRef={(imageUrlError) => { this.imageUrlError = imageUrlError }} className="error"> Please upload an image or provide an image URL </EleError>
           <ButtonWrapper>
             <Button type="submit" palette="primary">Upload Image</Button>
-            <AdminLink to="/admin-portal">
-              <Button onClick={this.goBack.bind(this)} type="reset" palette="secondary">Cancel</Button>
-            </AdminLink>
+            <Button onClick={this.goBack.bind(this)} type="reset" palette="secondary">Cancel</Button>
           </ButtonWrapper>
         </form>
         <SwipableArea swipedUp={this.onSubmit.bind(this, 'overide')}>Swipe up to overide queue</SwipableArea>

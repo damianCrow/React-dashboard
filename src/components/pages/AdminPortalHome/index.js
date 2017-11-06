@@ -123,7 +123,7 @@ class AdminPortalHome extends Component {
           {currentPlaylistName}
         </Heading>
         <Heading style={{color: '#616161'}} level={3}>
-          Playlists
+          Playlists:
         </Heading>
         <List>
           {this.props.allAvailablePlaylists.map((playlistObj, idx) =>
@@ -142,20 +142,20 @@ class AdminPortalHome extends Component {
             </ListItem>
           )}
         </List>
-        <Heading level={6}>
-          Or Create A Playlist
+        <Heading style={{color: '#616161'}} level={6}>
+          Create New Playlist
         </Heading>
         <form>
           <Field
             innerRef={(playlistTitle) => { this.playlistTitle = playlistTitle }}
             name="playlistTitle"
-            label="New Playlist Title"
+            label="Playlist Title:"
             type="text"
-            placeholder="Enter New Playlist Title Here"
+            placeholder="Enter Playlist Title Here"
           />
           <EleError innerRef={(playlistTitleError) => { this.playlistTitleError = playlistTitleError }} className="error" id="playlistTitleError"> A Title for the new playlist is required!</EleError>
           <ButtonWrapper>
-            <Button onClick={this.onCreate} palette="primary">Create New Playlist</Button>
+            <Button onClick={this.onCreate} palette="primary">Create Playlist</Button>
           </ButtonWrapper>
         </form>
       </AdminPortalTemplate>
