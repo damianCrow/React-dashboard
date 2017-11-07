@@ -1,24 +1,11 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
-import TransitionGroup from 'react-transition-group/TransitionGroup'
-import { SlideshowLogic } from 'hoc'
 
 import { fonts } from 'components/globals'
 import { startSlideshowLogic, socketDataRequest } from 'store/actions'
-import { FadingTransitionWrapper, InstagramCarousel, MediaBluredBack, SplashScreen, Icon, MetaTags, Ticker, InstagramImage, InstagramVideo, InstagramBackground } from 'components'
-
-const TransitionWrapper = styled(TransitionGroup)`
-  color: black;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: left;
-  flex: 1;
-  width: 100%;
-  height: 100%;
-`
+import { InstagramFrame, Pagination, SplashScreen, Icon, MetaTags, Ticker, InstagramBackground } from 'components'
 
 const InstagramWrapper = styled.section`
   color: white;
@@ -33,6 +20,18 @@ const InstagramWrapper = styled.section`
   top: 0;
   font-family: ${fonts.primary};
   width: 100%;
+  contain: strict;
+`
+
+const BottomMeta = styled.div`
+  align-items: center;
+  bottom: 0;
+  box-sizing: border-box;
+  display: flex;
+  left: 0;
+  padding: .25rem;
+  position: absolute;
+  width: 100%;
 `
 
 const StyledIcon = styled(Icon)`
@@ -40,22 +39,10 @@ const StyledIcon = styled(Icon)`
   padding: .25rem;
   flex: 0 0 auto;
   opacity: .5;
-  position: absolute;
-  left: 0.25rem;
-  bottom: 0.5rem;
+  display: flex;
 `
 
 // Frame
-
-const InstagramMedia = styled.div`
-  overflow: hidden;
-  flex: 1 0 auto;
-  margin: 1rem;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-`
 
 const InstagramCaption = styled.span`
   display: inline-block;
@@ -88,7 +75,7 @@ const HeaderLevel = styled.div`
 `
 
 
-class InstagramContainer extends Component {
+class InstagramContainer extends PureComponent {
   componentDidMount() {
     this.props.serviceRequest()
   }
@@ -99,55 +86,32 @@ class InstagramContainer extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
-    if (this.props.slideshow.status === 'ready') {
-      if (nextProps.posts[nextProps.slideshow.current].id === this.props.posts[this.props.slideshow.current].id) {
-        return false
-      }
-    }
+  // shouldComponentUpdate(nextProps) {
+  //   if (this.props.slideshow.status === 'ready') {
+  //     if (nextProps.posts[nextProps.slideshow.current].id === this.props.posts[this.props.slideshow.current].id) {
+  //       return false
+  //     }
+  //   }
 
-    return true
-  }
+  //   return true
+  // }
 
   render() {
     const isEmpty = this.props.posts.length === 0
 
-    if (!isEmpty && this.props.slideshow.status === 'ready') {
-      const post = this.props.posts[this.props.slideshow.current]
-      const { id, type } = post
+    if (!isEmpty && this.props.slideshowStatus === 'ready') {
+      const post = this.props.posts[this.props.current]
 
       const metaTags = [
         { icon: 'heart', metaInfo: post.likes.count },
         { icon: 'comment', metaInfo: post.comments.count },
       ]
 
-      let InstagramSlideshow = {}
-      console.log('post', post)
-
-
-      const mediaType = () => {
-        console.log('Instagram Container: type = ', type)
-        console.log('Instagram Container: id = ', id)
-        switch (type) {
-          case 'carousel':
-            InstagramSlideshow = SlideshowLogic({ connectedComp: InstagramCarousel, service: 'instagram', timeout: false })
-            return (<InstagramSlideshow posts={post.carousel_media} carouselPostId={id} />)
-          case 'video':
-            InstagramSlideshow = SlideshowLogic({ connectedComp: InstagramVideo, service: 'instagram', timeout: false })
-            return (<InstagramSlideshow currentVideo={post.videos.standard_resolution.url} />)
-          default:
-          case 'image':
-            InstagramSlideshow = SlideshowLogic({ connectedComp: InstagramImage, service: 'instagram' })
-            return (<InstagramSlideshow currentImage={post.images.standard_resolution.url} />)
-        }
-      }
-
       return (
         <InstagramWrapper>
-          <StyledIcon icon={'instagram'} height={35} />
-          {/* <InstagramBackground /> */}
+          <InstagramBackground />
           <Frame>
-            <Ticker icon="instagram" slideShowKey={id}>
+            <Ticker icon="instagram" slideShowKey={post.id}>
               <HeaderLevel>
                 {post.location && <InstagramCaption>{post.location.name}</InstagramCaption>}
               </HeaderLevel>
@@ -155,14 +119,15 @@ class InstagramContainer extends Component {
                 <MetaTags tags={metaTags} />
               </HeaderLevel>
             </Ticker>
-            <InstagramMedia>
-              <TransitionWrapper>
-                <FadingTransitionWrapper key={id}>
-                  {mediaType()}
-                </FadingTransitionWrapper>
-              </TransitionWrapper>
-            </InstagramMedia>
+            <InstagramFrame />
           </Frame>
+          <BottomMeta>
+            <StyledIcon icon={'instagram'} height={35} />
+            {(post.type === 'carousel') && <Pagination
+              total={this.props.carousel.max}
+              active={this.props.carousel.current}
+            />}
+          </BottomMeta>
           {/* <InstagramFrame post={post} slideShowKey={id} mediaType={type} /> */}
         </InstagramWrapper>
       )
@@ -177,7 +142,9 @@ class InstagramContainer extends Component {
 const mapStateToProps = state => ({
   posts: state.instagram.data.posts,
   status: state.instagram.data.status,
-  slideshow: state.instagram.slideshow,
+  current: state.instagram.slideshow.current,
+  slideshowStatus: state.instagram.slideshow.status,
+  carousel: state.instagram.slideshow.carousel,
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -188,9 +155,11 @@ const mapDispatchToProps = dispatch => ({
 InstagramContainer.propTypes = {
   serviceRequest: PropTypes.func,
   startSlideshowLogic: PropTypes.func,
-  slideshow: PropTypes.object,
+  slideshowStatus: PropTypes.string,
   posts: PropTypes.array,
   status: PropTypes.string,
+  current: PropTypes.number,
+  carousel: PropTypes.object,
 }
 
 InstagramContainer.defaultProps = {

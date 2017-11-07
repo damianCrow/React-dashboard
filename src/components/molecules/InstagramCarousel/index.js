@@ -81,9 +81,9 @@ class InstagramCarousel extends Component {
 
   shouldComponentUpdate = () => !this.state.last
 
-  componentWillUnmount() {
-    console.log('carousel unmounting')
-  }
+  // componentWillUnmount() {
+  //   console.log('carousel unmounting')
+  // }
 
   render() {
     const post = this.props.posts[this.props.carousel.current]

@@ -5,18 +5,20 @@ import styled from 'styled-components'
 const MediaWrapper = styled.div`
   height: 100%;
   left: 0;
-  mix-blend-mode: darken;
   opacity: .75;
   position: absolute;
   top: 0;
   width: 100%;
 `
 
-const Image = styled.img`
+const Image = styled.div`
   filter: blur(8px);
+  background-blend-mode: darken;
+  ${props => props.pic && `background-image: url('${props.pic}');`}
   height: 100%;
   left: 0;
-  object-fit: cover;
+  background-size: cover;
+  background-position: center;
   position: absolute;
   top: 0;
   transform: scale(1.1);
@@ -36,7 +38,7 @@ const Video = styled.video`
 
 const MediaBluredBack = ({ type, media }) => (
   <MediaWrapper>
-    {(type === 'image' || type === 'carousel') ? <Image src={media} /> : <Video src={media} autoPlay="true" muted /> }
+    {(type === 'image' || type === 'carousel') ? <Image pic={media} /> : <Video src={media} autoPlay="true" muted /> }
   </MediaWrapper>
 )
 
