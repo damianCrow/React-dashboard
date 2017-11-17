@@ -34,7 +34,6 @@ export const slideshowState = (service = '', carousel = false) => {
         }
 
       case `${service}_${SLIDESHOW_NEXT}`: {
-        console.log('showToSkip adding 1 to current: ', slideLevel)
         const current = ((slideLevel.current + 1) > slideLevel.max) ? 0 : (slideLevel.current + 1)
         return (carousel ? { ...state, carousel: { ...slideLevel, current } } : { ...state, current, carousel: initalSlideshowCarouselState })
       }

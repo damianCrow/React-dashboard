@@ -48,7 +48,7 @@ class InstagramCarousel extends Component {
     super()
     console.log('InstagramCarousel constructor')
 
-    this.state = { last: false, ready: false }
+    this.state = { last: false }
   }
 
   // componentWillMount() {

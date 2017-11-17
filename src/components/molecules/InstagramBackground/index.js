@@ -30,6 +30,7 @@ const InstagramBackground = ({ posts, slideshow, innerSlideshow }) => {
       switch (type) {
         case 'carousel':
           currentItem = post.carousel_media[innerSlideshow.current]
+          console.log('innerSlideshow.current', innerSlideshow.current)
           return (<MediaBluredBack media={currentItem[`${currentItem.type}s`].standard_resolution.url} type={currentItem.type} />)
         case 'video':
           return (<MediaBluredBack media={post.videos.standard_resolution.url} type="video" />)

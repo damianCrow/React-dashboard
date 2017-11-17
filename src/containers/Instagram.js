@@ -20,7 +20,6 @@ const InstagramWrapper = styled.section`
   top: 0;
   font-family: ${fonts.primary};
   width: 100%;
-  contain: strict;
 `
 
 const BottomMeta = styled.div`
@@ -126,6 +125,7 @@ class InstagramContainer extends PureComponent {
             {(post.type === 'carousel') && <Pagination
               total={this.props.carousel.max}
               active={this.props.carousel.current}
+              postId={post.id}
             />}
           </BottomMeta>
           {/* <InstagramFrame post={post} slideShowKey={id} mediaType={type} /> */}
