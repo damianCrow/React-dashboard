@@ -20,10 +20,11 @@ export const slideshowState = (service = '', carousel = false) => {
       case `${service}_${SLIDESHOW_META}`: {
         const max = ((action.max - 1) < 0) ? 0 : action.max - 1
         const newState = {
-          max,
           current: (slideLevel.current > max) ? max : slideLevel.current,
+          max,
           status: 'ready',
         }
+        // return { ...state, ...newState }
         return (carousel ? { ...state, carousel: { ...newState } } : { ...state, ...newState })
       }
 
@@ -35,7 +36,17 @@ export const slideshowState = (service = '', carousel = false) => {
 
       case `${service}_${SLIDESHOW_NEXT}`: {
         const current = ((slideLevel.current + 1) > slideLevel.max) ? 0 : (slideLevel.current + 1)
-        return (carousel ? { ...state, carousel: { ...slideLevel, current } } : { ...state, current, carousel: initalSlideshowCarouselState })
+        return (carousel ? {
+          ...state,
+          carousel: {
+            ...slideLevel,
+            current,
+          },
+        } : {
+          ...state,
+          current,
+          carousel: { ...initialState, status: 'ready' },
+        })
       }
 
       case `${service}_${SLIDESHOW_RESTART}`:

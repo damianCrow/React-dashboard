@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { connect } from 'react-redux'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
 
-import { startSlideshowLogic } from 'store/actions'
+import { startSlideshowLogic, clearComponentTimeout, slideshowMeta } from 'store/actions'
 import { SlideshowLogic } from 'hoc'
 import { FadeRightLeftOutInTransitionWrapper, InstagramImage, InstagramVideo } from 'components'
 
@@ -44,9 +44,10 @@ const Carousel = styled.div`
 
 
 class InstagramCarousel extends Component {
-  constructor() {
+  constructor(props) {
     super()
     console.log('InstagramCarousel constructor')
+    // props.clearComponentTimeout()
 
     this.state = { last: false }
   }
@@ -62,28 +63,35 @@ class InstagramCarousel extends Component {
   componentDidMount() {
     if (this.props.carousel.status === 'waiting') {
       this.props.startSlideshowLogic(this.props.posts.length)
+    } else {
+      this.props.slideshowMeta(this.props.posts.length)
     }
-    console.log('InstagramCarousel componentDidMount this.props: ', this.props)
+    // console.log('InstagramCarousel componentDidMount this.props: ', this.props)
   }
 
   componentWillReceiveProps(nextProps) {
-    if ((nextProps.carousel.current === nextProps.carousel.max) && (nextProps.carousel.status === 'ready')) {
-      console.log('this is the last photo in the carousel after it, we will going back to main slideshow')
+    if ((nextProps.carousel.current === nextProps.carousel.max)) {
+      // console.log('this is the last photo in the carousel after it, we will going back to main slideshow')
+      // this.props.clearComponentTimeout()
       this.setState({ last: true })
     }
 
-    if (nextProps.carousel.status === 'waiting') {
-      // console.log('carousel now cleaned and ready')
-      // this.setState({ ready: true })
-      nextProps.startSlideshowLogic(nextProps.posts.length)
+    if (this.props.carouselPostId !== nextProps.carouselPostId) {
+      this.props.slideshowMeta(this.props.posts.length)
     }
+
+    // if (nextProps.carousel.status === 'waiting') {
+    //   // console.log('carousel now cleaned and ready')
+    //   // this.setState({ ready: true })
+    //   nextProps.startSlideshowLogic(nextProps.posts.length)
+    // }
   }
 
   shouldComponentUpdate = () => !this.state.last
 
-  // componentWillUnmount() {
-  //   console.log('carousel unmounting')
-  // }
+  componentWillUnmount() {
+    console.log('InstagramCarousel unmounting')
+  }
 
   render() {
     const post = this.props.posts[this.props.carousel.current]
@@ -93,11 +101,11 @@ class InstagramCarousel extends Component {
 
         switch (post.type) {
           case 'video':
-            InstagramMedia = SlideshowLogic({ connectedComp: InstagramVideo, service: 'instagram', subSlideshow: (this.state.last ? '' : 'carousel'), timeout: false })
+            InstagramMedia = SlideshowLogic({ connectedComp: InstagramVideo, service: 'instagram', subSlideshow: (this.state.last ? '' : 'carousel'), timeout: false, id: this.props.carouselPostId })
             return (<InstagramMedia currentVideo={post.videos.standard_resolution.url} />)
           case 'image':
           default:
-            InstagramMedia = SlideshowLogic({ connectedComp: InstagramImage, service: 'instagram', subSlideshow: (this.state.last ? '' : 'carousel') })
+            InstagramMedia = SlideshowLogic({ connectedComp: InstagramImage, service: 'instagram', subSlideshow: (this.state.last ? '' : 'carousel'), id: this.props.carouselPostId })
             return (<InstagramMedia currentImage={post.images.standard_resolution.url} />)
         }
       }
@@ -124,7 +132,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   startSlideshowLogic: max => dispatch(startSlideshowLogic('INSTAGRAMCAROUSEL', max)),
-  // cleanSlideshow: () => dispatch(cleanSlideshow('INSTAGRAMCAROUSEL')),
+  slideshowMeta: max => dispatch(slideshowMeta('INSTAGRAMCAROUSEL', max)),
+  clearComponentTimeout: () => dispatch(clearComponentTimeout('INSTAGRAMCAROUSEL')),
 })
 
 
@@ -132,7 +141,8 @@ InstagramCarousel.propTypes = {
   posts: PropTypes.array.isRequired,
   carousel: PropTypes.object,
   startSlideshowLogic: PropTypes.func,
-  // cleanSlideshow: PropTypes.func,
+  slideshowMeta: PropTypes.func,
+  clearComponentTimeout: PropTypes.func,
   carouselPostId: PropTypes.string,
 }
 

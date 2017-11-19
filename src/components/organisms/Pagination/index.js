@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
+
 const PaginationContainer = styled.div`
   flex: 0 0 auto;
   position: absolute;
@@ -30,7 +31,7 @@ const Point = styled.span`
   border-radius: 50%;
   width: 6px;
   transition: background-color 4s;
-  background-color: ${props => props.active ? '#fff' : '#d8d8d8'};
+  background-color: ${props => props.active ? 'rgba(33, 33, 33, 0.75)' : 'rgba(97, 97, 97, 0.75)'};
 `
 
 const PointHighligter = styled(Point)`
@@ -38,7 +39,7 @@ const PointHighligter = styled(Point)`
   ${props => props.distance ? `transform: translateX(${props.distance}px) scale(1.15)` : 'scale(0)'};
   position: absolute;
   left: 0;
-  background-color: white;
+  background-color: rgba(33, 33, 33, 0.75);
   margin-left: 0;
   margin-right: 0;
 `
@@ -83,7 +84,7 @@ class Pagination extends Component {
 
   componentWillReceiveProps(nextProps) {
     if ((nextProps.active === nextProps.total) && this.props.postId === nextProps.postId) {
-      console.log('this is the last point in the pagination after it')
+      // console.log('this is the last point in the pagination after it')
       this.setState({ last: true })
     } else if (this.props.postId !== nextProps.postId) {
       this.setState({ last: false })

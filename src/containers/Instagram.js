@@ -8,7 +8,7 @@ import { startSlideshowLogic, socketDataRequest } from 'store/actions'
 import { InstagramFrame, Pagination, SplashScreen, Icon, MetaTags, Ticker, InstagramBackground } from 'components'
 
 const InstagramWrapper = styled.section`
-  color: white;
+  color: rgba(33, 33, 33);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -115,20 +115,19 @@ class InstagramContainer extends PureComponent {
                 {post.location && <InstagramCaption>{post.location.name}</InstagramCaption>}
               </HeaderLevel>
               <HeaderLevel>
-                <MetaTags tags={metaTags} />
+                <MetaTags palette="grayscale" tags={metaTags} />
               </HeaderLevel>
             </Ticker>
             <InstagramFrame />
           </Frame>
           <BottomMeta>
-            <StyledIcon icon={'instagram'} height={35} />
+            <StyledIcon icon={'instagram'} height={35} palette="grayscale" />
             {(post.type === 'carousel') && <Pagination
               total={this.props.carousel.max}
               active={this.props.carousel.current}
               postId={post.id}
             />}
           </BottomMeta>
-          {/* <InstagramFrame post={post} slideShowKey={id} mediaType={type} /> */}
         </InstagramWrapper>
       )
     }

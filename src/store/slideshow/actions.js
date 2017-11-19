@@ -1,5 +1,5 @@
 export const SLIDESHOW_START = 'SLIDESHOW_START'
-export const SLIDESHOW_COMPONENT_TIMEOUT = 'SLIDESHOW_COMPONENT_TIMEOUT'
+export const SLIDESHOW_TIMEOUT = 'SLIDESHOW_TIMEOUT'
 export const SLIDESHOW_RESUME = 'SLIDESHOW_RESUME'
 export const SLIDESHOW_NEXT = 'SLIDESHOW_NEXT'
 export const SLIDESHOW_CLEAR_TIME = 'SLIDESHOW_CLEAR_TIME'
@@ -23,7 +23,7 @@ export const slideshowMeta = (service, max) => ({
 })
 
 export const startComponentTimeout = service => ({
-  type: `${service.toUpperCase()}_${SLIDESHOW_COMPONENT_TIMEOUT}`,
+  type: `${service.toUpperCase()}_${SLIDESHOW_TIMEOUT}`,
   service,
 })
 

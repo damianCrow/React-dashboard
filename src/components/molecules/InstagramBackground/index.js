@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
@@ -19,36 +19,58 @@ const TransitionWrapper = styled(TransitionGroup)`
   contain: size layout style;
 `
 
-const InstagramBackground = ({ posts, slideshow, innerSlideshow }) => {
-  const post = posts[slideshow.current]
-  const { type } = post
-  const id = `${post.id}_${innerSlideshow.current}`
+class InstagramBackground extends Component {
+  constructor() {
+    super()
+    console.log('InstagramBackground constructor')
 
-  let currentItem = {}
-  if (slideshow.status === 'ready') {
-    const bluredBack = () => {
-      switch (type) {
-        case 'carousel':
-          currentItem = post.carousel_media[innerSlideshow.current]
-          console.log('innerSlideshow.current', innerSlideshow.current)
-          return (<MediaBluredBack media={currentItem[`${currentItem.type}s`].standard_resolution.url} type={currentItem.type} />)
-        case 'video':
-          return (<MediaBluredBack media={post.videos.standard_resolution.url} type="video" />)
-        default:
-        case 'image':
-          return (<MediaBluredBack media={post.images.thumbnail.url} type="image" />)
-      }
-    }
-
-    return (
-      <TransitionWrapper>
-        <FadingTransitionWrapper key={id}>
-          {bluredBack()}
-        </FadingTransitionWrapper>
-      </TransitionWrapper>
-    )
+    this.state = { last: false }
   }
-  return null
+
+  componentWillReceiveProps(nextProps) {
+    const { innerSlideshow } = nextProps
+    if ((innerSlideshow.current === innerSlideshow.max) && (innerSlideshow.status === 'ready')) {
+      // console.log('this is the last photo in the carousel after it, we will going back to main slideshow')
+      this.setState({ last: true })
+    } else if (this.state.last) {
+      this.setState({ last: false })
+    }
+  }
+
+  // shouldComponentUpdate = () => !this.state.last
+
+  render() {
+    // const InstagramBackground = ({ posts, slideshow, innerSlideshow }) => {
+    const post = this.props.posts[this.props.slideshow.current]
+    const { type } = post
+    const id = `${post.id}_${this.props.innerSlideshow.current}`
+
+    if (this.props.slideshow.status === 'ready') {
+      const bluredBack = () => {
+        switch (type) {
+          case 'carousel': {
+            const currentItem = post.carousel_media[this.props.innerSlideshow.current]
+            console.log('background innerSlideshow.current', this.props.innerSlideshow.current)
+            return (<MediaBluredBack media={currentItem[`${currentItem.type}s`].standard_resolution.url} type={currentItem.type} />)
+          }
+          case 'video':
+            return (<MediaBluredBack media={post.videos.standard_resolution.url} type="video" />)
+          default:
+          case 'image':
+            return (<MediaBluredBack media={post.images.thumbnail.url} type="image" />)
+        }
+      }
+
+      return (
+        <TransitionWrapper>
+          <FadingTransitionWrapper key={id}>
+            {bluredBack()}
+          </FadingTransitionWrapper>
+        </TransitionWrapper>
+      )
+    }
+    return null
+  }
 }
 
 // Listen and capture any changes made as a result of the the actions below.
