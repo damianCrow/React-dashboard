@@ -34,6 +34,7 @@ const TwitterWrapper = styled.section`
   top: 0;
   font-family: ${fonts.primary};
   width: 100%;
+  contain: strict;
 `
 
 const TwitterMedia = styled.div`

@@ -16,6 +16,7 @@ const SonosContainerStyled = styled.div`
   top: 0;
   width: 100%;
   font-family: ${fonts.primary};
+  contain: strict;
 `
 
 const SonosContainer = ({ children, ...props }) => {

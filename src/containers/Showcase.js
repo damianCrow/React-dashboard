@@ -19,6 +19,7 @@ const styles = css`
   text-align: left;
   top: 0;
   width: 100%;
+  contain: strict;
 `
 const TransitionWrapper = styled(TransitionGroup)`${styles}`
 

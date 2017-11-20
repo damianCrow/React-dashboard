@@ -26,6 +26,7 @@ const HarvestShuffle = styled.div`
   display: flex;
   position: relative;
   overflow: hidden;
+  contain: strict;
   & > * {
     display: flex;
     max-width: 100%;
@@ -85,6 +86,7 @@ const HarvestPanel = styled(HarvestEntry)`
   background-size: 80%;
   background-position: 40% 10%;
   background-repeat: no-repeat;
+  contain: strict;
 `
 // const HarvestPanelImage = styled.div`
 //   background-color: #f66822;
