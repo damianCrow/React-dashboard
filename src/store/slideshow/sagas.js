@@ -2,7 +2,7 @@ import { delay } from 'redux-saga'
 import { take, takeLatest, takeEvery, put, fork, select, cancel, call } from 'redux-saga/effects'
 import * as actions from './actions'
 
-function* componentTimeout(action, delayTime = 8000) {
+function* componentTimeout(action, delayTime = 15000) {
   const service = action.service
   yield delay(delayTime)
   yield put(actions.nextComponentSlideshow(service))
