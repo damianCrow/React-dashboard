@@ -80,5 +80,4 @@ class VimeoVideo extends Component {
   }
 }
 
-
-export default SlideshowLogic(VimeoVideo, 'showcase', false)
+export default SlideshowLogic({ connectedComp: VimeoVideo, service: 'showcase', timeout: false })

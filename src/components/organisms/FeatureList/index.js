@@ -28,7 +28,7 @@ const FeatureList = ({ ...props }) => {
           <SonosInfo />
         </Feature>
         <Feature square>
-          {/*<Twitter />*/}
+          <Twitter />
         </Feature>
         <Feature square>
           <Instagram />
@@ -36,12 +36,12 @@ const FeatureList = ({ ...props }) => {
       </GridRow>
       <GridRow>
         <Feature megaWide>
-          {/*<Countdown />*/}
+          <Countdown />
         </Feature>
       </GridRow>
       <GridRow>
         <Feature wide>
-          {/*<Showcase />*/}
+          <Showcase />
         </Feature>
       </GridRow>
       <GridRow>
@@ -54,7 +54,7 @@ const FeatureList = ({ ...props }) => {
       </GridRow>
       <GridRow>
         <Feature madWide>
-          {/*<Harvest />*/}
+          <Harvest />
         </Feature>
       </GridRow>
     </Grid>

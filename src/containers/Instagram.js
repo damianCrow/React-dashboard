@@ -85,16 +85,6 @@ class InstagramContainer extends PureComponent {
     }
   }
 
-  // shouldComponentUpdate(nextProps) {
-  //   if (this.props.slideshow.status === 'ready') {
-  //     if (nextProps.posts[nextProps.slideshow.current].id === this.props.posts[this.props.slideshow.current].id) {
-  //       return false
-  //     }
-  //   }
-
-  //   return true
-  // }
-
   render() {
     const isEmpty = this.props.posts.length === 0
 

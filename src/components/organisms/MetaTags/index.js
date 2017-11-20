@@ -50,7 +50,7 @@ MetaTags.propTypes = {
 }
 
 MetaTags.defaultProps = {
-  palette: false,
+  palette: '',
 }
 
 

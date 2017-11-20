@@ -53,16 +53,6 @@ const TwitterCaption = styled.span`
   margin: 1rem .5rem;
 `
 
-// const footerStyles = ({ ...props }) => css`
-//   background-color: rgba(0,0,0,.5);
-//   display: flex;
-//   width: 100%;
-//   overflow: hidden;
-//   flex: 0 0 3rem;
-//   align-items: center;
-//   margin-top: auto;
-//   flex-direction: row;
-// `
 const TwitterFrame = styled.div`
   display: flex;
   flex-direction: column;

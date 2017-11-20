@@ -22,25 +22,19 @@ const TransitionWrapper = styled(TransitionGroup)`
 class InstagramBackground extends Component {
   constructor() {
     super()
-    console.log('InstagramBackground constructor')
-
     this.state = { last: false }
   }
 
   componentWillReceiveProps(nextProps) {
     const { innerSlideshow } = nextProps
     if ((innerSlideshow.current === innerSlideshow.max) && (innerSlideshow.status === 'ready')) {
-      // console.log('this is the last photo in the carousel after it, we will going back to main slideshow')
       this.setState({ last: true })
     } else if (this.state.last) {
       this.setState({ last: false })
     }
   }
 
-  // shouldComponentUpdate = () => !this.state.last
-
   render() {
-    // const InstagramBackground = ({ posts, slideshow, innerSlideshow }) => {
     const post = this.props.posts[this.props.slideshow.current]
     const { type } = post
     const id = `${post.id}_${this.props.innerSlideshow.current}`
@@ -50,7 +44,6 @@ class InstagramBackground extends Component {
         switch (type) {
           case 'carousel': {
             const currentItem = post.carousel_media[this.props.innerSlideshow.current]
-            console.log('background innerSlideshow.current', this.props.innerSlideshow.current)
             return (<MediaBluredBack media={currentItem[`${currentItem.type}s`].standard_resolution.url} type={currentItem.type} />)
           }
           case 'video':

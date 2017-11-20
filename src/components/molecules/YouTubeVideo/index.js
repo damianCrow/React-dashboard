@@ -54,7 +54,6 @@ class YouTubeVideo extends Component {
   }
 
   onVideoEnd() {
-    console.log('youtube onVideoEnd, this.state.finishing: ', this.state.finishing)
     // Passed by HOC
     this.props.nextComponent()
     // if(!this.state.finishing) {
@@ -65,25 +64,15 @@ class YouTubeVideo extends Component {
     // }
   }
 
-  // componentWillUnmount() {
-  //   console.log('youtube componentWillUnmount, this.state.finishing: ', this.state.finishing)
-  //   if(!this.state.finishing) {
-  //     this.setState({
-  //       finishing: true,
-  //     })
-  //     this.props.resumeInstaSlideshow()
-  //   }
-  // }
-
   /**
    * Handles the event when the video is ready to play
    *
    * @returns {void}
    */
-  handleVideoReady(event) {
-    // event.target.mute()
-    // this.props.pauseInstaSlideshow()
-  }
+  // handleVideoReady(event) {
+  //   // event.target.mute()
+  //   // this.props.pauseInstaSlideshow()
+  // }
 
   render() {
     const { serviceId } = this.props
@@ -100,11 +89,4 @@ class YouTubeVideo extends Component {
   }
 }
 
-// const mapDispatchToProps = (dispatch) => ({
-//   resumeInstaSlideshow: () => dispatch(resumeServiceSlideshow('showcase')),
-//   pauseInstaSlideshow: () => dispatch(pauseServiceSlideshow('showcase')),
-// })
-
-
-// export default connect(null, mapDispatchToProps)(YouTubeVideo)
-export default SlideshowLogic(YouTubeVideo, 'showcase', false)
+export default SlideshowLogic({ connectedComp: YouTubeVideo, service: 'showcase', timeout: false })

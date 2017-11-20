@@ -11,6 +11,7 @@ yarn-error.log
 npm-debug.log
 
 public/user-data/
+public/google-user-pics/*
 .credentials/
 
 coverage
