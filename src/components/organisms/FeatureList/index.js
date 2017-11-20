@@ -5,25 +5,30 @@ import { Feature } from 'components'
 import { SonosInfo, Twitter, Instagram, Countdown, Harvest, Showcase, Calendar } from 'containers'
 
 const Grid = styled.div`
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
+  height: 100%;
 `
 
 const GridRow = styled.div`
   display: flex;
   width: 100%;
+  flex: ${props => props.size ? props.size : '1 1 auto'};
 `
 
-const GridColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 33.3333333333%
+const SquareGridRow = styled(GridRow)`
+  min-height: 360px;
+`
+
+const WideGridRow = styled(GridRow)`
+  min-height: 608px;
 `
 
 const FeatureList = ({ ...props }) => {
   return (
     <Grid {...props}>
-      <GridRow>
+      <SquareGridRow size="1">
         <Feature square>
           <SonosInfo />
         </Feature>
@@ -33,27 +38,24 @@ const FeatureList = ({ ...props }) => {
         <Feature square>
           <Instagram />
         </Feature>
-      </GridRow>
-      <GridRow>
-        <Feature megaWide>
+      </SquareGridRow>
+      <GridRow size="1">
+        <Feature>
           <Countdown />
         </Feature>
       </GridRow>
-      <GridRow>
-        <Feature wide>
+      <WideGridRow size="1">
+        <Feature>
           <Showcase />
         </Feature>
-      </GridRow>
-      <GridRow>
-        <Feature />
-      </GridRow>
-      <GridRow>
-        <Feature style={{ paddingTop: '52%' }}>
+      </WideGridRow>
+      <GridRow size="7">
+        <Feature>
           <Calendar />
         </Feature>
       </GridRow>
-      <GridRow>
-        <Feature madWide>
+      <GridRow size="2">
+        <Feature>
           <Harvest />
         </Feature>
       </GridRow>

@@ -9,10 +9,18 @@ import { UserCircle, CalendarRow } from 'components'
 import { TransitionMotion, spring, presets } from 'react-motion'
 
 const CalendarWrapper = styled.div`
-  position: absolute;
+  display: flex;
   width: 100%;
-  height: 100%;
-  top: 0;
+`
+
+const CalendarBrief = styled.div`
+  display: flex;
+`
+
+const EventsContainer = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
 `
 
 class CalendarContainer extends Component {
@@ -117,7 +125,7 @@ class CalendarContainer extends Component {
     return (
       <CalendarWrapper key={this.state.key}>
         {inAvatarArray.length > 0 && outAvatarArray.length > 0 ? (
-          <div>
+          <CalendarBrief>
             <CalendarRow
               rowDay={'Today'}
               rowTitle={'Out Of Office'}
@@ -136,7 +144,7 @@ class CalendarContainer extends Component {
             >
               {inAvatarArray}
             </CalendarRow>
-          </div>
+          </CalendarBrief>
         ) : (null)}
 
         {this.state.meetings.length > 0 ? (
@@ -147,7 +155,7 @@ class CalendarContainer extends Component {
             willEnter={this.willEnter}
           >
             {(styles) => {
-              return (<div> {styles.map((meeting, idx) => {
+              return (<EventsContainer> {styles.map((meeting, idx) => {
                 let rowDate
                 let colorCode
                 let location
@@ -192,7 +200,7 @@ class CalendarContainer extends Component {
                   )
                 }
                 return null
-              })}</div>)
+              })}</EventsContainer>)
             }
             }
           </TransitionMotion>

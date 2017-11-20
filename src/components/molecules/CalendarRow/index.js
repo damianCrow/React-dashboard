@@ -16,7 +16,6 @@ const Pulsate = keyframes`
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
-  height: 80px;
   display: flex;
   padding: 0 15px;
   overflow: hidden;
