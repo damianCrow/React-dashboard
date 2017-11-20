@@ -48,20 +48,20 @@ const Header = (props) => {
           timezone="Europe/London"
         />
         <Clock
-          country="United States of America"
-          countryAbbr="USA"
-          gradient="#FDEF42, #50B848"
-          location="Los Angeles"
-          locationAbbr="LA"
-          timezone="America/Los_Angeles"
-        />
-        <Clock
           country="Bahrain"
           countryAbbr="BAH"
           gradient="#FBB568, #FDEF42"
           location="Manama"
           locationAbbr="MAN"
           timezone="Etc/GMT+3"
+        />
+        <Clock
+          country="United States of America"
+          countryAbbr="USA"
+          gradient="#FDEF42, #50B848"
+          location="Los Angeles"
+          locationAbbr="LA"
+          timezone="America/Los_Angeles"
         />
       </Clocks>
     </Wrapper>
