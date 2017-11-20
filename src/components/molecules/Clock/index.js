@@ -15,6 +15,7 @@ const ClockFrame = styled.div`
   position: relative;
   box-sizing: border-box;
   background: linear-gradient(to right, rgba(255,255,255,1) 0%,rgba(230,230,230,1) 100%);
+  contain: strict;
 `
 
 const Handles = styled.div`

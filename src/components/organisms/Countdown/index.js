@@ -17,6 +17,7 @@ const Wrapper = styled.div`
   height: 100%;
   overflow: hidden;
   position: absolute;
+  contain: strict;
   &:after {
     content: '';
     width: 100%;

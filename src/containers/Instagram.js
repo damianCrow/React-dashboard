@@ -20,6 +20,7 @@ const InstagramWrapper = styled.section`
   top: 0;
   font-family: ${fonts.primary};
   width: 100%;
+  contain: strict;
 `
 
 const BottomMeta = styled.div`
