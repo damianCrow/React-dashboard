@@ -52,15 +52,15 @@ class TwitterContainer extends Component {
 }
 
 // Listen and capture any changes made as a result of the the actions below.
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   posts: state.twitter.data.posts,
   status: state.twitter.data.status,
   slideshow: state.twitter.slideshow,
 })
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   serviceRequest: () => dispatch(socketDataRequest({ service: 'TWITTER', serverAction: 'pull', request: 'tweets' })),
-  startSlideshowLogic: (max) => dispatch(startSlideshowLogic('TWITTER', max)),
+  startSlideshowLogic: max => dispatch(startSlideshowLogic('TWITTER', max)),
 })
 
 TwitterContainer.propTypes = {

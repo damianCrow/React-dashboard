@@ -131,9 +131,9 @@ class Countdown extends Component {
 }
 
 Countdown.propTypes = {
-  countDownDisplay: PropTypes.string,
   event: PropTypes.object,
   countdownFigure: PropTypes.string,
 }
 
-export default SlideshowLogic(Countdown, 'countdown', true, true)
+export default SlideshowLogic({ connectedComp: Countdown, service: 'countdown', propBased: true })
+// export default SlideshowLogic({connectedComp:  Countdown, 'countdown', true, true})

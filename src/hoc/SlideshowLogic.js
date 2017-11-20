@@ -4,7 +4,14 @@ import PropTypes from 'prop-types'
 import { startComponentTimeout, clearComponentTimeout, nextComponentSlideshow } from 'store/actions'
 
 
-function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true, propBased = false) {
+function SlideshowLogic(initalConfig) {
+  const config = {
+    timeout: true,
+    propBased: false,
+    subSlideshow: '',
+    ...initalConfig,
+  }
+
   class SlideshowLogicWrapper extends Component {
     componentDidMount() {
       this.startOrClear()
@@ -13,7 +20,7 @@ function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true, propBased =
     // If this slideshow component is not a refreshing...
     // ...component (unmounting and mounting), base the slideshow logic on the changing prop.
     componentWillReceiveProps(nextProps) {
-      if (propBased && (nextProps.slideshowCurrent !== this.props.slideshowCurrent)) {
+      if (config.propBased && (nextProps.slideshowCurrent !== this.props.slideshowCurrent)) {
         this.startOrClear()
       }
 
@@ -25,7 +32,7 @@ function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true, propBased =
     }
 
     startOrClear() {
-      if (timeoutOrNot) {
+      if (config.timeout) {
         // This will clear the last timeout as well as set a new timeout.
         this.props.startTimeoutUntilNextSlide()
       } else {
@@ -35,23 +42,31 @@ function SlideshowLogic(ConnectedComp, service, timeoutOrNot = true, propBased =
     }
 
     render() {
+      const ConnectedComp = config.connectedComp
       return (
         <ConnectedComp {...this.props} />
       )
     }
   }
 
-  const mapStateToProps = state => ({
-    slideshowStatus: state[service].slideshow.status,
-    slideshowCurrent: state[service].slideshow.current,
-    slideshowMax: state[service].slideshow.max,
-  })
+  const mapStateToProps = (state) => {
+    const slideshow = config.subSlideshow ? state[config.service].slideshow[config.subSlideshow] : state[config.service].slideshow
+    return {
+      slideshowStatus: slideshow.status,
+      slideshowCurrent: slideshow.current,
+      slideshowMax: slideshow.max,
+    }
+  }
 
-  const mapDispatchToProps = dispatch => ({
-    startTimeoutUntilNextSlide: () => dispatch(startComponentTimeout(service)),
-    clearTimeoutForNextSlide: () => dispatch(clearComponentTimeout(service)),
-    nextComponent: () => dispatch(nextComponentSlideshow(service)),
-  })
+  const mapDispatchToProps = (dispatch) => {
+    const slideType = config.subSlideshow ? (config.service + config.subSlideshow) : config.service
+    // console.log('hoc slideType dispatch: ', slideType)
+    return {
+      startTimeoutUntilNextSlide: () => dispatch(startComponentTimeout(slideType)),
+      clearTimeoutForNextSlide: () => dispatch(clearComponentTimeout(slideType)),
+      nextComponent: () => dispatch(nextComponentSlideshow(slideType)),
+    }
+  }
 
   SlideshowLogicWrapper.propTypes = {
     startTimeoutUntilNextSlide: PropTypes.func,

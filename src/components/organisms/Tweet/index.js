@@ -80,7 +80,7 @@ class Tweet extends Component {
     this.theater
       .addScene(500)
       .addScene(`${this.tweetId}:${stripLinks(allTweetDetails.text)}`, 100)
-      .addScene(done => {
+      .addScene((done) => {
         done()
         setTimeout(() => {
           if (!this.state.removeing) {
@@ -97,7 +97,7 @@ class Tweet extends Component {
 
     this.theater
       .addScene(`${this.tweetId}: `, 50)
-      .addScene(done => {
+      .addScene((done) => {
         done()
         this.props.nextComponent()
       })
@@ -119,5 +119,4 @@ Tweet.propTypes = {
   nextComponent: PropTypes.func.isRequired,
 }
 
-export default SlideshowLogic(Tweet, 'twitter', false)
-
+export default SlideshowLogic({ connectedComp: Tweet, service: 'twitter', timeout: false })

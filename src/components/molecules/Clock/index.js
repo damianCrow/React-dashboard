@@ -27,7 +27,10 @@ const Handles = styled.div`
 `
 
 const Wrapper = styled.figure`
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
   margin: 1rem;
 `
 
@@ -38,11 +41,14 @@ const FrontShadow = styled.svg`
   contain: strict;
 `
 
-const LocationType = styled.abbr`
+const LocationWrapper = styled.figcaption`
+  display: inline-flex;
+`
+
+const Location = styled.abbr`
   border-bottom: 0;
   color: white;
   font-size: 1.5rem;
-  font-weight: bold;
   margin: 0 .20rem;
   text-align: center;
   text-decoration: none;
@@ -51,8 +57,11 @@ const LocationType = styled.abbr`
   font-family: ${fonts.primary};
 `
 
-class Clock extends Component {
+const LocationType = styled(Location)`
+  font-weight: bold;
+`
 
+class Clock extends Component {
   constructor() {
     super()
     this.state = {
@@ -109,9 +118,10 @@ class Clock extends Component {
             />
           </FrontShadow>
         </ClockFrame>
-        <figcaption>
+        <LocationWrapper>
           <LocationType title={this.props.location} >{this.props.locationAbbr}</LocationType>
-        </figcaption>
+          <Location title={this.props.country} >{this.props.countryAbbr}</Location>
+        </LocationWrapper>
       </Wrapper>
     )
   }
@@ -120,6 +130,8 @@ class Clock extends Component {
 Clock.propTypes = {
   location: PropTypes.string,
   locationAbbr: PropTypes.string,
+  country: PropTypes.string,
+  countryAbbr: PropTypes.string,
   timezone: PropTypes.string,
   gradient: PropTypes.string,
 }

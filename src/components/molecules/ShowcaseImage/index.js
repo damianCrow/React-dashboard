@@ -58,4 +58,4 @@ ShowcaseImage.propTypes = {
   preview: PropTypes.string,
 }
 
-export default SlideshowLogic(ShowcaseImage, 'showcase')
+export default SlideshowLogic({ connectedComp: ShowcaseImage, service: 'showcase' })

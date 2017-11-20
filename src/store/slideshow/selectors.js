@@ -4,6 +4,11 @@ export const initialState = {
   status: 'waiting',
 }
 
+export const initalSlideshowCarouselState = {
+  ...initialState,
+  carousel: initialState,
+}
+
 // export const getInstagramData = (state = initialState) => state.instagram || []
 
 export const maxSlideshow = (service = '') => {

@@ -12,7 +12,7 @@ import {
 
 function sortEvents(events) {
   events.sort((a, b) => (moment(a.endDateTime, 'DD-MM-YYYY HH:mm:ss').unix() - moment(b.endDateTime, 'DD-MM-YYYY HH:mm:ss').unix()))
-  events.map(event => {
+  events.map((event) => {
     const eventUnix = event
     eventUnix.unixStart = moment(event.startDateTime, 'DD-MM-YYYY HH:mm:ss').unix()
     return eventUnix

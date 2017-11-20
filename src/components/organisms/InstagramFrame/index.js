@@ -1,9 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
+import { connect } from 'react-redux'
 import TransitionGroup from 'react-transition-group/TransitionGroup'
+import { SlideshowLogic } from 'hoc'
 
-import { FadingTransitionWrapper, InstagramImage, InstagramVideo, MetaTags, Ticker } from 'components'
+import { FadingTransitionWrapper, InstagramImage, InstagramVideo, InstagramCarousel } from 'components'
 
 const TransitionWrapper = styled(TransitionGroup)`
   color: black;
@@ -26,85 +28,47 @@ const InstagramMedia = styled.div`
   justify-content: center;
 `
 
-const InstagramCaption = styled.span`
-  display: inline-block;
-  flex: 1 1 auto;
-  margin: 1rem .5rem;
-`
+const InstagramFrame = ({ posts, current }) => {
+  let InstagramSlideshow = {}
+  const post = posts[current]
 
-const Frame = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: center;
-  left: 0;
-  overflow: hidden;
-  position: relative;
-  text-align: left;
-  top: 0;
-  width: 100%;
-`
-
-const HeaderLevel = styled.div`
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  flex: 0 0 100%;
-  justify-content: space-between;
-  z-index: 1;
-`
-
-const InstagramFrame = ({ post, mediaType, slideShowKey }) => {
-  const metaTags = [
-    { icon: 'heart', metaInfo: post.likes.count },
-    { icon: 'comment', metaInfo: post.comments.count },
-  ]
-
-  const currentPost = () => {
-    switch (mediaType) {
-      case 'image':
+  const mediaType = () => {
+    switch (post.type) {
       case 'carousel':
-      default:
-        return (<InstagramImage currentImage={post.images.standard_resolution.url} />)
+        InstagramSlideshow = SlideshowLogic({ connectedComp: InstagramCarousel, service: 'instagram', timeout: false })
+        return (<InstagramSlideshow posts={post.carousel_media} carouselPostId={post.id} />)
       case 'video':
-        return (<InstagramVideo currentVideo={post.videos.standard_resolution.url} />)
+        InstagramSlideshow = SlideshowLogic({ connectedComp: InstagramVideo, service: 'instagram', timeout: false })
+        return (<InstagramSlideshow currentVideo={post.videos.standard_resolution.url} />)
+      default:
+      case 'image':
+        InstagramSlideshow = SlideshowLogic({ connectedComp: InstagramImage, service: 'instagram' })
+        return (<InstagramSlideshow currentImage={post.images.standard_resolution.url} />)
     }
   }
 
   return (
-    <Frame>
-      { /* <Header>
-        <StyledIcon icon="instagram" size={35} />
-        <InstagramCaption>{post.caption.text}</InstagramCaption>
-        <MetaTags tags={metaTags} />
-      </Header> */ }
-      <Ticker icon="instagram" slideShowKey={slideShowKey}>
-        <HeaderLevel>
-          {post.location &&
-          <InstagramCaption>{post.location.name}</InstagramCaption>}
-        </HeaderLevel>
-        <HeaderLevel>
-          <MetaTags tags={metaTags} />
-        </HeaderLevel>
-      </Ticker>
-      <InstagramMedia>
-        <TransitionWrapper>
-          <FadingTransitionWrapper key={slideShowKey}>
-            {currentPost()}
-          </FadingTransitionWrapper>
-        </TransitionWrapper>
-      </InstagramMedia>
-    </Frame>
+    <InstagramMedia>
+      <TransitionWrapper>
+        <FadingTransitionWrapper key={post.id}>
+          {mediaType()}
+        </FadingTransitionWrapper>
+      </TransitionWrapper>
+    </InstagramMedia>
   )
 }
 
+const mapStateToProps = state => ({
+  posts: state.instagram.data.posts,
+  current: state.instagram.slideshow.current,
+})
+
+
 InstagramFrame.propTypes = {
-  post: PropTypes.object.isRequired,
-  slideShowKey: PropTypes.string.isRequired,
-  mediaType: PropTypes.string,
+  posts: PropTypes.array.isRequired,
+  current: PropTypes.number,
 }
 
-export default InstagramFrame
+
+export default connect(mapStateToProps)(InstagramFrame)
 

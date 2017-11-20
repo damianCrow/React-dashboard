@@ -1,27 +1,14 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { connect } from 'react-redux'
-import TransitionGroup from 'react-transition-group/TransitionGroup'
 
 import { fonts } from 'components/globals'
 import { startSlideshowLogic, socketDataRequest } from 'store/actions'
-import { FadingTransitionWrapper, InstagramFrame, MediaBluredBack, SplashScreen, Icon } from 'components'
-
-
-const TransitionWrapper = styled(TransitionGroup)`
-  color: black;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: left;
-  flex: 1;
-  width: 100%;
-  height: 100%;
-`
+import { InstagramFrame, Pagination, SplashScreen, Icon, MetaTags, Ticker, InstagramBackground } from 'components'
 
 const InstagramWrapper = styled.section`
-  color: white;
+  color: rgba(33, 33, 33);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -35,17 +22,59 @@ const InstagramWrapper = styled.section`
   width: 100%;
 `
 
+const BottomMeta = styled.div`
+  align-items: center;
+  bottom: 0;
+  box-sizing: border-box;
+  display: flex;
+  left: 0;
+  padding: .25rem;
+  position: absolute;
+  width: 100%;
+`
+
 const StyledIcon = styled(Icon)`
   z-index: 59;
   padding: .25rem;
   flex: 0 0 auto;
   opacity: .5;
-  position: absolute;
-  left: 0.25rem;
-  bottom: 0.5rem;
+  display: flex;
 `
 
-class InstagramContainer extends Component {
+// Frame
+
+const InstagramCaption = styled.span`
+  display: inline-block;
+  flex: 1 1 auto;
+  margin: 1rem .5rem;
+`
+
+const Frame = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  overflow: hidden;
+  position: relative;
+  text-align: left;
+  top: 0;
+  width: 100%;
+`
+
+const HeaderLevel = styled.div`
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex: 0 0 100%;
+  justify-content: space-between;
+  z-index: 1;
+`
+
+
+class InstagramContainer extends PureComponent {
   componentDidMount() {
     this.props.serviceRequest()
   }
@@ -59,30 +88,36 @@ class InstagramContainer extends Component {
   render() {
     const isEmpty = this.props.posts.length === 0
 
-    if (!isEmpty && this.props.slideshow.status === 'ready') {
-      const post = this.props.posts[this.props.slideshow.current]
-      const { id, type } = post
+    if (!isEmpty && this.props.slideshowStatus === 'ready') {
+      const post = this.props.posts[this.props.current]
 
-      const backgroundMedia = () => {
-        switch (type) {
-          case 'image':
-          case 'carousel':
-          default:
-            return (<MediaBluredBack media={post.images.thumbnail.url} type="image" />)
-          case 'video':
-            return (<MediaBluredBack media={post.videos.standard_resolution.url} type="video" />)
-        }
-      }
+      const metaTags = [
+        { icon: 'heart', metaInfo: post.likes.count },
+        { icon: 'comment', metaInfo: post.comments.count },
+      ]
 
       return (
         <InstagramWrapper>
-          <StyledIcon icon={'instagram'} height={35} />
-          <TransitionWrapper>
-            <FadingTransitionWrapper key={id}>
-              {backgroundMedia()}
-            </FadingTransitionWrapper>
-          </TransitionWrapper>
-          <InstagramFrame post={post} slideShowKey={id} mediaType={type} />
+          <InstagramBackground />
+          <Frame>
+            <Ticker icon="instagram" slideShowKey={post.id}>
+              <HeaderLevel>
+                {post.location && <InstagramCaption>{post.location.name}</InstagramCaption>}
+              </HeaderLevel>
+              <HeaderLevel>
+                <MetaTags palette="grayscale" tags={metaTags} />
+              </HeaderLevel>
+            </Ticker>
+            <InstagramFrame />
+          </Frame>
+          <BottomMeta>
+            <StyledIcon icon={'instagram'} height={35} palette="grayscale" />
+            {(post.type === 'carousel') && <Pagination
+              total={this.props.carousel.max}
+              active={this.props.carousel.current}
+              postId={post.id}
+            />}
+          </BottomMeta>
         </InstagramWrapper>
       )
     }
@@ -96,7 +131,9 @@ class InstagramContainer extends Component {
 const mapStateToProps = state => ({
   posts: state.instagram.data.posts,
   status: state.instagram.data.status,
-  slideshow: state.instagram.slideshow,
+  current: state.instagram.slideshow.current,
+  slideshowStatus: state.instagram.slideshow.status,
+  carousel: state.instagram.slideshow.carousel,
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -107,9 +144,11 @@ const mapDispatchToProps = dispatch => ({
 InstagramContainer.propTypes = {
   serviceRequest: PropTypes.func,
   startSlideshowLogic: PropTypes.func,
-  slideshow: PropTypes.object,
+  slideshowStatus: PropTypes.string,
   posts: PropTypes.array,
   status: PropTypes.string,
+  current: PropTypes.number,
+  carousel: PropTypes.object,
 }
 
 InstagramContainer.defaultProps = {
