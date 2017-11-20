@@ -13,14 +13,13 @@ const Wrapper = styled.div`
   overflow: hidden;
   height: 1920px;
   background: linear-gradient(to right, #00928f 0%, #50b848 100%);
-  cursor: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7), auto;
+  // cursor: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7), auto;
 `
 
 const Content = styled.article`
   box-sizing: border-box;
   display: flex;
   justify-content: center;
-  max-width: 1080px;
   width: 100%;
   overflow: hidden;
   will-change: transform;

@@ -10,7 +10,6 @@ import {
 function instagramReducerWrapper() {
   return (state = initialState, action) => {
     switch (action.type) {
-
       case SOCKET_INSTAGRAM_PULL_POSTS_SUCCESS:
         return {
           ...state,
@@ -31,8 +30,13 @@ function instagramReducerWrapper() {
   }
 }
 
+// const slideshow = combineReducers({
+//   main: slideshowState('INSTAGRAM', 'CAROUSEL'),
+//   carousel: slideshowState('INSTAGRAM'),
+// })
+
 // TODO: Spread (...) instragramReducerWrapper(), not in 'data'
 export default combineReducers({
   data: instagramReducerWrapper(),
-  slideshow: slideshowState('INSTAGRAM'),
+  slideshow: slideshowState('INSTAGRAM').merge(slideshowState('INSTAGRAMCAROUSEL', true)),
 })

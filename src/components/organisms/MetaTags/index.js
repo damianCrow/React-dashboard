@@ -27,11 +27,11 @@ const StyledIcon = styled(Icon)`
   flex: 0 0 auto;
 `
 
-const MetaTags = ({ tags }) => {
+const MetaTags = ({ tags, palette }) => {
   const builtTags = tags.map((tag, index) => {
     return (
       <Meta key={index}>
-        <StyledIcon icon={tag.icon} height={28} />
+        <StyledIcon palette={palette} icon={tag.icon} height={28} />
         <span>{tag.metaInfo}</span>
       </Meta>
     )
@@ -46,6 +46,12 @@ const MetaTags = ({ tags }) => {
 
 MetaTags.propTypes = {
   tags: PropTypes.array.isRequired,
+  palette: PropTypes.string,
 }
+
+MetaTags.defaultProps = {
+  palette: false,
+}
+
 
 export default MetaTags

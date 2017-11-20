@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { MediaBluredBack } from 'components'
-import { SlideshowLogic } from 'hoc'
 
 
 const ImageWrapper = styled.div`
@@ -32,4 +31,5 @@ InstagramImage.propTypes = {
   thumbnail: PropTypes.string,
 }
 
-export default SlideshowLogic(InstagramImage, 'instagram')
+// This should be wrapped in the SlideshowLogic HOC when used
+export default InstagramImage

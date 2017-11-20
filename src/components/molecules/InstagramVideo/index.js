@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { SlideshowLogic } from 'hoc'
 
 const ImageWrapper = styled.div`
   height: 100%;
@@ -51,4 +50,5 @@ InstagramVideo.defaultProps = {
   currentVideo: '',
 }
 
-export default SlideshowLogic(InstagramVideo, 'instagram', false)
+// This should be wrapped in the SlideshowLogic HOC when used
+export default InstagramVideo

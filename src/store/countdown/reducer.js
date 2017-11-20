@@ -52,5 +52,5 @@ function countdownReducerWrapper() {
 // TODO: Spread (...) instragramReducerWrapper(), not in 'data'
 export default combineReducers({
   data: countdownReducerWrapper(),
-  slideshow: slideshowState('COUNTDOWN'),
+  // slideshow: slideshowState('COUNTDOWN'),
 })
