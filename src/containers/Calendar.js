@@ -9,10 +9,23 @@ import { UserCircle, CalendarRow } from 'components'
 import { TransitionMotion, spring, presets } from 'react-motion'
 
 const CalendarWrapper = styled.div`
-  position: absolute;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  height: 100%;
-  top: 0;
+`
+
+const CalendarBrief = styled.div`
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  width: 100%;
+`
+
+const EventsContainer = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  flex: 1;
 `
 
 class CalendarContainer extends Component {
@@ -31,23 +44,31 @@ class CalendarContainer extends Component {
     }
   }
 
-  startLoop(arrayToLoop) {
-    arrayToLoop.map(meeting => {
-      this[`hilightCurrentMeeting${meeting.id}`] = setInterval(() => { this.isMeetingCurrent(meeting) }, 1000)
-    })
+  getEmails = users => (
+    users
+      .filter(user => moment().isBetween(user.start.date, user.end.date) && user.attendees)
+      .map(user => user.attendees
+        .filter(attendee => (attendee.email && !(attendee.email.indexOf('group.calendar.google.com') !== -1)))
+      )
+      .reduce((pre, cur) => pre.concat(cur), [])
+  )
+
+  getDefaultStyles() {
+    return this.state.meetings.map(meeting => ({ data: meeting, style: { height: 80, opacity: 1 }, key: meeting.id }))
   }
 
-  getAvatars(arrayToPopulate, arrayToMap) {
-    arrayToMap.map((item) => {
-      const startDate = moment(item.start.date)
-      const endDate = moment(item.end.date)
+  getStyles() {
+    const meetings = this.state.meetings
 
-      if (moment().isBetween(startDate, endDate)) {
-        if (item.attendees && item.attendees[0].email) {
-          arrayToPopulate.push(<UserCircle className={'small'} key={item.attendees[0].email} email={item.attendees[0].email} />)
-        }
+    return meetings.map((meeting) => {
+      return {
+        data: meeting,
+        key: meeting.id,
+        style: {
+          height: spring(70, presets.gentle),
+          opacity: spring(1, presets.gentle),
+        },
       }
-      return null
     })
   }
 
@@ -64,29 +85,15 @@ class CalendarContainer extends Component {
         clearInterval(this[`hilightCurrentMeeting${meetingObj.id}`])
         this.setState({ meetings: this.state.meetings.filter(meeting => meeting.id !== meetingObj.id) })
         setTimeout(() => {
-          // this.props.serviceRequest('calendar')
           this.forceUpdateDom()
         }, 1750)
       }
     }
   }
 
-  getDefaultStyles() {
-    return this.state.meetings.map(meeting => ({ data: meeting, style: { height: 80, opacity: 1 }, key: meeting.id }))
-  }
-
-  getStyles() {
-    const meetings = this.state.meetings
-
-    return meetings.map(meeting => {
-      return {
-        data: meeting,
-        key: meeting.id,
-        style: {
-          height: spring(80, presets.gentle),
-          opacity: spring(1, presets.gentle),
-        },
-      }
+  startLoop(arrayToLoop) {
+    arrayToLoop.map((meeting) => {
+      this[`hilightCurrentMeeting${meeting.id}`] = setInterval(() => this.isMeetingCurrent(meeting), 1000)
     })
   }
 
@@ -97,7 +104,7 @@ class CalendarContainer extends Component {
 
   willEnter() {
     return {
-      height: 80,
+      height: 70,
       opacity: 1,
     }
   }
@@ -109,15 +116,15 @@ class CalendarContainer extends Component {
   }
 
   render() {
-    const outAvatarArray = []
-    const inAvatarArray = []
-    this.getAvatars(outAvatarArray, this.props.outOfOffice)
-    this.getAvatars(inAvatarArray, this.props.inOffice)
+    const { inOffice, outOfOffice } = this.props
+
+    const outAvatarArray = this.getEmails(outOfOffice)
+    const inAvatarArray = this.getEmails(inOffice)
 
     return (
       <CalendarWrapper key={this.state.key}>
-        {inAvatarArray.length > 0 && outAvatarArray.length > 0 ? (
-          <div>
+        <CalendarBrief>
+          { outAvatarArray.length > 0 &&
             <CalendarRow
               rowDay={'Today'}
               rowTitle={'Out Of Office'}
@@ -125,8 +132,10 @@ class CalendarContainer extends Component {
               colorCode={'#ffd200'}
               opacity={0.4}
             >
-              {outAvatarArray}
+              {outAvatarArray.map(user => <UserCircle className={'small'} key={user.email} email={user.email} />)}
             </CalendarRow>
+          }
+          { inAvatarArray.length > 0 &&
             <CalendarRow
               rowDay={'Today'}
               rowTitle={'Creative Resources'}
@@ -134,11 +143,10 @@ class CalendarContainer extends Component {
               colorCode={'#ffd200'}
               opacity={0.4}
             >
-              {inAvatarArray}
+              {inAvatarArray.map(user => <UserCircle className={'small'} key={user.email} email={user.email} />)}
             </CalendarRow>
-          </div>
-        ) : (null)}
-
+          }
+        </CalendarBrief>
         {this.state.meetings.length > 0 ? (
           <TransitionMotion
             defaultStyles={this.getDefaultStyles()}
@@ -147,7 +155,7 @@ class CalendarContainer extends Component {
             willEnter={this.willEnter}
           >
             {(styles) => {
-              return (<div> {styles.map((meeting, idx) => {
+              return (<EventsContainer> {styles.map((meeting, idx) => {
                 let rowDate
                 let colorCode
                 let location
@@ -192,7 +200,7 @@ class CalendarContainer extends Component {
                   )
                 }
                 return null
-              })}</div>)
+              })}</EventsContainer>)
             }
             }
           </TransitionMotion>
@@ -217,8 +225,6 @@ const mapDispatchToProps = dispatch => ({
 
 CalendarContainer.propTypes = {
   serviceRequest: PropTypes.func,
-  // status: PropTypes.string,
-  // message: PropTypes.string,
   meetings: PropTypes.array,
   outOfOffice: PropTypes.array,
   inOffice: PropTypes.array,

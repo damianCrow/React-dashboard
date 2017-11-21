@@ -20,7 +20,7 @@ const Animate = keyframes`
     transform: scale(1);
   }
   100% {
-    transform: scale(1.15);
+    transform: scale(1.05);
   } 
 `
 const FeaturedImage = styled.img`
@@ -33,7 +33,9 @@ const FeaturedImage = styled.img`
   animation: ${Animate} 14s linear forwards;
   -webkit-filter: blur(5px);
   filter: blur(5px);
+  will-change: transform, filter;
   transition: filter 400ms;
+  contain: strict;
   &.lazyloaded {
     -webkit-filter: blur(0);
     filter: blur(0);

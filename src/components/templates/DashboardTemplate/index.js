@@ -6,10 +6,10 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100vh;
+  height: 100vh;
+  min-height: 1920px;
   box-sizing: border-box;
   padding-top: 9.375rem;
-  width: 1080px;
   overflow: hidden;
   height: 1920px;
   background: linear-gradient(to right, #00928f 0%, #50b848 100%);
@@ -18,17 +18,16 @@ const Wrapper = styled.div`
 
 const Content = styled.article`
   box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  width: 100%;
+  display: block;
+  height: 100%;
   overflow: hidden;
-  will-change: transform;
+  width: 100%;
 `
 
 const Header = styled.header`
+  left: 0;
   position: fixed;
   top: 0;
-  left: 0;
   width: 100%;
   z-index: 999;
 `
