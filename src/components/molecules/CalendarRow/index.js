@@ -102,7 +102,7 @@ const SubTitle = styled.span`
 class CalendarRow extends Component {
   render() {
     return (
-      <Wrapper opacity={this.props.opacity} style={this.props.styles} id={this.props.id}>
+      <Wrapper opacity={this.props.opacity} style={this.props.styles} id={this.props.id} innerRef={(wrapper) => { this.wrapper = wrapper }}>
         <LeftColumn>
           <Day color={this.props.colorCode} level={4}>{this.props.rowDay}</Day>
           { /* <Wink fillColor={'#ffd200'} icon="interwink" height={20} /> */ }
