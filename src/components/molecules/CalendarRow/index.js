@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React from 'react'
 import styled, { keyframes } from 'styled-components'
-import { Heading, Icon, TruncatedScroller } from 'components'
+import { Heading, TruncatedScroller } from 'components'
 
 const Pulsate = keyframes`
   0% {
@@ -17,9 +17,14 @@ const Wrapper = styled.div`
   position: relative;
   width: 100%;
   display: flex;
-  padding: 0 15px;
+  background-color: rgba(0, 0, 0, ${props => props.opacity ? props.opacity : 1});
+  box-sizing: border-box;
   overflow: hidden;
   font-family: Gotham,Helvetica Neue,Helvetica,Roboto,sans-serif;
+  flex: 1 0 auto;
+  min-height: 70px;
+  align-items: stretch;
+
   &:first-child {
     .main_content {
       border-top: none;
@@ -31,51 +36,57 @@ const Wrapper = styled.div`
     }
   }
 `
-const Shade = styled.div`
-  position: absolute;
-  width: calc(100% + 30px);
-  left: -15px;
-  height: 100%;
-  background-color: #000;
-  opacity: ${props => props.opacity ? props.opacity : 0};
-`
+
 const Day = styled(Heading)`
-  color: ${props => props.color ? props.color : '#000'};  
+  color: ${props => props.color ? props.color : '#000'};
+  margin: 0;
   text-align: left;
 `
 const LeftColumn = styled.div`
   position: relative;
-  width: 10%;
-  height: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: .5rem 1rem;
 `
 // border-right: 1px solid #078074; removed from LeftColumn \\
-const RightColumn = styled.div`
-  position: absolute;
-  right: 15px;
-  top: 15px;
+const MainColumn = styled.div`
+  position: relative;
+  border-top: 1px solid rgba(38, 208, 124, 0.15);
+  padding: .5rem 1rem;
+  display: flex;
+  flex: 8;
+`
+
+const Titles = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: auto;
+  justify-content: center;
+`
+
+const Details = styled.div`
+  flex: auto;
+  margin-left: auto;
+  text-align: right;
   color: #a4d0a2;
   font-size: 1.25rem;
   display: flex;
-  max-height: 50px;
+  align-items: center;
+  justify-content: flex-end;
 `
-const MainColumn = styled.div`
-  position: relative;
-  width: calc(90% - 30px);
-  height: 100%;
-  margin-left: 15px;
-  border-top: 1px solid #078074;
-`
+
 const Title = styled(TruncatedScroller)`
   font-weight: 600;
   font-size: 1.25rem;
   color: #fff;
   top: 15px;
-  position: absolute;
+  // position: absolute;
 `
-const SubTitle = styled(TruncatedScroller)`
+const SubTitle = styled.span`
   font-weight: 100;
   top: 50px;
-  position: absolute;
+  // position: absolute;
   color: #71c3a8;
   font-size: 1rem;
 `
@@ -86,30 +97,23 @@ const SubTitle = styled(TruncatedScroller)`
 //   top: calc(50% - 10px);
 // `
 
-class CalendarRow extends Component {
-  componentDidMount() {
-    const rightColumnWidth = window.getComputedStyle(this.rightColumn, null).getPropertyValue('width')
-    this.Title.scroller.style.width = `calc(100% - ${rightColumnWidth} - 30px)`
-    this.SubTitle.scroller.style.width = `calc(100% - ${rightColumnWidth} - 30px)`
-  }
-
-  render() {
-    return (
-      <Wrapper style={this.props.styles} id={this.props.id} innerRef={(wrapper) => { this.wrapper = wrapper }} >
-        <Shade opacity={this.props.opacity} />
-        <LeftColumn>
-          <Day color={this.props.colorCode} level={4}>{this.props.rowDay}</Day>
-          { /* <Wink fillColor={'#ffd200'} icon="interwink" height={20} /> */ }
-        </LeftColumn>
-        <MainColumn className={'main_content'}>
-          <Title className={'title'} innerRef={(Title) => { this.Title = Title }}>{this.props.rowTitle}</Title>
-          <SubTitle innerRef={(SubTitle) => { this.SubTitle = SubTitle }}>{this.props.rowSubTitle}</SubTitle>
-          <RightColumn className={'content-on-right'} innerRef={(rightColumn) => { this.rightColumn = rightColumn }}>{this.props.children}</RightColumn>
-        </MainColumn>
-      </Wrapper>
-    )
-  }
-}
+const CalendarRow = ({ colorCode, opacity, id, rowDay, rowTitle, rowSubTitle, children, styles }) => (
+  <Wrapper opacity={opacity} style={styles} id={id} >
+    <LeftColumn>
+      <Day color={colorCode} level={4}>{rowDay}</Day>
+      { /* <Wink fillColor={'#ffd200'} icon="interwink" height={20} /> */ }
+    </LeftColumn>
+    <MainColumn className={'main_content'}>
+      <Titles>
+        <Title className={'title'}>{rowTitle}</Title>
+        <SubTitle>{rowSubTitle}</SubTitle>
+      </Titles>
+      <Details className={'content-on-right'}>
+        {children}
+      </Details>
+    </MainColumn>
+  </Wrapper>
+)
 
 CalendarRow.propTypes = {
   colorCode: PropTypes.string,
