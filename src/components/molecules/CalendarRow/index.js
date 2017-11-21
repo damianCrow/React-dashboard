@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Component } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { Heading, TruncatedScroller } from 'components'
 
@@ -97,23 +97,29 @@ const SubTitle = styled.span`
 //   top: calc(50% - 10px);
 // `
 
-const CalendarRow = ({ colorCode, opacity, id, rowDay, rowTitle, rowSubTitle, children, styles }) => (
-  <Wrapper opacity={opacity} style={styles} id={id} >
-    <LeftColumn>
-      <Day color={colorCode} level={4}>{rowDay}</Day>
-      { /* <Wink fillColor={'#ffd200'} icon="interwink" height={20} /> */ }
-    </LeftColumn>
-    <MainColumn className={'main_content'}>
-      <Titles>
-        <Title className={'title'}>{rowTitle}</Title>
-        <SubTitle>{rowSubTitle}</SubTitle>
-      </Titles>
-      <Details className={'content-on-right'}>
-        {children}
-      </Details>
-    </MainColumn>
-  </Wrapper>
-)
+// Has to be a full compoenent for animaitons to work.
+// eslint-disable-next-line react/prefer-stateless-function
+class CalendarRow extends Component {
+  render() {
+    return (
+      <Wrapper opacity={this.props.opacity} style={this.props.styles} id={this.props.id}>
+        <LeftColumn>
+          <Day color={this.props.colorCode} level={4}>{this.props.rowDay}</Day>
+          { /* <Wink fillColor={'#ffd200'} icon="interwink" height={20} /> */ }
+        </LeftColumn>
+        <MainColumn className={'main_content'}>
+          <Titles>
+            <Title className={'title'}>{this.props.rowTitle}</Title>
+            <SubTitle>{this.props.rowSubTitle}</SubTitle>
+          </Titles>
+          <Details className={'content-on-right'}>
+            {this.props.children}
+          </Details>
+        </MainColumn>
+      </Wrapper>
+    )
+  }
+}
 
 CalendarRow.propTypes = {
   colorCode: PropTypes.string,
