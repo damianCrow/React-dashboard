@@ -8,7 +8,6 @@ import {
 
 const weather = (state = initialState, action) => {
   switch (action.type) {
-
     case FETCH_WEATHER:
       return {
         ...state,
@@ -27,7 +26,7 @@ const weather = (state = initialState, action) => {
         ...state,
         // message: action.message,
         fetching: false,
-        reason: action.reason,
+        reason: action.reason.message,
       }
 
     default:

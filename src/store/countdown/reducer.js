@@ -40,7 +40,7 @@ function countdownReducerWrapper() {
         return {
           ...state,
           fetching: false,
-          message: action.reason,
+          message: action.reason.message,
         }
 
       default:
