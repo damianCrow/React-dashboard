@@ -2,23 +2,20 @@ const fs = require('fs')
 const google = require('googleapis')
 const googleAuth = require('google-auth-library')
 
-const CRED_DIR = './.credentials/google/'
-const HOST = 'https://www.googleapis.com'
+const CRED_DIR = './.tokens/'
 const TOKEN_PATH = `${CRED_DIR}google_token.json`
-const CLIENT_DETAILS = `${CRED_DIR}config.json`
+const REDIRECT_URIS = 'http://localhost:3000/calendar_auth'
+const HOST = 'https://www.googleapis.com/auth/'
 
-const SCOPES = [`${HOST}/auth/admin.directory.user.readonly`, `${HOST}/auth/calendar.readonly`]
-
-
-// Example 1: Creating a new class (declaration-form)
-// ===============================================================
+const SCOPES = [
+  `${HOST}admin.directory.user.readonly`,
+  `${HOST}calendar.readonly`,
+]
 
 class Google {
-
   constructor(app, socket) {
     this.app = app
     this.socket = socket
-    this.config = {}
 
     this.init()
   }
@@ -29,8 +26,7 @@ class Google {
 
     // Setup and load the class with the already known credentials,
     // then make sure the external auth url is correct.
-    this.grabLocalCredentials()
-      .then(() => this.loadUpOauthClient())
+    this.loadUpOauthClient()
   }
 
   setupLocalAuthPaths() {
@@ -47,43 +43,42 @@ class Google {
       // oauth2Client, authCode
       // this.getNewToken(accessCode, 'access')
       this.getNewToken(accessCode, 'access')
-        .then(tokenDetails => {
+        .then((tokenDetails) => {
           this.storeToken(tokenDetails)
           res.redirect('/')
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
         })
     })
   }
 
-  grabLocalCredentials() {
-    return new Promise((resolve, reject) => {
-      fs.readFile(CLIENT_DETAILS, (err, content) => {
-        if (err) {
-          reject(`Error loading client secret file: '${err}`)
-        }
-        this.config = JSON.parse(content).installed
-        resolve()
-      })
-    })
-  }
+  // grabLocalCredentials() {
+  //   return new Promise((resolve, reject) => {
+  //     fs.readFile(CLIENT_DETAILS, (err, content) => {
+  //       if (err) {
+  //         reject(`Error loading client secret file: '${err}`)
+  //       }
+  //       resolve()
+  //     })
+  //   })
+  // }
 
   checkAuth() {
     return new Promise((resolve, reject) => {
       // Load client secrets from a local file.
       this.checkStoredAccessToken()
-        .then(token => {
+        .then((token) => {
           this.oauth2Client.setCredentials(token)
           this.checkAccessTokenExpiration(token)
             .then(() => {
               resolve(this.oauth2Client)
             })
         })
-        .catch(err => {
-          // It ends here, the user needs to authenticate.
+        .catch((err) => {
+          // 🛑 It all ends here folks 🛑 - The user needs to authenticate.
           reject(err)
-          console.log(`User needs to authenticate Google, error report: ${err} `)
+          console.log(`User needs to authenticate Google or can't read the existing token. Error report: ${err} `)
         })
     })
   }
@@ -98,19 +93,14 @@ class Google {
   checkStoredAccessToken() {
     return new Promise((resolve, reject) => {
       // Check if we have previously stored a token.
-      fs.readFile(TOKEN_PATH, (err, token) => {
-        if (err) {
-          // No token stored, so get a new one.
-          // Setup to catch authorize user in the consuctor
-          // this.setupAccessForNewToken()
-          reject(err)
-        } else {
-          const tokenToPass = JSON.parse(token)
-          resolve(tokenToPass)
-          // We have a processed token stored, first check if it's expired.
-          // this.checkAccessTokenExpiration(resolve, reject, JSON.parse(token))
-        }
-      })
+      if (fs.existsSync(TOKEN_PATH)) {
+        fs.readFile(TOKEN_PATH, (err, token) => {
+          err ? reject(err) : resolve(JSON.parse(token))
+        })
+      }
+      // else {
+      //   fs.writeFile(TOKEN_PATH, json, 'utf8', callback => console.log(callback))
+      // }
     })
   }
 
@@ -138,8 +128,12 @@ class Google {
 
   loadUpOauthClient() {
     this.auth = new googleAuth()
-    this.oauth2Client = new this.auth.OAuth2(this.config.client_id, this.config.client_secret, this.config.redirect_uris)
-    console.log('setupExternalAuthUrl')
+    this.oauth2Client = new this.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      REDIRECT_URIS
+    )
+
     this.authUrl = this.oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: SCOPES,

@@ -4,22 +4,14 @@ const Twitter = require('twitter')
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/calendar-nodejs-quickstart.json
 const SCOPES = ['likes', 'follower_list', 'basic', 'public_content']
-const CRED_DIR = './.credentials/twitter/'
-const STORED_CREDENTIALS = `${CRED_DIR}credentials.json`
+const CRED_DIR = './.tokens/'
 const STORED_TOKEN = `${CRED_DIR}token.json`
-
-// https://www.twitter.com/psysize/
-// const TWITTER_USER_ID = '30605504'
 
 // https://www.twitter.com/interstateteam/
 const TWITTER_USER_NAME = 'interstateteam'
 
-// Example 1: Creating a new class (declaration-form)
-// ===============================================================
-
 // A base class is defined using the new reserved 'class' keyword
 class TwitterApi {
-
   constructor(app, socket, port) {
     this.app = app
     this.socket = socket
@@ -34,29 +26,35 @@ class TwitterApi {
 
 
   checkAuth() {
-    return new Promise((resolve, reject) => {
-      // console.log('GoogleCalendar this: ', this)
-      // Load client secrets from a local file.
-      fs.readFile(STORED_CREDENTIALS, (err, content) => {
-        if (err) {
-          reject(`Error loading client secret file: ${err}`)
-        }
-        // Authorize a client with the loaded credentials, then call the
-        // Twitter API.
-        const CREDENTIALS = JSON.parse(content)
-        // console.log('CREDENTIALS', JSON.parse(content))
-
-        // this.authorize(CREDENTIALS)
-        //   .then(function (twitter) {
-        //     resolve(twitter)
-        //   })
-        //   .catch(function (error) {
-        //     console.log(error)
-        //   })
-
-        resolve(this.authorize(CREDENTIALS))
-      })
+    return new Twitter({
+      consumer_key: process.env.TWITTER_COMSUMER_KEY,
+      consumer_secret: process.env.TWITTER_COMSUMER_SECRET,
+      access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
+      access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
     })
+    // return new Promise((resolve, reject) => {
+    //   // console.log('GoogleCalendar this: ', this)
+    //   // Load client secrets from a local file.
+    //   fs.readFile(STORED_CREDENTIALS, (err, content) => {
+    //     if (err) {
+    //       reject(`Error loading client secret file: ${err}`)
+    //     }
+    //     // Authorize a client with the loaded credentials, then call the
+    //     // Twitter API.
+    //     const CREDENTIALS = JSON.parse(content)
+    //     // console.log('CREDENTIALS', JSON.parse(content))
+
+    //     // this.authorize(CREDENTIALS)
+    //     //   .then(function (twitter) {
+    //     //     resolve(twitter)
+    //     //   })
+    //     //   .catch(function (error) {
+    //     //     console.log(error)
+    //     //   })
+
+    //     resolve(this.authorize(CREDENTIALS))
+    //   })
+    // })
   }
 
   /**
@@ -66,15 +64,22 @@ class TwitterApi {
    * @param {Object} credentials The authorization client credentials.
    * @param {function} callback The callback to call with the authorized client.
    */
-  authorize(credentials) {
-    const twitter = new Twitter({
-      consumer_key: credentials.consumer_key,
-      consumer_secret: credentials.consumer_secret,
-      access_token_key: credentials.access_token_key,
-      access_token_secret: credentials.access_token_secret,
+  authorize() {
+    // const twitter = new Twitter({
+    //   consumer_key: credentials.consumer_key,
+    //   consumer_secret: credentials.consumer_secret,
+    //   access_token_key: credentials.access_token_key,
+    //   access_token_secret: credentials.access_token_secret,
+    // })
+
+    return new Twitter({
+      consumer_key: process.env.TWITTER_COMSUMER_KEY,
+      consumer_secret: process.env.TWITTER_COMSUMER_SECRET,
+      access_token_key: process.env.TWITTER_ACCESS_TOKEN_KEY,
+      access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET,
     })
 
-    return twitter
+    // return twitter
 
     // return new Promise((resolve, reject) => {
     //   console.log('autherorize credentials', credentials)
@@ -180,22 +185,21 @@ class TwitterApi {
    */
   tweets() {
     return new Promise((resolve, reject) => {
-      this.checkAuth().then(twitter => {
-        twitter.get('statuses/user_timeline', { screen_name: TWITTER_USER_NAME }, (error, posts, response) => {
-          if (!error) {
-            resolve(posts)
-            // this.socket.emit('twitter-new-posts', { posts })
-          } else {
-            reject(error)
-            // this.socket.emit('twitter-new-posts-error', { error })
-          }
-        })
-      }).catch((error) => {
-        console.log('error', error)
+      // this.checkAuth().then(twitter => {
+      this.checkAuth().get('statuses/user_timeline', { screen_name: TWITTER_USER_NAME }, (error, posts, response) => {
+        if (!error) {
+          resolve(posts)
+          // this.socket.emit('twitter-new-posts', { posts })
+        } else {
+          reject(error)
+          // this.socket.emit('twitter-new-posts-error', { error })
+        }
       })
+      // }).catch((error) => {
+      //   console.log('error', error)
+      // })
     })
   }
-
 }
 
 module.exports = TwitterApi

@@ -12,7 +12,9 @@ npm-debug.log
 
 public/user-data/
 public/google-user-pics/*
-.credentials/
+
+.tokens/*
+.env
 
 coverage
 

@@ -10,19 +10,18 @@ const INSTAGRAM_USER_ID = '30605504'
 // https://www.instagram.com/simoninterstate/
 // const INSTAGRAM_USER_ID = '5846525555'
 
-const CRED_DIR = './.credentials/instagram/'
+const CRED_DIR = './.tokens/'
 const HOST_URL = 'https://api.instagram.com'
 const TOKEN_PATH = `${CRED_DIR}instagram_token.json`
-const CLIENT_DETAILS = `${CRED_DIR}config.json`
+// const CLIENT_DETAILS = `${CRED_DIR}config.json`
+const REDIRECT_URI = 'http://localhost:3000/instagram_auth'
 
 
 // A base class is defined using the new reserved 'class' keyword
 class Instagram {
-
   constructor(app, sockets) {
     this.app = app
     this.sockets = sockets
-    this.credentials = {}
 
     this.init()
   }
@@ -33,21 +32,20 @@ class Instagram {
 
     // Setup and load the class with the already known credentials,
     // then make sure the external auth url is correct.
-    this.grabLocalCredentials()
-      .then(() => this.setupExternalAuthUrl())
+    this.setupExternalAuthUrl()
   }
 
-  grabLocalCredentials() {
-    return new Promise((resolve, reject) => {
-      fs.readFile(CLIENT_DETAILS, (err, content) => {
-        if (err) {
-          reject(`Error loading client secret file: '${err}`)
-        }
-        this.credentials = JSON.parse(content)
-        resolve()
-      })
-    })
-  }
+  // grabLocalCredentials() {
+  //   return new Promise((resolve, reject) => {
+  //     fs.readFile(CLIENT_DETAILS, (err, content) => {
+  //       if (err) {
+  //         reject(`Error loading client secret file: '${err}`)
+  //       }
+  //       this.credentials = JSON.parse(content)
+  //       resolve()
+  //     })
+  //   })
+  // }
 
   checkAuth() {
     return new Promise((resolve, reject) => {
@@ -110,7 +108,7 @@ class Instagram {
 
   setupExternalAuthUrl() {
     console.log('setupExternalAuthUrl')
-    this.authUrl = `${HOST_URL}/oauth/authorize/?client_id=${this.credentials.client_id}&redirect_uri=${this.credentials.redirect_uri}&state=optional-csrf-token&response_type=code`
+    this.authUrl = `${HOST_URL}/oauth/authorize/?client_id=${process.env.INSTAGRAM_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&state=optional-csrf-token&response_type=code`
     console.log('this.authUrl', this.authUrl)
   }
 
@@ -154,7 +152,7 @@ class Instagram {
         },
         access: {
           code,
-          redirect_uri: this.credentials.redirect_uri,
+          redirect_uri: REDIRECT_URI,
           grant_type: 'authorization_code',
         },
       }
@@ -163,8 +161,8 @@ class Instagram {
         method: 'POST',
         uri: `${HOST_URL}/oauth/access_token`,
         form: Object.assign({
-          client_id: this.credentials.client_id,
-          client_secret: this.credentials.client_secret,
+          client_id: process.env.INSTAGRAM_CLIENT_ID,
+          client_secret: process.env.INSTAGRAM_CLIENT_SECRET,
         }, extraOptions[requstType]),
         json: true, // Automatically stringifies the body to JSON
       }
@@ -247,8 +245,6 @@ class Instagram {
     }
     // 900000 = 15 minutes
   }
-
-
 }
 
 module.exports = Instagram

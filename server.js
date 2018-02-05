@@ -1,5 +1,6 @@
 /* eslint-disable */
 const path = require('path');
+const dotenv = require('dotenv')
 const webpack = require('webpack');
 // const WebpackDevServer = require('webpack-dev-server')
 const WebpackDevMiddleware = require('webpack-dev-middleware');
@@ -26,13 +27,13 @@ const PUBLIC_PATH = `/${process.env.PUBLIC_PATH || ''}/`.replace('//', '/');
 
 const Sockets = require('./SocketServer.js');
 
+DEBUG && dotenv.load();
+
 const app = express();
 
-console.log('DEBUG', DEBUG);
-
-const server = app.listen(port, () => {
-  console.info('🌎   🖥... Listening at http://%s:%s', ip, port);
-});
+const server = app.listen(port, () => 
+  console.info('🌎   🖥... Listening at http://%s:%s', ip, port)
+);
 
 const sockets = socketIo(server)
 
@@ -56,12 +57,7 @@ app.use(express.static(path.join(process.cwd(), PUBLIC_PATH)));
 
 const compiler = webpack(config);
 
-var basic = auth.basic({
-  realm: "Protected Area",
-  file: __dirname + '/.htpasswd'
-});
-
-app.use(auth.connect(basic));
+// app.use(auth.connect(basic));
 
 if (DEBUG) {
 
@@ -79,7 +75,7 @@ if (DEBUG) {
   });
 
   app.use(middleware);
-  // console.log('compiler', compiler)
+
   // Keeps crashing sometimes?
   app.use(webpackHotMiddleware(compiler));
 
