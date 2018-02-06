@@ -18,7 +18,7 @@ const List = styled.ul`
   margin: 15px 20px;
   font-family: ${font('primary')};
   max-width: 700px;
-  max-height: calc(100vh - 16rem);
+  max-height: calc(100vh - 55%);
   overflow: scroll;
 `
 const ListItem = styled.li`

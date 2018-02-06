@@ -26,7 +26,7 @@ const List = styled.ul`
  font-size: 1.125rem;
  margin: 1rem 0.5rem;
  padding: 0;
- max-height: calc(100vh - 19rem);
+ max-height: calc(100vh - 63%);
  overflow: scroll;
 `
 const ListItem = styled.li`
