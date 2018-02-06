@@ -26,8 +26,8 @@ const List = styled.ul`
  font-size: 1.125rem;
  margin: 1rem 0.5rem;
  padding: 0;
- max-height: calc(100% - 240px);
- overflow-y: scroll;
+ max-height: calc(100vh - 19rem);
+ overflow: scroll;
 `
 const ListItem = styled.li`
  display: flex;
@@ -64,17 +64,24 @@ class AdminPortalHome extends Component {
 
   constructor(props) {
     super(props)
-    this.state = { goToPlaylist: ''}
+    this.state = { goToPlaylist: '', currentPlaylistName: ''}
+    this.onSelect = this.onSelect.bind(this)
+    this.onCreate = this.onCreate.bind(this)
+  }
+
+  componentWillMount() {
     if (this.props.allAvailablePlaylists.length < 1) {
       fetch('/public/user-data/showcase-media.json').then((response) => {
         return response.json()
       }).then((j) => {
         this.props.storeAllPlaylists(j.playlists)
+        this.setState({ currentPlaylistName: j.currentPlaylist })
       })
+    } else {
+      if(this.props.allAvailablePlaylists.find(playlist => playlist.isCurrent)){
+        this.setState({ currentPlaylistName: this.props.allAvailablePlaylists.find(playlist => playlist.isCurrent).name })
+      }
     }
-
-    this.onSelect = this.onSelect.bind(this)
-    this.onCreate = this.onCreate.bind(this)
   }
 
   onSelect(playlistId) {
@@ -85,6 +92,7 @@ class AdminPortalHome extends Component {
   onPublish(playlistId) {
     this.props.recievedPlaylistFromServer(...this.props.allAvailablePlaylists.filter(playlist => playlist.id === playlistId))
     this.props.publishPlaylist()
+    this.setState({ currentPlaylistName:this.props.allAvailablePlaylists.filter(playlist => playlist.id === playlistId)[0].name })
   }
 
   onCreate() {
@@ -107,19 +115,11 @@ class AdminPortalHome extends Component {
       return (<Redirect to={`/admin-portal/playlist/${this.state.goToPlaylist}`} component={AdminPortalPlaylistView} />)
     }
 
-    let currentPlaylistName
-
-    if(this.props.allAvailablePlaylists.find(playlist => playlist.isCurrent)){
-      currentPlaylistName = this.props.allAvailablePlaylists.find(playlist => playlist.isCurrent).name
-    } else {
-      currentPlaylistName = ''
-    }
-
     return (
       <AdminPortalTemplate>
         <Heading palette="alert" level={6}>
           <SubHeading>The current playlist is:</SubHeading>
-          {currentPlaylistName}
+          {this.state.currentPlaylistName}
         </Heading>
         <Heading style={{color: '#616161'}} level={3}>
           Playlists:
@@ -131,7 +131,7 @@ class AdminPortalHome extends Component {
               <div style={{textAlign: 'center'}}>
                 <Button onClick={this.onSelect.bind(this, playlistObj.id)} palette="primary">Edit</Button>
                   {(() => {
-                    if(playlistObj.isCurrent) {
+                    if(playlistObj.isCurrent || playlistObj.name === this.state.currentPlaylistName) {
                       return <Button disabled palette="primary">CURRENT</Button>
                     } else {
                       return <Button onClick={this.onPublish.bind(this, playlistObj.id)} palette="primary">Publish</Button>

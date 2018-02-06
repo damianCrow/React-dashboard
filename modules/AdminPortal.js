@@ -85,6 +85,7 @@ class AdminPortal {
           obj.playlists.map((playlist, idx) => {
             if(req.body.overideQueue !== undefined) {
               Object.assign(playlist, {isCurrent: false})
+              obj.currentPlaylist = req.body.playlist.name
             }
             
             if(playlist.id === req.body.playlist.id) {
